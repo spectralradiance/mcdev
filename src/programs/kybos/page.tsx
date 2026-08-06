@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import * as THREE from "three";
-import { Hypercube, Transform, wrap, toIndex, toAngle } from "./hypercube";
+import { type Polytope, Cell24, Cell600, Hypercube, Transform, wrap, toIndex, toAngle } from "./hypercube";
 import { type Params, INIT } from "./types";
 import { type ThreeScene, createThreeScene, rebuildMeshes, rebuildSphereLines } from "./three-scene";
 import { parseUrlState } from "./url-state";
@@ -40,19 +40,23 @@ export default function KybosPage() {
   // All mutable animation state in refs — the RAF loop never triggers React re-renders
   const mp = useRef<Params>({ ...INIT });
   const transforms = useRef<Transform[]>([]);
-  const hypercube = useRef<Hypercube | null>(null);
+  const hypercube = useRef<Polytope | null>(null);
   const anyAnimated = useRef(false);
   const rafId = useRef(0);
   const modeRef = useRef<"2d" | "3d">("2d");
   const threeRef = useRef<ThreeScene | null>(null);
-  const shapeRef = useRef<"cube" | "sphere">("cube");
+  const shapeRef = useRef<"cube" | "sphere" | "24cell" | "600cell">("cube");
   const sphereRef = useRef<SphereCurves | null>(null);
+  const cell24Ref = useRef(new Cell24());
+  const cell600Ref = useRef(new Cell600());
+  const perspRef = useRef(false);
 
   // React state — only for structural re-renders (slider panel + row list)
   const [params, setParams] = useState<Params>(INIT);
   const [rows, setRows] = useState<Array<{ id: number; i: number; j: number }>>([]);
   const [mode, setMode] = useState<"2d" | "3d">("2d");
-  const [shape, setShape] = useState<"cube" | "sphere">("cube");
+  const [shape, setShape] = useState<"cube" | "sphere" | "24cell" | "600cell">("cube");
+  const [persp, setPersp] = useState(false);
   const [showFaces, setShowFaces] = useState(false);
   const showFacesRef = useRef(false);
   const [showEdges, setShowEdges] = useState(true);
@@ -252,8 +256,15 @@ export default function KybosPage() {
     const p2d = hc.points.map(pt => {
       const p = pt.slice();
       transforms.current.forEach(t => t.apply(p));
+      if (perspRef.current) {
+        const d = mp.current.persp_dist;
+        const f = d / Math.max(d - p[3], 0.1);
+        return [p[0] * f * s + cx, cy - p[1] * f * s];
+      }
       return [p[0] * s + cx, cy - p[1] * s];
     });
+    const glowAmt = mp.current.glow;
+    if (glowAmt > 0) { ctx.shadowBlur = glowAmt * 0.7; ctx.shadowColor = "#fff"; }
     if (showFacesRef.current) {
       ctx.globalAlpha = mp.current.face_alpha / 100;
       ctx.fillStyle = "#fff";
@@ -283,10 +294,11 @@ export default function KybosPage() {
       ctx.fillStyle = "#fff";
       p2d.forEach(([x, y]) => {
         ctx.beginPath();
-        ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+        ctx.arc(x, y, mp.current.vertex_size * 0.25, 0, Math.PI * 2);
         ctx.fill();
       });
     }
+    ctx.shadowBlur = 0;
   }, []);
 
   // Projects N-D → 3D for cube (orthographic) or S³ (stereographic).
@@ -327,9 +339,15 @@ export default function KybosPage() {
       const pts = hc.points.map(pt => {
         const p = pt.slice();
         transforms.current.forEach(t => t.apply(p));
+        if (perspRef.current) {
+          const d = mp.current.persp_dist;
+          const f = d / Math.max(d - p[3], 0.1);
+          return new THREE.Vector3(p[0]*f*S, p[1]*f*S, p[2]*f*S);
+        }
         return new THREE.Vector3(p[0] * S, p[1] * S, p[2] * S);
       });
-      pts.forEach((v, i) => { ts.spheres[i]?.position.copy(v); });
+      const vScale = mp.current.vertex_size / 10;
+      pts.forEach((v, i) => { const m = ts.spheres[i]; if (m) { m.position.copy(v); m.scale.setScalar(vScale); } });
       const yAxis = new THREE.Vector3(0, 1, 0);
       hc.edges.forEach(([a, b], i) => {
         const mesh = ts.edgeCylinders[i];
@@ -364,6 +382,10 @@ export default function KybosPage() {
       }
     }
 
+    // Emissive intensity is the lightweight 3D glow (no post-processing needed)
+    const emissive = mp.current.glow / 30;
+    ts.sphereMat.emissiveIntensity = emissive;
+    ts.cylinderMat.emissiveIntensity = emissive;
     ts.controls.update();
     ts.renderer.render(ts.scene, ts.camera);
   }, []);
@@ -446,6 +468,11 @@ export default function KybosPage() {
 
   useEffect(() => { syncAllBtns(); }, [rows, syncAllBtns]);
 
+  // Rebuild Three.js meshes when shape changes while in 3D mode
+  useEffect(() => {
+    if (mode === "3d" && threeRef.current) createThreeObjects();
+  }, [shape, mode, createThreeObjects]);
+
   // ── param handlers ───────────────────────────────────────────────────────────
 
   const setP = (key: keyof Params, v: number) => {
@@ -464,6 +491,12 @@ export default function KybosPage() {
 
   const switchMode = () => {
     const next: "2d" | "3d" = modeRef.current === "2d" ? "3d" : "2d";
+    if (next === "2d") {
+      // Snapshot dimensions from the visible Three.js container before the canvas is un-hidden
+      const cont = threeContainerRef.current;
+      const cnv = canvasRef.current;
+      if (cont && cnv) { cnv.width = cont.clientWidth; cnv.height = cont.clientHeight; }
+    }
     modeRef.current = next;
     setMode(next);
     if (next === "3d") {
@@ -476,6 +509,14 @@ export default function KybosPage() {
     }
   };
 
+  const selectShape = (s: "cube" | "sphere" | "24cell" | "600cell") => {
+    shapeRef.current = s;
+    setShape(s);
+    if (s === "24cell") { hypercube.current = cell24Ref.current; createThreeObjects(); }
+    else if (s === "600cell") { hypercube.current = cell600Ref.current; createThreeObjects(); }
+    else if (s === "cube") { createHypercube(mp.current.n_dimensions); }
+  };
+
   const copySettings = () => {
     const state = {
       d: mp.current.n_dimensions,
@@ -484,6 +525,9 @@ export default function KybosPage() {
       a: mp.current.accentuation,
       w: mp.current.line_width,
       fa: mp.current.face_alpha,
+      g: mp.current.glow,
+      pd: mp.current.persp_dist,
+      vs: mp.current.vertex_size,
       sv: showVerticesRef.current ? 1 : 0,
       se: showEdgesRef.current ? 1 : 0,
       sf: showFacesRef.current ? 1 : 0,
@@ -497,15 +541,17 @@ export default function KybosPage() {
   // ── render ───────────────────────────────────────────────────────────────────
 
   const td: React.CSSProperties = { padding: "4px", color: "#aaa", fontSize: "0.75rem", cursor: "default" };
-
-  const paramRows = [
-    { label: "N", title: "number of dimensions",    min: 2, max: 8,   value: params.n_dimensions,              display: params.n_dimensions,  onChange: onDim },
-    { label: "D", title: "angle divisions (2^n)",   min: 1, max: 5,   value: Math.log2(params.n_divisions),    display: params.n_divisions,   onChange: onDiv },
-    { label: "S", title: "animation speed",          min: 0, max: 10, value: params.speed,                     display: params.speed,         onChange: (v: number) => setP("speed", v) },
-    { label: "A", title: "accentuation",             min: 0, max: 99,  value: params.accentuation,              display: params.accentuation,  onChange: (v: number) => setP("accentuation", v) },
-    { label: "W", title: "line width",               min: 1, max: 20,  value: params.line_width,                display: params.line_width,    onChange: (v: number) => setP("line_width", v) },
-    { label: "T", title: "face opacity %",            min: 0, max: 100, value: params.face_alpha,                 display: params.face_alpha,    onChange: (v: number) => setP("face_alpha", v) },
-  ];
+  const gh: React.CSSProperties = { fontSize: "0.6rem", color: "#555", borderBottom: "0.5px solid #333", padding: "1px 0", marginTop: "6px", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.05em" };
+  const sr = (label: string, title: string, min: number, max: number, value: number, display: number | string, onChange: (v: number) => void) => (
+    <tr key={label}>
+      <td style={{ ...td, fontSize: "0.62rem", whiteSpace: "nowrap" }} title={title}>{label}</td>
+      <td style={{ padding: "2px" }}>
+        <input className="k-range" type="range" min={min} max={max} value={value}
+          onChange={e => onChange(parseInt(e.target.value))} />
+      </td>
+      <td style={{ ...td, whiteSpace: "nowrap", fontSize: "0.65rem" }}>&nbsp;{display}&nbsp;</td>
+    </tr>
+  );
 
   return (
     <>
@@ -519,30 +565,63 @@ export default function KybosPage() {
 
       <div style={{ display: "flex", height: "calc(100vh - 88px)", background: "#000", color: "#fff", overflow: "hidden" }}>
 
-        {/* left panel — sliders */}
-        <div style={{ width: "15%", height: "100%", borderRight: "0.5px solid dimgrey", padding: "4px" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <tbody>
-              {paramRows.map(({ label, title, min, max, value, display, onChange }) => (
-                <tr key={label}>
-                  <td style={td} title={title}>{label}</td>
-                  <td style={{ padding: "2px" }}>
-                    <input className="k-range" type="range" min={min} max={max} value={value}
-                      onChange={e => onChange(parseInt(e.target.value))} />
-                  </td>
-                  <td style={{ ...td, whiteSpace: "nowrap" }}>&nbsp;{display}&nbsp;</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* left panel — grouped controls */}
+        <div style={{ width: "15%", height: "100%", borderRight: "0.5px solid dimgrey", padding: "4px", overflowY: "auto" }}>
+
+          <div style={gh}>object</div>
+          <select
+            value={shape}
+            onChange={e => selectShape(e.target.value as "cube" | "sphere" | "24cell" | "600cell")}
+            style={{ background: "black", color: "#aaa", border: "0.5px solid dimgrey", width: "100%", padding: "2px 4px", fontSize: "0.7rem", cursor: "pointer", outline: "none", marginBottom: "2px" }}
+          >
+            <option value="cube">hypercube</option>
+            <option value="sphere">S³ hypersphere</option>
+            <option value="24cell">24-cell (icositetrachoron)</option>
+            <option value="600cell">600-cell (hexacosichoron)</option>
+          </select>
+          {shape === "cube" && (
+            <table style={{ width: "100%", borderCollapse: "collapse" }}><tbody>
+              {sr("dimensions", "number of dimensions", 2, 8, params.n_dimensions, params.n_dimensions, onDim)}
+            </tbody></table>
+          )}
+
+          <div style={gh}>animation</div>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}><tbody>
+            {sr("divisions", "angle divisions (2^n)", 1, 5, Math.log2(params.n_divisions), params.n_divisions, onDiv)}
+            {sr("speed", "animation speed", 0, 10, params.speed, params.speed, v => setP("speed", v))}
+            {sr("accentuation", "accentuation", 0, 99, params.accentuation, params.accentuation, v => setP("accentuation", v))}
+          </tbody></table>
+
+          <div style={gh}>vertices</div>
+          <Toggle label="show" on={showVertices} onToggle={() => { showVerticesRef.current = !showVerticesRef.current; setShowVertices(v => !v); }} />
+          <table style={{ width: "100%", borderCollapse: "collapse" }}><tbody>
+            {sr("radius", "vertex radius", 1, 30, params.vertex_size, params.vertex_size, v => setP("vertex_size", v))}
+          </tbody></table>
+
+          <div style={gh}>edges</div>
+          <Toggle label="show" on={showEdges} onToggle={() => { showEdgesRef.current = !showEdgesRef.current; setShowEdges(e => !e); }} />
+          <table style={{ width: "100%", borderCollapse: "collapse" }}><tbody>
+            {sr("width", "line width", 1, 20, params.line_width, params.line_width, v => setP("line_width", v))}
+          </tbody></table>
+
+          <div style={gh}>faces</div>
+          <Toggle label="show" on={showFaces} onToggle={() => { showFacesRef.current = !showFacesRef.current; setShowFaces(f => !f); }} />
+          <table style={{ width: "100%", borderCollapse: "collapse" }}><tbody>
+            {sr("opacity", "face opacity %", 0, 100, params.face_alpha, params.face_alpha, v => setP("face_alpha", v))}
+          </tbody></table>
+
+          <div style={gh}>view</div>
+          <Toggle label="perspective" on={persp} onToggle={() => { perspRef.current = !perspRef.current; setPersp(p => !p); }} />
+          <table style={{ width: "100%", borderCollapse: "collapse" }}><tbody>
+            {sr("glow", "glow intensity", 0, 30, params.glow, params.glow, v => setP("glow", v))}
+            {sr("distance", "perspective distance", 2, 8, params.persp_dist, params.persp_dist, v => setP("persp_dist", v))}
+          </tbody></table>
+
           <button onClick={copySettings} style={{
             marginTop: "8px", width: "100%", background: "transparent",
             border: "0.5px solid dimgrey", color: "#888",
             fontSize: "0.7rem", padding: "4px", cursor: "pointer",
           }}>copy link</button>
-          <Toggle label="vertices" on={showVertices} onToggle={() => { showVerticesRef.current = !showVerticesRef.current; setShowVertices(v => !v); }} />
-          <Toggle label="edges" on={showEdges} onToggle={() => { showEdgesRef.current = !showEdgesRef.current; setShowEdges(e => !e); }} />
-          <Toggle label="faces" on={showFaces} onToggle={() => { showFacesRef.current = !showFacesRef.current; setShowFaces(f => !f); }} />
         </div>
 
         {/* canvas / 3D viewport */}
@@ -555,13 +634,6 @@ export default function KybosPage() {
             color: "#aaa", fontSize: "0.7rem", padding: "2px 8px", cursor: "pointer",
           }}>
             {mode === "2d" ? "3D" : "2D"}
-          </button>
-          <button onClick={() => { const n = shapeRef.current === "cube" ? "sphere" : "cube"; shapeRef.current = n; setShape(n); }} style={{
-            position: "absolute", top: 40, right: 8,
-            background: "transparent", border: "0.5px solid dimgrey",
-            color: "#aaa", fontSize: "0.7rem", padding: "2px 8px", cursor: "pointer",
-          }}>
-            {shape === "cube" ? "S³" : "cube"}
           </button>
         </div>
 
