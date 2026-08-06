@@ -6,6 +6,7 @@ import Portfolio from './components/Portfolio';
 import ProgramsPage from './programs/page';
 import WoodlandFortressPage from './programs/woodlandfortress/page';
 import KybosPage from './programs/kybos/page';
+import ApaxPage from './programs/apax/page';
 
 function HomePage() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/programs/kybos" element={<KybosPage />} />
           <Route path="/programs/woodlandfortress" element={<WoodlandFortressPage />} />
+          <Route path="/programs/apax" element={<Contained><ApaxPage /></Contained>} />
           <Route path="/" element={<Contained><HomePage /></Contained>} />
           <Route path="/portfolio" element={<Contained><Portfolio /></Contained>} />
           <Route path="/resume" element={<Contained><Profile /></Contained>} />
