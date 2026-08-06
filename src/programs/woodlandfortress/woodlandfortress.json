@@ -1,0 +1,244 @@
+[
+  {
+    "id": "hole-dweller",
+    "name": "Hole Dweller",
+    "isSpecialPerformance": false,
+    "tags": ["Dungeon Synth", "Comfy Synth", "Fantasy Ambient"],
+    "description": "Whimsical, burrow-dwelling dungeon synth with cozy, nostalgic textures.",
+    "links": {
+      "bandcamp": "https://holedweller.bandcamp.com",
+      "spotify": "https://open.spotify.com/artist/holedweller",
+      "bandcampAlbumEmbedId": "3491024823"
+    }
+  },
+  {
+    "id": "orcus",
+    "name": "Orcus (UK)",
+    "isSpecialPerformance": false,
+    "tags": ["Dungeon Synth", "Dark Ambient", "UK DS"],
+    "description": "Atmospheric and gloomy medieval dungeon synth direct from the UK.",
+    "links": {
+      "bandcamp": "https://orcus-vm.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "malfet",
+    "name": "Malfet",
+    "isSpecialPerformance": false,
+    "tags": ["Dungeon Synth", "High Fantasy", "Neoclassical"],
+    "description": "Lush, high-fantasy dungeon synth steeped in Arthurian lore and noble melodies.",
+    "links": {
+      "bandcamp": "https://malfet.bandcamp.com",
+      "spotify": "https://open.spotify.com/artist/malfet",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "hermit-knight",
+    "name": "Hermit Knight",
+    "isSpecialPerformance": false,
+    "tags": ["Dungeon Synth", "Chivalric Synth", "Medieval"],
+    "description": "Melodious, solitary knightly synth exploring themes of questing and solitude.",
+    "links": {
+      "bandcamp": "https://hermitknight.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "woodland-spells",
+    "name": "Woodland Spells",
+    "isSpecialPerformance": false,
+    "tags": ["Forest Synth", "Dungeon Synth", "Nature Ambient"],
+    "description": "Enchanting forest-themed soundscapes evoking ancient trees and mossy thickets.",
+    "links": {
+      "bandcamp": "https://windkeytapes.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "sombre-arcane",
+    "name": "Sombre Arcane",
+    "isSpecialPerformance": false,
+    "tags": ["Dungeon Synth", "Winter Synth", "Traditional DS"],
+    "description": "Epic and cold dungeon synth reminiscent of classic second-wave atmospheric synth.",
+    "links": {
+      "bandcamp": "https://sombrearcane.bandcamp.com",
+      "spotify": "https://open.spotify.com/artist/sombrearcane",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "mortwight",
+    "name": "Mortwight",
+    "isSpecialPerformance": false,
+    "tags": ["Dark Dungeon Synth", "Atmospheric", "Raw DS"],
+    "description": "Shadowy, raw dungeon synth echoing forgotten pathways and spectral ruins.",
+    "links": {
+      "bandcamp": "https://mortwight.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "foglord",
+    "name": "Foglord",
+    "isSpecialPerformance": false,
+    "tags": ["Dark Ambient", "Dungeon Synth", "Fog Wave"],
+    "description": "Dense, mist-heavy drone and dungeon ambient designed for deep forest immersion.",
+    "links": {
+      "bandcamp": "https://foglord.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "wych-elm",
+    "name": "Wych Elm",
+    "isSpecialPerformance": false,
+    "tags": ["Forest Synth", "Hag Synth", "Folklore"],
+    "description": "Eerie and botanical synth compositions steeped in herbal folklore and herbal witchcraft.",
+    "links": {
+      "bandcamp": "https://orcus-vm.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "bergtatt",
+    "name": "Bergtatt",
+    "isSpecialPerformance": false,
+    "tags": ["Nordic Ambient", "Dungeon Synth", "Folk Ambient"],
+    "description": "Nordic-inspired mountain ambient and folklore-driven dungeon synth.",
+    "links": {
+      "bandcamp": "https://bergtattdungeonsynth.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+
+    "id": "unsheathed-glory",
+    "name": "Unsheathed Glory",
+    "isSpecialPerformance": false,
+    "tags": ["Martial Synth", "Dungeon Synth", "Chivalric"],
+    "description": "Triumphant, heroic synthesizer anthems of martial prowess and forgotten battles.",
+    "links": {
+      "bandcamp": "https://unsheathedglory.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "emberwilde",
+    "name": "Emberwilde",
+    "isSpecialPerformance": false,
+    "tags": ["Campfire Synth", "Pastoral Synth", "Acoustic DS"],
+    "description": "Warm, hearthside tavern tunes and acoustic-tinged fantasy ambient.",
+    "links": {
+      "bandcamp": "https://emberwilde.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "fernmage",
+    "name": "Fernmage",
+    "isSpecialPerformance": false,
+    "tags": ["Botanical Synth", "Forest Synth", "Green Ambient"],
+    "description": "Lush, nature-focused ambient focusing on woodland flora and mossy magic.",
+    "links": {
+      "bandcamp": "https://fernmage.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "fenwalker",
+    "name": "Fenwalker",
+    "isSpecialPerformance": false,
+    "tags": ["Dungeon Synth", "Bog Synth"],
+    "description": "",
+    "links": {
+      "bandcamp": "https://fenwalker.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "wood-archer",
+    "name": "Wood Archer",
+    "isSpecialPerformance": false,
+    "tags": ["Ranger Synth", "Fantasy Synth", "Outdoor Ambient"],
+    "description": "Swift, outdoorsy synth compositions inspired by rangers and forest frontiers.",
+    "links": {
+      "bandcamp": "https://woodarcher.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "moss-helm",
+    "name": "Moss Helm",
+    "isSpecialPerformance": false,
+    "tags": ["Forest Synth", "Comfy Synth", "Earthy Ambient"],
+    "description": "Deep forest immersion and grounding subterranean synth tones.",
+    "links": {
+      "bandcamp": "https://mosshelm.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "meadowgoat",
+    "name": "Meadowgoat",
+    "isSpecialPerformance": false,
+    "tags": ["Pastoral Synth", "Folk Ambient", "Comfy Synth"],
+    "description": "Bucolic, countryside melodies celebrating pastoral life and sunny glades.",
+    "links": {
+      "bandcamp": "https://meadowgoat.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "mossy-oubliette",
+    "name": "Mossy Oubliette",
+    "isSpecialPerformance": false,
+    "tags": ["Village Synth", "Pastoral Synth", "Comfy Synth"],
+    "description": "Cozy, rustic synthesizer music reminiscent of old stone paths and quiet villages.",
+    "links": {
+      "bandcamp": "https://mossyoubliette.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+
+    "id": "fogweaver",
+    "name": "Fogweaver",
+    "isSpecialPerformance": true,
+    "tags": ["Dungeon Synth", "High Fantasy", "Special Performance"],
+    "description": "Atmospheric, Earthsea-inspired dungeon synth with sweeping synth landscapes.",
+    "links": {
+      "bandcamp": "https://windkeytapes.bandcamp.com",
+      "spotify": "https://open.spotify.com/artist/fogweaver",
+      "bandcampAlbumEmbedId": ""
+    }
+  },
+  {
+    "id": "au-seuil",
+    "name": "Au Seuil",
+    "isSpecialPerformance": true,
+    "tags": ["Dark Ambient", "Threshold Synth", "Special Performance"],
+    "description": "Liminoid, shadowy ambient exploring the thresholds between worlds.",
+    "links": {
+      "bandcamp": "https://auseuil.bandcamp.com",
+      "spotify": "",
+      "bandcampAlbumEmbedId": ""
+    }
+  }
+]
