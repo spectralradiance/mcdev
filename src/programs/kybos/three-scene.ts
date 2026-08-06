@@ -6,7 +6,7 @@ import type { SphereCurves } from "./hypersphere";
 export interface ThreeScene {
   renderer: THREE.WebGLRenderer;
   scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
+  camera: THREE.OrthographicCamera;
   controls: OrbitControls;
   spheres: THREE.Mesh[];
   edgeCylinders: THREE.Mesh[];
@@ -31,7 +31,9 @@ export function createThreeScene(container: HTMLDivElement): ThreeScene {
   container.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
+  // Orthographic camera eliminates double-perspective; only the 4D→3D projection creates depth effects
+  const halfH = 3;
+  const camera = new THREE.OrthographicCamera(-halfH * (w/h), halfH * (w/h), halfH, -halfH, 0.1, 200);
   camera.position.set(0, 0, 10);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.25));
