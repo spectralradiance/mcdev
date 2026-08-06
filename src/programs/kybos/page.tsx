@@ -2,94 +2,12 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { Hypercube, Transform, wrap, toIndex, toAngle } from "./hypercube";
+import { type Params, INIT } from "./types";
+import { type ThreeScene, createThreeScene, rebuildMeshes } from "./three-scene";
+import { parseUrlState } from "./url-state";
 
-// ─── pure logic ──────────────────────────────────────────────────────────────
-
-class Hypercube {
-  points: number[][];
-  edges: [number, number][];
-
-  constructor(n: number) {
-    const nPts = 1 << n;
-    this.points = [];
-    for (let i = 0; i < nPts; i++) {
-      let t = i;
-      const p: number[] = [];
-      for (let j = 0; j < nPts; j++) {
-        p.push(t % 2 === 0 ? -1 : 1);
-        t = Math.floor(t / 2);
-      }
-      this.points.push(p);
-    }
-    this.edges = [];
-    for (let i = 0; i < nPts; i++) {
-      for (let j = i + 1; j < nPts; j++) {
-        let diff = 0;
-        for (let k = 0; k < n; k++) {
-          if (this.points[i][k] !== this.points[j][k] && ++diff >= 2) break;
-        }
-        if (diff === 1) this.edges.push([i, j]);
-      }
-    }
-  }
-}
-
-class Transform {
-  angle: number;
-  index_i: number;
-  index_j: number;
-  cosA: number;
-  sinA: number;
-  animate = 0;
-  goalAngle = -1;
-  angleIndex = 0;
-
-  constructor(a: number, i: number, j: number) {
-    this.angle = a;
-    this.index_i = i;
-    this.index_j = j;
-    this.cosA = Math.cos(a);
-    this.sinA = Math.sin(a);
-  }
-
-  update() {
-    this.cosA = Math.cos(this.angle);
-    this.sinA = Math.sin(this.angle);
-  }
-
-  apply(p: number[]) {
-    const pi = p[this.index_i] * this.cosA - p[this.index_j] * this.sinA;
-    const pj = p[this.index_i] * this.sinA + p[this.index_j] * this.cosA;
-    p[this.index_i] = pi;
-    p[this.index_j] = pj;
-  }
-}
-
-function wrap(a: number): number {
-  const pi2 = Math.PI * 2;
-  while (a < 0) a += pi2;
-  while (a > pi2) a -= pi2;
-  return a;
-}
-function toIndex(angle: number, n: number): number {
-  const ind = (angle / (Math.PI * 2)) * n;
-  return ind > n - 0.5 ? 0 : Math.round(ind);
-}
-function toAngle(idx: number, n: number): number {
-  return (Math.PI * 2 * idx) / n;
-}
-
-// ─── types ───────────────────────────────────────────────────────────────────
-
-interface Params {
-  n_dimensions: number;
-  n_divisions: number;
-  speed: number;
-  accentuation: number;
-  line_width: number;
-}
-
+/** Per-transform DOM refs updated directly each frame, bypassing React's reconciler. */
 type RowRefs = {
   la: HTMLElement | null;
   ls: HTMLElement | null;
@@ -99,27 +17,12 @@ type RowRefs = {
   av: HTMLElement | null;
 };
 
-interface ThreeScene {
-  renderer: THREE.WebGLRenderer;
-  scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
-  controls: OrbitControls;
-  spheres: THREE.Mesh[];
-  edgeCylinders: THREE.Mesh[];
-  sphereGeo: THREE.SphereGeometry | null;
-  cylGeo: THREE.CylinderGeometry | null;
-  sphereMat: THREE.MeshPhongMaterial;
-  cylinderMat: THREE.MeshPhongMaterial;
-}
-
 // ─── component ───────────────────────────────────────────────────────────────
-
-const INIT: Params = { n_dimensions: 4, n_divisions: 8, speed: 10, accentuation: 95, line_width: 4 };
 
 export default function KybosPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // animation state lives in refs — no re-renders per frame
+  // All mutable animation state in refs — the RAF loop never triggers React re-renders
   const mp = useRef<Params>({ ...INIT });
   const transforms = useRef<Transform[]>([]);
   const hypercube = useRef<Hypercube | null>(null);
@@ -234,19 +137,8 @@ export default function KybosPage() {
   // ── hypercube & Three.js mesh creation ───────────────────────────────────────
 
   const createThreeObjects = useCallback(() => {
-    const ts = threeRef.current;
-    if (!ts || !hypercube.current) return;
-    const hc = hypercube.current;
-    ts.spheres.forEach(m => ts.scene.remove(m));
-    ts.edgeCylinders.forEach(m => ts.scene.remove(m));
-    ts.sphereGeo?.dispose();
-    ts.cylGeo?.dispose();
-    const sphereGeo = new THREE.SphereGeometry(0.065, 14, 10);
-    const cylGeo = new THREE.CylinderGeometry(0.022, 0.022, 1, 8);
-    ts.sphereGeo = sphereGeo;
-    ts.cylGeo = cylGeo;
-    ts.spheres = hc.points.map(() => { const m = new THREE.Mesh(sphereGeo, ts.sphereMat); ts.scene.add(m); return m; });
-    ts.edgeCylinders = hc.edges.map(() => { const m = new THREE.Mesh(cylGeo, ts.cylinderMat); ts.scene.add(m); return m; });
+    if (threeRef.current && hypercube.current)
+      rebuildMeshes(threeRef.current, hypercube.current);
   }, []);
 
   const createHypercube = useCallback((n: number) => {
@@ -264,6 +156,7 @@ export default function KybosPage() {
 
   // ── draw ────────────────────────────────────────────────────────────────────
 
+  // Advances all transform angles one step; writes index/value to per-row DOM directly.
   const stepTransforms = useCallback(() => {
     const { speed, n_divisions, accentuation } = mp.current;
     const spd = speed / 100;
@@ -282,7 +175,8 @@ export default function KybosPage() {
         if (r?.av) r.av.textContent = String(trn.angleIndex);
       }
       if (trn.animate !== 0) {
-        const ps = spd + spd * Math.sin(trn.angle * n_divisions - Math.PI / 2) * acc;
+        // Accentuation: sinusoidal speed bump at each division boundary
+      const ps = spd + spd * Math.sin(trn.angle * n_divisions - Math.PI / 2) * acc;
         trn.angle = wrap(trn.angle + (trn.animate === -1 ? -ps : ps));
         trn.angleIndex = toIndex(trn.angle, n_divisions);
         trn.update();
@@ -293,6 +187,7 @@ export default function KybosPage() {
     });
   }, []);
 
+  // Projects N-D → 2D: x = p[0], y = p[1] after all rotations.
   const renderCanvas = useCallback(() => {
     const cnv = canvasRef.current;
     if (!cnv || !hypercube.current) return;
@@ -319,6 +214,7 @@ export default function KybosPage() {
     ctx.stroke();
   }, []);
 
+  // Projects N-D → 3D: x = p[0], y = p[1], z = p[2]. Cylinders are unit-height meshes scaled and rotated to each edge.
   const draw3D = useCallback(() => {
     const ts = threeRef.current;
     if (!ts || !hypercube.current) return;
@@ -347,39 +243,12 @@ export default function KybosPage() {
 
   // ── Three.js scene init ──────────────────────────────────────────────────────
 
+  // ── Three.js scene init (lazy: runs only on first 3D switch) ─────────────────
+
   const initThree = useCallback(() => {
     const container = threeContainerRef.current;
     if (!container) return;
-    const w = container.clientWidth || 800;
-    const h = container.clientHeight || 600;
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(w, h);
-    renderer.setClearColor(0x000000);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
-    camera.position.set(0, 0, 5);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.25));
-    const dir1 = new THREE.DirectionalLight(0xffffff, 1.0);
-    dir1.position.set(3, 4, 5);
-    scene.add(dir1);
-    const dir2 = new THREE.DirectionalLight(0x4466cc, 0.4);
-    dir2.position.set(-3, -2, -4);
-    scene.add(dir2);
-    const pt = new THREE.PointLight(0xff9955, 0.8, 12);
-    pt.position.set(2, -2, 3);
-    scene.add(pt);
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.06;
-    threeRef.current = {
-      renderer, scene, camera, controls,
-      spheres: [], edgeCylinders: [],
-      sphereGeo: null, cylGeo: null,
-      sphereMat: new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 100 }),
-      cylinderMat: new THREE.MeshPhongMaterial({ color: 0xcccccc, shininess: 40 }),
-    };
+    threeRef.current = createThreeScene(container);
     createThreeObjects();
   }, [createThreeObjects]);
 
@@ -400,7 +269,28 @@ export default function KybosPage() {
     };
     resize();
     window.addEventListener("resize", resize);
+
+    const saved = parseUrlState();
+    if (saved) {
+      Object.assign(mp.current, saved.params);
+      setParams({ ...mp.current });
+    }
+
     createHypercube(mp.current.n_dimensions);
+
+    // Apply saved transform states after createHypercube sets transforms.current
+    if (saved?.transforms.length) {
+      saved.transforms.forEach(([idx, anim]: [number, number], i: number) => {
+        const t = transforms.current[i];
+        if (!t) return;
+        t.angleIndex = idx;
+        t.angle = toAngle(idx, mp.current.n_divisions);
+        t.animate = anim;
+        t.update();
+      });
+      anyAnimated.current = transforms.current.some(t => t.animate !== 0);
+    }
+
     const loop = () => {
       stepTransforms();
       if (modeRef.current === "2d") renderCanvas(); else draw3D();
@@ -441,6 +331,28 @@ export default function KybosPage() {
     const next: "2d" | "3d" = modeRef.current === "2d" ? "3d" : "2d";
     modeRef.current = next;
     setMode(next);
+    if (next === "3d") {
+      const ts = threeRef.current;
+      if (ts) {
+        ts.camera.position.set(0, 0, 10);
+        ts.controls.target.set(0, 0, 0);
+        ts.controls.update();
+      }
+    }
+  };
+
+  const copySettings = () => {
+    const state = {
+      d: mp.current.n_dimensions,
+      v: Math.log2(mp.current.n_divisions),
+      s: mp.current.speed,
+      a: mp.current.accentuation,
+      w: mp.current.line_width,
+      t: transforms.current.map(t => [t.angleIndex, t.animate]),
+    };
+    const encoded = btoa(JSON.stringify(state));
+    window.history.replaceState(null, "", `?k=${encoded}`);
+    navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?k=${encoded}`).catch(() => {});
   };
 
   // ── render ───────────────────────────────────────────────────────────────────
@@ -483,6 +395,11 @@ export default function KybosPage() {
               ))}
             </tbody>
           </table>
+          <button onClick={copySettings} style={{
+            marginTop: "8px", width: "100%", background: "transparent",
+            border: "0.5px solid dimgrey", color: "#888",
+            fontSize: "0.7rem", padding: "4px", cursor: "pointer",
+          }}>copy link</button>
         </div>
 
         {/* canvas / 3D viewport */}
