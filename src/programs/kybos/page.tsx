@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useEffect, useState, useCallback } from "react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 // ─── pure logic ──────────────────────────────────────────────────────────────
 
@@ -97,6 +99,19 @@ type RowRefs = {
   av: HTMLElement | null;
 };
 
+interface ThreeScene {
+  renderer: THREE.WebGLRenderer;
+  scene: THREE.Scene;
+  camera: THREE.PerspectiveCamera;
+  controls: OrbitControls;
+  spheres: THREE.Mesh[];
+  edgeCylinders: THREE.Mesh[];
+  sphereGeo: THREE.SphereGeometry | null;
+  cylGeo: THREE.CylinderGeometry | null;
+  sphereMat: THREE.MeshPhongMaterial;
+  cylinderMat: THREE.MeshPhongMaterial;
+}
+
 // ─── component ───────────────────────────────────────────────────────────────
 
 const INIT: Params = { n_dimensions: 4, n_divisions: 8, speed: 10, accentuation: 95, line_width: 4 };
@@ -110,13 +125,17 @@ export default function KybosPage() {
   const hypercube = useRef<Hypercube | null>(null);
   const anyAnimated = useRef(false);
   const rafId = useRef(0);
+  const modeRef = useRef<"2d" | "3d">("2d");
+  const threeRef = useRef<ThreeScene | null>(null);
 
   // React state — only for structural re-renders (slider panel + row list)
   const [params, setParams] = useState<Params>(INIT);
   const [rows, setRows] = useState<Array<{ id: number; i: number; j: number }>>([]);
+  const [mode, setMode] = useState<"2d" | "3d">("2d");
 
   // DOM refs for per-frame updates (bypassing React)
   const rowRefs = useRef<Record<number, RowRefs>>({});
+  const threeContainerRef = useRef<HTMLDivElement>(null);
   const allLA = useRef<HTMLElement | null>(null);
   const allLS = useRef<HTMLElement | null>(null);
   const allRA = useRef<HTMLElement | null>(null);
@@ -212,7 +231,23 @@ export default function KybosPage() {
     t.goalAngle = toAngle(val, mp.current.n_divisions);
   }, []);
 
-  // ── hypercube creation ───────────────────────────────────────────────────────
+  // ── hypercube & Three.js mesh creation ───────────────────────────────────────
+
+  const createThreeObjects = useCallback(() => {
+    const ts = threeRef.current;
+    if (!ts || !hypercube.current) return;
+    const hc = hypercube.current;
+    ts.spheres.forEach(m => ts.scene.remove(m));
+    ts.edgeCylinders.forEach(m => ts.scene.remove(m));
+    ts.sphereGeo?.dispose();
+    ts.cylGeo?.dispose();
+    const sphereGeo = new THREE.SphereGeometry(0.065, 14, 10);
+    const cylGeo = new THREE.CylinderGeometry(0.022, 0.022, 1, 8);
+    ts.sphereGeo = sphereGeo;
+    ts.cylGeo = cylGeo;
+    ts.spheres = hc.points.map(() => { const m = new THREE.Mesh(sphereGeo, ts.sphereMat); ts.scene.add(m); return m; });
+    ts.edgeCylinders = hc.edges.map(() => { const m = new THREE.Mesh(cylGeo, ts.cylinderMat); ts.scene.add(m); return m; });
+  }, []);
 
   const createHypercube = useCallback((n: number) => {
     hypercube.current = new Hypercube(n);
@@ -224,17 +259,15 @@ export default function KybosPage() {
     anyAnimated.current = false;
     rowRefs.current = {};
     setRows(ts.map((t, id) => ({ id, i: t.index_i, j: t.index_j })));
-  }, []);
+    createThreeObjects();
+  }, [createThreeObjects]);
 
   // ── draw ────────────────────────────────────────────────────────────────────
 
-  const draw = useCallback(() => {
-    const cnv = canvasRef.current;
-    if (!cnv || !hypercube.current) return;
-    const { speed, n_divisions, accentuation, line_width } = mp.current;
+  const stepTransforms = useCallback(() => {
+    const { speed, n_divisions, accentuation } = mp.current;
     const spd = speed / 100;
     const acc = accentuation / 100;
-
     transforms.current.forEach((trn, i) => {
       if (trn.goalAngle !== -1) {
         trn.angle += (trn.goalAngle - trn.angle) * spd * 2;
@@ -248,7 +281,6 @@ export default function KybosPage() {
         if (r?.sl) r.sl.value = String(trn.angleIndex);
         if (r?.av) r.av.textContent = String(trn.angleIndex);
       }
-
       if (trn.animate !== 0) {
         const ps = spd + spd * Math.sin(trn.angle * n_divisions - Math.PI / 2) * acc;
         trn.angle = wrap(trn.angle + (trn.animate === -1 ? -ps : ps));
@@ -259,20 +291,23 @@ export default function KybosPage() {
         if (r?.av) r.av.textContent = String(trn.angleIndex);
       }
     });
+  }, []);
 
+  const renderCanvas = useCallback(() => {
+    const cnv = canvasRef.current;
+    if (!cnv || !hypercube.current) return;
+    const { line_width } = mp.current;
     const ctx = cnv.getContext("2d")!;
     ctx.clearRect(0, 0, cnv.width, cnv.height);
     const s = Math.min(cnv.width, cnv.height) * 0.19;
     const cx = cnv.width / 2;
     const cy = cnv.height / 2;
     const hc = hypercube.current;
-
     const p2d = hc.points.map(pt => {
       const p = pt.slice();
       transforms.current.forEach(t => t.apply(p));
       return [p[0] * s + cx, cy - p[1] * s];
     });
-
     ctx.lineWidth = line_width;
     ctx.lineCap = "round";
     ctx.strokeStyle = "#fff";
@@ -284,18 +319,105 @@ export default function KybosPage() {
     ctx.stroke();
   }, []);
 
+  const draw3D = useCallback(() => {
+    const ts = threeRef.current;
+    if (!ts || !hypercube.current) return;
+    const S = 1.5;
+    const hc = hypercube.current;
+    const pts = hc.points.map(pt => {
+      const p = pt.slice();
+      transforms.current.forEach(t => t.apply(p));
+      return new THREE.Vector3(p[0] * S, p[1] * S, p[2] * S);
+    });
+    pts.forEach((v, i) => { ts.spheres[i]?.position.copy(v); });
+    const yAxis = new THREE.Vector3(0, 1, 0);
+    hc.edges.forEach(([a, b], i) => {
+      const mesh = ts.edgeCylinders[i];
+      if (!mesh) return;
+      const dir = pts[b].clone().sub(pts[a]);
+      const len = dir.length();
+      if (len < 1e-6) return;
+      mesh.scale.set(1, len, 1);
+      mesh.position.copy(pts[a]).addScaledVector(dir.normalize(), len / 2);
+      mesh.quaternion.setFromUnitVectors(yAxis, dir);
+    });
+    ts.controls.update();
+    ts.renderer.render(ts.scene, ts.camera);
+  }, []);
+
+  // ── Three.js scene init ──────────────────────────────────────────────────────
+
+  const initThree = useCallback(() => {
+    const container = threeContainerRef.current;
+    if (!container) return;
+    const w = container.clientWidth || 800;
+    const h = container.clientHeight || 600;
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(w, h);
+    renderer.setClearColor(0x000000);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
+    camera.position.set(0, 0, 5);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+    const dir1 = new THREE.DirectionalLight(0xffffff, 1.0);
+    dir1.position.set(3, 4, 5);
+    scene.add(dir1);
+    const dir2 = new THREE.DirectionalLight(0x4466cc, 0.4);
+    dir2.position.set(-3, -2, -4);
+    scene.add(dir2);
+    const pt = new THREE.PointLight(0xff9955, 0.8, 12);
+    pt.position.set(2, -2, 3);
+    scene.add(pt);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    threeRef.current = {
+      renderer, scene, camera, controls,
+      spheres: [], edgeCylinders: [],
+      sphereGeo: null, cylGeo: null,
+      sphereMat: new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 100 }),
+      cylinderMat: new THREE.MeshPhongMaterial({ color: 0xcccccc, shininess: 40 }),
+    };
+    createThreeObjects();
+  }, [createThreeObjects]);
+
   // ── init ────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const cnv = canvasRef.current!;
-    const resize = () => { cnv.width = cnv.clientWidth; cnv.height = cnv.clientHeight; };
+    const resize = () => {
+      cnv.width = cnv.clientWidth;
+      cnv.height = cnv.clientHeight;
+      const ts = threeRef.current;
+      const cont = threeContainerRef.current;
+      if (ts && cont) {
+        ts.renderer.setSize(cont.clientWidth, cont.clientHeight);
+        ts.camera.aspect = cont.clientWidth / cont.clientHeight;
+        ts.camera.updateProjectionMatrix();
+      }
+    };
     resize();
     window.addEventListener("resize", resize);
     createHypercube(mp.current.n_dimensions);
-    const loop = () => { draw(); rafId.current = requestAnimationFrame(loop); };
+    const loop = () => {
+      stepTransforms();
+      if (modeRef.current === "2d") renderCanvas(); else draw3D();
+      rafId.current = requestAnimationFrame(loop);
+    };
     rafId.current = requestAnimationFrame(loop);
-    return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(rafId.current); };
-  }, [createHypercube, draw]);
+    return () => {
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(rafId.current);
+      const ts = threeRef.current;
+      if (ts) { ts.renderer.domElement.remove(); ts.renderer.dispose(); threeRef.current = null; }
+    };
+  }, [createHypercube, stepTransforms, renderCanvas, draw3D]);
+
+  useEffect(() => {
+    if (mode === "3d" && !threeRef.current) initThree();
+  }, [mode, initThree]);
 
   useEffect(() => { syncAllBtns(); }, [rows, syncAllBtns]);
 
@@ -315,6 +437,12 @@ export default function KybosPage() {
     transforms.current.forEach((_, i) => { const r = rowRefs.current[i]; if (r?.sl) r.sl.max = String(nd - 1); });
   };
 
+  const switchMode = () => {
+    const next: "2d" | "3d" = modeRef.current === "2d" ? "3d" : "2d";
+    modeRef.current = next;
+    setMode(next);
+  };
+
   // ── render ───────────────────────────────────────────────────────────────────
 
   const td: React.CSSProperties = { padding: "4px", color: "#aaa", fontSize: "0.75rem", cursor: "default" };
@@ -322,7 +450,7 @@ export default function KybosPage() {
   const paramRows = [
     { label: "N", title: "number of dimensions",    min: 2, max: 8,   value: params.n_dimensions,              display: params.n_dimensions,  onChange: onDim },
     { label: "D", title: "angle divisions (2^n)",   min: 1, max: 5,   value: Math.log2(params.n_divisions),    display: params.n_divisions,   onChange: onDiv },
-    { label: "S", title: "animation speed",          min: 0, max: 100, value: params.speed,                     display: params.speed,         onChange: (v: number) => setP("speed", v) },
+    { label: "S", title: "animation speed",          min: 0, max: 10, value: params.speed,                     display: params.speed,         onChange: (v: number) => setP("speed", v) },
     { label: "A", title: "accentuation",             min: 0, max: 99,  value: params.accentuation,              display: params.accentuation,  onChange: (v: number) => setP("accentuation", v) },
     { label: "W", title: "line width",               min: 1, max: 20,  value: params.line_width,                display: params.line_width,    onChange: (v: number) => setP("line_width", v) },
   ];
@@ -357,9 +485,17 @@ export default function KybosPage() {
           </table>
         </div>
 
-        {/* canvas */}
-        <div style={{ flex: 1, height: "100%" }}>
-          <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
+        {/* canvas / 3D viewport */}
+        <div style={{ flex: 1, height: "100%", position: "relative" }}>
+          <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: mode === "2d" ? "block" : "none" }} />
+          <div ref={threeContainerRef} style={{ width: "100%", height: "100%", display: mode === "3d" ? "block" : "none" }} />
+          <button onClick={switchMode} style={{
+            position: "absolute", top: 8, right: 8,
+            background: "transparent", border: "0.5px solid dimgrey",
+            color: "#aaa", fontSize: "0.7rem", padding: "2px 8px", cursor: "pointer",
+          }}>
+            {mode === "2d" ? "3D" : "2D"}
+          </button>
         </div>
 
         {/* right panel — transforms */}
