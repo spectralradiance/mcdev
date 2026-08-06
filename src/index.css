@@ -1,13 +1,17 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Open Sans', sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  font-family: 'Open Sans', sans-serif;
 }
+
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #fff; border-radius: 0; }
+::-webkit-scrollbar-button { display: block; height: 12px; background-size: 6px; background-repeat: no-repeat; background-position: center; background-color: #000; }
+::-webkit-scrollbar-button:vertical:decrement { background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'><path d='M3 0L6 6H0Z' fill='%23fff'/></svg>"); }
+::-webkit-scrollbar-button:vertical:increment { background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'><path d='M0 0H6L3 6Z' fill='%23fff'/></svg>"); }
+* { scrollbar-width: thin; scrollbar-color: #fff #000; }

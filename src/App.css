@@ -8,6 +8,16 @@ body {
   background-color: #f4f4f4;
 }
 
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 2px; }
+}
+@media (prefers-color-scheme: light) {
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.25); border-radius: 2px; }
+}
+* { scrollbar-width: thin; }
+
 .App {
   text-align: center;
 }

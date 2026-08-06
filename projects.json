@@ -1,0 +1,1046 @@
+[
+  {
+    "id": "3a8503f4-de12-808d-b673-f6e0e31412b4",
+    "url": "https://app.notion.com/p/Seed-of-Life-3a8503f4de12808db673f6e0e31412b4",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/7bd37ded-38cf-4f44-9f71-290153316532/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=2ec7bddd02566c3cb57bf26b8fd5fb64db5d933e225dfb82e8d370bfa7d4e136&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/vEgzvdb",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": null,
+      "Category": "Art",
+      "Name": "Seed of Life"
+    },
+    "screencaps": [
+      "screencaps\\Seed of Life_1.png"
+    ]
+  },
+  {
+    "id": "3a8503f4-de12-804c-a2a6-d5cfa15feae4",
+    "url": "https://app.notion.com/p/three-js-hypercube-3a8503f4de12804ca2a6d5cfa15feae4",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": "Todo",
+      "Category": null,
+      "Name": "three.js hypercube"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a8503f4-de12-8007-b8b0-e428590b09e5",
+    "url": "https://app.notion.com/p/2d-3d-graphs-polar-coordinates-3a8503f4de128007b8b0e428590b09e5",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": "Todo",
+      "Category": null,
+      "Name": "2d/3d graphs, polar coordinates"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a6503f4-de12-80a4-9f4c-e072f77c0bd7",
+    "url": "https://app.notion.com/p/Decoding-Text-3a6503f4de1280a49f4ce072f77c0bd7",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/YQzNXE",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": null,
+      "Category": "Interface",
+      "Name": "Decoding Text"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a6503f4-de12-8053-8a42-c798132f3ecf",
+    "url": "https://app.notion.com/p/Merging-Balls-3a6503f4de1280538a42c798132f3ecf",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "JavaScript"
+      ],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/zPpyre",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Merging Balls"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a6503f4-de12-801f-8670-c783da80b7f7",
+    "url": "https://app.notion.com/p/Numeric-Base-Converter-3a6503f4de12801f8670c783da80b7f7",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Angular",
+        "JavaScript"
+      ],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/zweVZg",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Numeric Base Converter"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a6503f4-de12-80eb-9195-c4c03405cf30",
+    "url": "https://app.notion.com/p/Hacker-Typer-3a6503f4de1280eb9195c4c03405cf30",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/paXPRE",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": null,
+      "Category": "Interface",
+      "Name": "Hacker Typer"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a6503f4-de12-8048-a86b-f23c8cb11a9e",
+    "url": "https://app.notion.com/p/N-Body-Gravity-Simulator-3a6503f4de128048a86bf23c8cb11a9e",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "JavaScript"
+      ],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/rYpQrv",
+      "Subtitle": "gravity simulator",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": "2017-11-19",
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "N-Body Gravity Simulator"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a6503f4-de12-8039-aba8-e383bf7b2cc5",
+    "url": "https://app.notion.com/p/Apax-3a6503f4de128039aba8e383bf7b2cc5",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/ece63f56-efa6-4ed2-89b0-4feee3fc4c83/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=83d45c85cae5805033f5841ff505e51850d6af1a7fb60d9c7a93bced32466cd0&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "Angular",
+        "JavaScript"
+      ],
+      "Priority": "High",
+      "Code URL": "https://codepen.io/spectralradiance/pen/bNgxXxV",
+      "Subtitle": "pixel drawing with symmetries",
+      "Publish to mccdev": "Yes",
+      "Overview": "Apax is a pixel drawing app that uses symmetries",
+      "Date": null,
+      "Source": "solus ipse?",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Apax"
+    },
+    "screencaps": [
+      "screencaps\\Apax_1.png"
+    ]
+  },
+  {
+    "id": "3a6503f4-de12-80d6-b9d0-eb8c80202d63",
+    "url": "https://app.notion.com/p/Color-Picker-Sliders-3a6503f4de1280d6b9d0eb8c80202d63",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/77967376-a072-431b-bd56-5e1b0341e053/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=5eb318a7947ec5784e557abfba365177224c9ddc1d1d59ca69a45ad4855317e3&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/owgNMo",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": "2017-06-04",
+      "Source": "",
+      "Size": null,
+      "Status": null,
+      "Category": "Interface",
+      "Name": "Color Picker - Sliders"
+    },
+    "screencaps": [
+      "screencaps\\Color Picker - Sliders_1.png"
+    ]
+  },
+  {
+    "id": "3a5503f4-de12-808c-aeea-f2ebc385eed2",
+    "url": "https://app.notion.com/p/python-fullstack-curriculum-3a5503f4de12808caeeaf2ebc385eed2",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "High",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": "Todo",
+      "Category": "Curriculum",
+      "Name": "python fullstack curriculum"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a5503f4-de12-8043-a062-e43f1e001751",
+    "url": "https://app.notion.com/p/Pixel-art-virtual-graphics-object-scale-up-3a5503f4de128043a062e43f1e001751",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": "Todo",
+      "Category": "Art",
+      "Name": "Pixel art - virtual graphics object, scale up"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a5503f4-de12-80a6-875a-fbdd1d28eef8",
+    "url": "https://app.notion.com/p/Nutrition-meal-calculator-3a5503f4de1280a6875afbdd1d28eef8",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": "Todo",
+      "Category": null,
+      "Name": "Nutrition/meal calculator"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "3a5503f4-de12-8069-9ca0-ed4ae8d8575c",
+    "url": "https://app.notion.com/p/Data-mining-3a5503f4de1280699ca0ed4ae8d8575c",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/84b727ef-3c42-4289-b119-b4f366853dc3/apriori.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=840a199d2b8641ca4d9a845e78d8130f15a0ee59f3c316ff684004ba516c5dda&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/dc25a792-d446-48f6-b468-78bbdc06f88f/clusters8.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=25afa68c0ea48757d5034f28ee266712fc384cc5b91bbcebf81ba04f3977ff17&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "Java"
+      ],
+      "Priority": "Medium",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Medium",
+      "Status": null,
+      "Category": "Data",
+      "Name": "Data mining"
+    },
+    "screencaps": [
+      "screencaps\\Data mining_1.png",
+      "screencaps\\Data mining_2.png"
+    ]
+  },
+  {
+    "id": "3a1503f4-de12-8093-962c-e9cda4803f09",
+    "url": "https://app.notion.com/p/flickr-browser-3a1503f4de128093962ce9cda4803f09",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/2361a126-ff9d-49e3-86c8-3c3e62740912/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=faf7e09f1fcabeb07699c7955535f95c027874718e9e76a3f9d6b4173ce3bc2a&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/4626ae04-a024-472c-bcf0-8ef6748e875f/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=b4a0d3d4777f2e978b01186df4559559bce0cd1c0569b9339e0406969a4e23d9&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/f0a66f07-b8b2-44e8-997b-43cc18d515c6/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=7ba1bf51b7bd3e9424d73297246140dfb4a5a73ebd5af86e773dc559687a2d4c&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": null,
+      "Category": null,
+      "Name": "flickr browser"
+    },
+    "screencaps": [
+      "screencaps\\flickr browser_1.png",
+      "screencaps\\flickr browser_2.png",
+      "screencaps\\flickr browser_3.png"
+    ]
+  },
+  {
+    "id": "39f503f4-de12-80ec-b83a-e0bd0801bea4",
+    "url": "https://app.notion.com/p/activewiki-39f503f4de1280ecb83ae0bd0801bea4",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Django",
+        "Python"
+      ],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "wiki",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": "2019-12-29",
+      "Source": "",
+      "Size": "Medium",
+      "Status": "Complete",
+      "Category": null,
+      "Name": "activewiki"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-80c9-97ad-ee6b2ca92213",
+    "url": "https://app.notion.com/p/aapdx-39f503f4de1280c997adee6b2ca92213",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Django",
+        "Python"
+      ],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "community website",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": "2019-08-14",
+      "Source": "",
+      "Size": "Medium",
+      "Status": "Complete",
+      "Category": null,
+      "Name": "aapdx"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-8019-b540-e457e518d83a",
+    "url": "https://app.notion.com/p/Mobile-Gateway-39f503f4de128019b540e457e518d83a",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Android"
+      ],
+      "Priority": "Medium",
+      "Code URL": null,
+      "Subtitle": "android message relay",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Medium",
+      "Status": "Complete",
+      "Category": "Mobile",
+      "Name": "Mobile Gateway"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-8067-bb12-e0b248c1d8c2",
+    "url": "https://app.notion.com/p/Tracer-39f503f4de128067bb12e0b248c1d8c2",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/2775d117-b9e2-4bae-b991-bb091ec31280/tracer1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=66a41fcb2d14b433d54ef52132785ea2d712de2c5a475c91d464a9e4a2fc42d4&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/12307717-5d58-4c10-9976-20175f690e5e/tracer2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=fbd986cebadf4c3bd9def778f0fb89f1f9f39aa7ad164a6a0cce774eabf8d9b0&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/9a7364ee-7934-4014-b1a7-db3a47a6e056/tracer3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=c836ee8435cc0a5d211ebeef07215ea2c82df255121958e451918ec36140098f&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "Android"
+      ],
+      "Priority": "Medium",
+      "Code URL": null,
+      "Subtitle": "android gps tracking",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Medium",
+      "Status": "Complete",
+      "Category": "Mobile",
+      "Name": "Tracer"
+    },
+    "screencaps": [
+      "screencaps\\Tracer_1.png",
+      "screencaps\\Tracer_2.png",
+      "screencaps\\Tracer_3.png"
+    ]
+  },
+  {
+    "id": "39f503f4-de12-8017-a984-d94f6c9b7840",
+    "url": "https://app.notion.com/p/Boniface-39f503f4de128017a984d94f6c9b7840",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "vocabulary management",
+      "Publish to mccdev": "Yes",
+      "Overview": "Uses Sqlite, JavaFX",
+      "Date": "2016-12-17",
+      "Source": "",
+      "Size": null,
+      "Status": null,
+      "Category": "Desktop",
+      "Name": "Boniface"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-80a7-ad81-d4a4844e13cd",
+    "url": "https://app.notion.com/p/Facebook-Event-Scraper-39f503f4de1280a7ad81d4a4844e13cd",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Python"
+      ],
+      "Priority": "Low",
+      "Code URL": "https://github.com/spectralradiance/miscellaneous/tree/master/random/fb_event_scraper",
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": null,
+      "Name": "Facebook Event Scraper"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-80b3-959f-d3a6b2ae9e2b",
+    "url": "https://app.notion.com/p/Ray-Tracing-in-Python-39f503f4de1280b3959fd3a6b2ae9e2b",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": "https://github.com/spectralradiance/miscellaneous/tree/master/random/Kykliskos/src/Kalyptra",
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": null,
+      "Category": null,
+      "Name": "Ray Tracing in Python"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-809d-b81d-eabdc8b27ddc",
+    "url": "https://app.notion.com/p/Procedural-Art-39f503f4de12809db81deabdc8b27ddc",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Python"
+      ],
+      "Priority": "Low",
+      "Code URL": "https://github.com/spectralradiance/miscellaneous/tree/master/random/Kykliskos",
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Procedural Art"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-80a7-9b17-cf3db658c934",
+    "url": "https://app.notion.com/p/flux4web-39f503f4de1280a79b17cf3db658c934",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/d767ebb7-e29a-4456-8cf0-39a116ea519d/photos.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=853964888f9914f867939bceb5f60bcf68d50e4149e2e73a4e0d0a81cdd609f8&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/803a1b32-1336-4adf-aa45-ee2e5b8be77c/veg_calculator.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=d3483e3e96a29d9664243d33110a64497ed0e34449702408633aeea79f15517f&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/74241429-a88b-433c-8cd0-24a4c50e133a/veg_resources.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=c23d8c93f6aee8f7b6b2de92e9b6d3c3440a14a5f9a45a63ea35c19c60ad4e55&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/767caa81-a33c-4093-ab41-5755d786c55e/vemoji.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=bbabba09ca6d81806c2e7a9e7b97696b65d101e798cdac57fb94f65a7110e868&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": null,
+      "Category": null,
+      "Name": "flux4web"
+    },
+    "screencaps": [
+      "screencaps\\flux4web_1.png",
+      "screencaps\\flux4web_2.png",
+      "screencaps\\flux4web_3.png",
+      "screencaps\\flux4web_4.png"
+    ]
+  },
+  {
+    "id": "39f503f4-de12-802c-9955-f2c04ed4d268",
+    "url": "https://app.notion.com/p/Aisling-39f503f4de12802c9955f2c04ed4d268",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Electron"
+      ],
+      "Priority": "High",
+      "Code URL": "https://github.com/spectralradiance/Aisling",
+      "Subtitle": "vocabulary management",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": null,
+      "Category": "Desktop",
+      "Name": "Aisling"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-8035-a1ba-e17a692769ba",
+    "url": "https://app.notion.com/p/WPF-text-editor-39f503f4de128035a1bae17a692769ba",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": null,
+      "Name": "WPF text editor"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-805f-a8b3-f16d4930f222",
+    "url": "https://app.notion.com/p/Himinn-39f503f4de12805fa8b3f16d4930f222",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/b82644af-c338-4a91-9d67-91ad4553ed57/atmosphere0.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=2a5527d1e59a3ede6e373ac4c15d57a3dd59aa0c501e0e91dfacf16e0e5cb577&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "Python"
+      ],
+      "Priority": "Medium",
+      "Code URL": "https://github.com/spectralradiance/miscellaneous/tree/master/python/himinn",
+      "Subtitle": "raytracing rayleigh & mie scattering",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Himinn"
+    },
+    "screencaps": [
+      "screencaps\\Himinn_1.jpg"
+    ]
+  },
+  {
+    "id": "39f503f4-de12-8021-8c4b-d1f8653d238e",
+    "url": "https://app.notion.com/p/Black-Hole-Classifier-39f503f4de1280218c4bd1f8653d238e",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Medium",
+      "Code URL": "https://github.com/spectralradiance/miscellaneous/tree/master/data%20science/black_holes",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": "Complete",
+      "Category": "Data",
+      "Name": "Black Hole Classifier"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39f503f4-de12-8071-9067-df64221dd0ba",
+    "url": "https://app.notion.com/p/Niamh-39f503f4de1280719067df64221dd0ba",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/521ff713-3059-4112-88bb-c646d269f007/render2017-07-26_07-56-29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=32ccffdf629882b550102825b8bc6b114e495a5554f9ec060fad20a7a264c23b&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "Java"
+      ],
+      "Priority": "Medium",
+      "Code URL": "https://github.com/spectralradiance/Niamh",
+      "Subtitle": "physically-based raytracer",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Large",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Niamh"
+    },
+    "screencaps": [
+      "screencaps\\Niamh_1.png"
+    ]
+  },
+  {
+    "id": "39e503f4-de12-8041-a05c-eae873ece1f6",
+    "url": "https://app.notion.com/p/ARC-39e503f4de128041a05ceae873ece1f6",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Website",
+        "Vue"
+      ],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "community website",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": "2020-07-28",
+      "Source": "",
+      "Size": "Medium",
+      "Status": "Complete",
+      "Category": null,
+      "Name": "ARC"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39e503f4-de12-8006-8bdc-d446029c7dcd",
+    "url": "https://app.notion.com/p/Compassionate-PDX-39e503f4de1280068bdcd446029c7dcd",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/15ba3b13-19b6-4dff-af4b-fea28a627160/screencapture-localhost-8000-2026-07-15-18_33_29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=bfc99d5bf53637606c040342beeb7da2bd953c0341443ca2f93b48f330a1f7f2&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/145ac0c0-e7fa-4c20-8846-c06243331043/screencapture-localhost-8000-furtruth-php-2026-07-15-18_33_46.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=6e0222d3ecceeb337b8e33cc44b7593defbd359d165d1468e8229f2d76c93137&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/ea4b102b-b8a4-487a-8d78-03de3104415e/screencapture-localhost-8000-furfreepdx-2026-07-15-18_35_08.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=c3a20957e28c2c7519a1cbba286dbb47c2defb9f17ca49167e2445e9560fbda1&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "Website"
+      ],
+      "Priority": "Medium",
+      "Code URL": "https://github.com/spectralradiance/miscellaneous/tree/master/animal%20rights%20websites/compassionatepdx",
+      "Subtitle": "community website",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": "2021-01-03",
+      "Source": "",
+      "Size": "Medium",
+      "Status": "Complete",
+      "Category": "Website",
+      "Name": "Compassionate PDX"
+    },
+    "screencaps": [
+      "screencaps\\Compassionate PDX_1.png",
+      "screencaps\\Compassionate PDX_2.png",
+      "screencaps\\Compassionate PDX_3.png"
+    ]
+  },
+  {
+    "id": "39d503f4-de12-8080-ad17-d4bdae676e95",
+    "url": "https://app.notion.com/p/HSV-Color-Picker-39d503f4de128080ad17d4bdae676e95",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/31052f7a-ad9e-4e49-8e6b-d7ad3fc6f82e/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=a557bae0f868106e04ec857396e903b94aa09022e68ccbe0f4919e8d7a2f5466&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "Vue"
+      ],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/qBaVgby",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": "Interface",
+      "Name": "HSV Color Picker"
+    },
+    "screencaps": [
+      "screencaps\\HSV Color Picker_1.png"
+    ]
+  },
+  {
+    "id": "39d503f4-de12-80fa-bdba-e8d9e788d800",
+    "url": "https://app.notion.com/p/Leet-Translator-39d503f4de1280fabdbae8d9e788d800",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "React"
+      ],
+      "Priority": "Low",
+      "Code URL": "https://codepen.io/spectralradiance/pen/yvqLWZ",
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": "Small",
+      "Status": "Todo",
+      "Category": "Art",
+      "Name": "Leet Translator"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39d503f4-de12-80d3-8973-f93b2a2bbece",
+    "url": "https://app.notion.com/p/Calculator-in-Materialize-39d503f4de1280d38973f93b2a2bbece",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "JavaScript",
+        "Materialize"
+      ],
+      "Priority": "Low",
+      "Code URL": "https://codepen.io/spectralradiance/pen/JpBoxy",
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": "2018-02-22",
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": null,
+      "Name": "Calculator in Materialize"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39d503f4-de12-8095-a055-de4a365e90a7",
+    "url": "https://app.notion.com/p/Pixel-Sampling-Patterns-39d503f4de128095a055de4a365e90a7",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Vue",
+        "JavaScript"
+      ],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": "2019-02-24",
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": null,
+      "Name": "Pixel Sampling Patterns"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39d503f4-de12-80b7-9434-dd0df67df02e",
+    "url": "https://app.notion.com/p/Aura-39d503f4de1280b79434dd0df67df02e",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "color transformations",
+      "Publish to mccdev": null,
+      "Overview": "rgb, hsv, xyz, spd",
+      "Date": null,
+      "Source": "",
+      "Size": "Small",
+      "Status": "Half-Done",
+      "Category": null,
+      "Name": "Aura"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39d503f4-de12-804b-b98e-d4da58d3517c",
+    "url": "https://app.notion.com/p/Aria-39d503f4de12804bb98ed4da58d3517c",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/6c6325e3-eb88-40a6-b2d7-b07db30644f5/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=5796d7f6f12ca6785f66a1727a8f0094c9cc97b7557603f2637f3fa013f57c0d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "JavaScript"
+      ],
+      "Priority": "High",
+      "Code URL": "https://codepen.io/spectralradiance/pen/zRXJbP",
+      "Subtitle": "melody maker",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": "2018-03-03",
+      "Source": "",
+      "Size": "Medium",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Aria"
+    },
+    "screencaps": [
+      "screencaps\\Aria_1.png"
+    ]
+  },
+  {
+    "id": "39d503f4-de12-802f-8ca7-ffc3b41e73b1",
+    "url": "https://app.notion.com/p/Camera-Comparator-39d503f4de12802f8ca7ffc3b41e73b1",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "Vue"
+      ],
+      "Priority": "Low",
+      "Code URL": "https://codepen.io/spectralradiance/pen/ZEpZQzj",
+      "Subtitle": "compare camera configurations",
+      "Publish to mccdev": null,
+      "Overview": "add field of view simulation? compare two focal lengths in the same shot, give real-world distances, different scenes to swap out, use three.js",
+      "Date": "2021-01-20",
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": null,
+      "Name": "Camera Comparator"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39d503f4-de12-802b-906e-d43fd019df1d",
+    "url": "https://app.notion.com/p/Simone-39d503f4de12802b906ed43fd019df1d",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "JavaScript"
+      ],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/RQExWX",
+      "Subtitle": "musical memory game",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": "2018-02-27",
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Simone"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39d503f4-de12-8043-9ca9-f24af865c02e",
+    "url": "https://app.notion.com/p/Draw-Division-Remainder-Pattern-39d503f4de1280439ca9f24af865c02e",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/1fede7a4-8914-44e6-94a2-e2a7fd48c7b3/zmi-step10_copy.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=efaf813179d8d62c1e0fc457e8bba52e059543961888b2f261cbc17421f8b9ef&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "JavaScript"
+      ],
+      "Priority": "Medium",
+      "Code URL": "https://codepen.io/spectralradiance/pen/OOPqEd",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": "2017-10-30",
+      "Source": "",
+      "Size": "Small",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Draw Division Remainder Pattern"
+    },
+    "screencaps": [
+      "screencaps\\Draw Division Remainder Pattern_1.jpg"
+    ]
+  },
+  {
+    "id": "39d503f4-de12-8009-8d3b-eaa950d84b18",
+    "url": "https://app.notion.com/p/Media-List-in-Vue-39d503f4de1280098d3beaa950d84b18",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/46d6e7e8-2549-4571-ab98-f9fec660aa03/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=0f5ecbb745a88124c8130fa9f90ca84d9395a25a1607f20012d05ddf83cd546c&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "Vue",
+        "JavaScript"
+      ],
+      "Priority": "High",
+      "Code URL": "https://codepen.io/spectralradiance/pen/yygjemw",
+      "Subtitle": "",
+      "Publish to mccdev": "Yes",
+      "Overview": "",
+      "Date": null,
+      "Source": "flux4",
+      "Size": "Medium",
+      "Status": "Complete",
+      "Category": "Interface",
+      "Name": "Media List in Vue"
+    },
+    "screencaps": [
+      "screencaps\\Media List in Vue_1.png"
+    ]
+  },
+  {
+    "id": "39d503f4-de12-80e7-999a-e569f960e776",
+    "url": "https://app.notion.com/p/Hangman-39d503f4de1280e7999ae569f960e776",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": "Complete",
+      "Category": null,
+      "Name": "Hangman"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39d503f4-de12-805c-956a-ce26f063b0c1",
+    "url": "https://app.notion.com/p/Bingo-39d503f4de12805c956ace26f063b0c1",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "",
+      "Publish to mccdev": null,
+      "Overview": "",
+      "Date": null,
+      "Source": "",
+      "Size": null,
+      "Status": "Complete",
+      "Category": null,
+      "Name": "Bingo"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39d503f4-de12-805c-b4da-d5ece2eb5046",
+    "url": "https://app.notion.com/p/Niamh-js-39d503f4de12805cb4dad5ece2eb5046",
+    "properties": {
+      "Screenshots": [],
+      "Technology": [
+        "React",
+        "JavaScript"
+      ],
+      "Priority": "Low",
+      "Code URL": null,
+      "Subtitle": "raytracer",
+      "Publish to mccdev": null,
+      "Overview": "kd trees",
+      "Date": null,
+      "Source": "",
+      "Size": "Large",
+      "Status": "Todo",
+      "Category": null,
+      "Name": "Niamh-js"
+    },
+    "screencaps": []
+  },
+  {
+    "id": "39d503f4-de12-80ae-a357-ff377af407a5",
+    "url": "https://app.notion.com/p/Kybos-39d503f4de1280aea357ff377af407a5",
+    "properties": {
+      "Screenshots": [
+        "https://prod-files-secure.s3.us-west-2.amazonaws.com/75870654-534d-4b42-823f-9665bfc112c9/7915df90-63d4-48c0-8260-b0921ce85d7e/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UPTFTCHB%2F20260725%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260725T234122Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGAaCXVzLXdlc3QtMiJIMEYCIQDG%2B9Oy4%2FjAWL1ocBvBAghmG3Ds6f4fCogfzR6PxVWuPQIhAKuu5zonB28tzqXugImBN0rjCe%2BMKLJbchb25WadenJeKv8DCCgQABoMNjM3NDIzMTgzODA1IgxclGW0%2F2NKFezIFuoq3AMte%2F5dsUvaVwOKFli%2FlYxdTlurP2aQ%2FosLTwg%2FlfZGjbe18PamtR2YzerWvzk6j1DYVdet%2FU%2FLp%2F0MfKJcOfv2cLqK9uiHPydM5Kd46gNH0QaA6HGfEyOMz5To2ZJPjhNYSSnXzFsRmdtNrIjE8DudsZgB0%2BP2L9kgAAyXWhUks0kv0UIpyKnTMfcNjvmBEQQ1ylX6kiSpaIXjABEbwT9k3H65goR16t2AM%2BIRMxSAUlTAu4YVToHvkltxvNEVtnL58P1WnvsHTdUwOy%2Fuqy9fjJSD%2Bd466G0MbJE83S7oAsz31gLGXNDkkFJxvjet%2B%2BH67GcBoLWH%2F%2FkGKLs7ZS16h6LgD3yzFjsd%2Bp4vcInAULod5FzABqSHnP8EYKcFjGlVIqbzV3KUTsVDgcgVUcqa9w36aDHRSqZvQodfSAEBYI8x%2FLlEA9UWgtGxV7pbewdizzgaKEoN2cna3jYs10lV67euH9Axff3DKgmWNgEpd45P5Td42yinTl5mxGf0VpAwt1PWOs3FpNx6Sp4WgWOTCTHho4iGrfpT%2FsWfmWwhHEgw3fyiIG8CMgM9NOoCFf%2B7oCpgktJuBpo4mWkiOvXraqstsg086kNDBRDjqR9RfXO6GBqVIH0ee3kQCDCkiJXTBjqkAU6Cdstnhdv4vbROyq5AOKCccGxkkwC3oBIwtPCTwCU%2BZiELJNILpJiigPHtd%2F2laVjAGK7h2l4U%2B85dC6hdBSbZaHXShDOgqpOZtRJ4uRQYStT0sn9waOnLffhXtwvqfLlxu6j7cpU7ISUU5ZdxswAU34ZpnqmINN0aF4Hce%2Fqa1olGq1pEp58w99r97dSPsWI0FsqDX%2FY7orkAnHC6iraKvsEN&X-Amz-Signature=b79a3582f033fc98638f0af1d96ab64f0be4cc848586f8c7d50056cb8ea891bc&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      ],
+      "Technology": [
+        "Angular",
+        "JavaScript"
+      ],
+      "Priority": "High",
+      "Code URL": "https://codepen.io/spectralradiance/pen/qERMeVY",
+      "Subtitle": "hypercube simulator",
+      "Publish to mccdev": "Yes",
+      "Overview": "Kybos is a ",
+      "Date": null,
+      "Source": "solus ipse?",
+      "Size": "Medium",
+      "Status": "Complete",
+      "Category": "Art",
+      "Name": "Kybos"
+    },
+    "screencaps": [
+      "screencaps\\Kybos_1.png"
+    ]
+  }
+]
