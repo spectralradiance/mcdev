@@ -22,6 +22,7 @@ type RowRefs = {
 
 const SPHERE_RINGS = 5;
 const SPHERE_STEPS = 60;
+const EDGE_SUBS = 8; // subdivisions per edge for curved perspective projection
 
 function Toggle({ label, on, onToggle }: { label: string; on: boolean; onToggle: () => void }) {
   return (
@@ -50,6 +51,7 @@ export default function KybosPage() {
   const cell24Ref = useRef(new Cell24());
   const cell600Ref = useRef(new Cell600());
   const nspherePlyRef = useRef<NSpherePolytope | null>(null);
+  const perspLinesRef = useRef<THREE.LineSegments | null>(null);
   const perspRef = useRef(false);
 
   // React state — only for structural re-renders (slider panel + row list)
@@ -166,8 +168,17 @@ export default function KybosPage() {
   // ── hypercube & Three.js mesh creation ───────────────────────────────────────
 
   const createThreeObjects = useCallback(() => {
-    if (threeRef.current && hypercube.current)
-      rebuildMeshes(threeRef.current, hypercube.current);
+    const ts = threeRef.current;
+    const hc = hypercube.current;
+    if (!ts || !hc) return;
+    rebuildMeshes(ts, hc);
+    // Rebuild perspective-curve LineSegments sized for subdivided edges
+    if (perspLinesRef.current) { ts.scene.remove(perspLinesRef.current); perspLinesRef.current.geometry.dispose(); }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(hc.edges.length * EDGE_SUBS * 6), 3));
+    perspLinesRef.current = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: 0xffffff }));
+    perspLinesRef.current.visible = false;
+    ts.scene.add(perspLinesRef.current);
   }, []);
 
   const createHypercube = useCallback((n: number) => {
@@ -286,10 +297,25 @@ export default function KybosPage() {
       ctx.lineCap = "round";
       ctx.strokeStyle = "#fff";
       ctx.beginPath();
-      hc.edges.forEach(([a, b]) => {
-        ctx.moveTo(p2d[a][0], p2d[a][1]);
-        ctx.lineTo(p2d[b][0], p2d[b][1]);
-      });
+      if (perspRef.current) {
+        const d = mp.current.persp_dist;
+        hc.edges.forEach(([a, b]) => {
+          const pa = hc.points[a], pb = hc.points[b];
+          for (let k = 0; k <= EDGE_SUBS; k++) {
+            const t = k / EDGE_SUBS;
+            const pt = pa.map((v, ci) => v * (1-t) + pb[ci] * t);
+            transforms.current.forEach(tr => tr.apply(pt));
+            const f = d / Math.max(d - pt[3], 0.1);
+            const x = pt[0]*f*s + cx, y = cy - pt[1]*f*s;
+            if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+        });
+      } else {
+        hc.edges.forEach(([a, b]) => {
+          ctx.moveTo(p2d[a][0], p2d[a][1]);
+          ctx.lineTo(p2d[b][0], p2d[b][1]);
+        });
+      }
       ctx.stroke();
     }
     if (showVerticesRef.current) {
@@ -363,7 +389,35 @@ export default function KybosPage() {
         mesh.position.copy(pts[a]).addScaledVector(dir.normalize(), len / 2);
         mesh.quaternion.setFromUnitVectors(yAxis, dir);
       });
-      ts.edgeCylinders.forEach(m => { m.visible = showEdgesRef.current; });
+      // Perspective mode: replace cylinders with subdivided curve LineSegments
+      if (perspRef.current && perspLinesRef.current) {
+        ts.edgeCylinders.forEach(m => { m.visible = false; });
+        perspLinesRef.current.visible = showEdgesRef.current;
+        if (showEdgesRef.current) {
+          const pos = perspLinesRef.current.geometry.attributes.position as THREE.BufferAttribute;
+          const arr = pos.array as Float32Array;
+          const d = mp.current.persp_dist;
+          let vi = 0;
+          hc.edges.forEach(([a, b]) => {
+            const pa = hc.points[a], pb = hc.points[b];
+            for (let k = 0; k < EDGE_SUBS; k++) {
+              const t1 = k / EDGE_SUBS, t2 = (k + 1) / EDGE_SUBS;
+              const pt1 = pa.map((v, ci) => v*(1-t1) + pb[ci]*t1);
+              transforms.current.forEach(tr => tr.apply(pt1));
+              const f1 = d / Math.max(d - pt1[3], 0.1);
+              arr[vi++]=pt1[0]*f1*S; arr[vi++]=pt1[1]*f1*S; arr[vi++]=pt1[2]*f1*S;
+              const pt2 = pa.map((v, ci) => v*(1-t2) + pb[ci]*t2);
+              transforms.current.forEach(tr => tr.apply(pt2));
+              const f2 = d / Math.max(d - pt2[3], 0.1);
+              arr[vi++]=pt2[0]*f2*S; arr[vi++]=pt2[1]*f2*S; arr[vi++]=pt2[2]*f2*S;
+            }
+          });
+          pos.needsUpdate = true;
+        }
+      } else {
+        if (perspLinesRef.current) perspLinesRef.current.visible = false;
+        ts.edgeCylinders.forEach(m => { m.visible = showEdgesRef.current; });
+      }
       ts.spheres.forEach(m => { m.visible = showVerticesRef.current; });
       if (ts.faceMesh) {
         ts.faceMesh.visible = showFacesRef.current;
@@ -413,8 +467,13 @@ export default function KybosPage() {
       const ts = threeRef.current;
       const cont = threeContainerRef.current;
       if (ts && cont) {
-        ts.renderer.setSize(cont.clientWidth, cont.clientHeight);
-        ts.camera.aspect = cont.clientWidth / cont.clientHeight;
+        const w2 = cont.clientWidth, h2 = cont.clientHeight;
+        ts.renderer.setSize(w2, h2);
+        const halfH = 3;
+        ts.camera.left = -halfH * (w2 / h2);
+        ts.camera.right = halfH * (w2 / h2);
+        ts.camera.top = halfH;
+        ts.camera.bottom = -halfH;
         ts.camera.updateProjectionMatrix();
       }
     };
@@ -462,6 +521,7 @@ export default function KybosPage() {
       cancelAnimationFrame(rafId.current);
       const ts = threeRef.current;
       if (ts) { ts.renderer.domElement.remove(); ts.renderer.dispose(); threeRef.current = null; }
+      if (perspLinesRef.current) { perspLinesRef.current.geometry.dispose(); perspLinesRef.current = null; }
     };
   }, [createHypercube, stepTransforms, renderCanvas, draw3D]);
 
@@ -514,6 +574,8 @@ export default function KybosPage() {
       const ts = threeRef.current;
       if (ts) {
         ts.camera.position.set(0, 0, 10);
+        ts.camera.zoom = 1;
+        ts.camera.updateProjectionMatrix();
         ts.controls.target.set(0, 0, 0);
         ts.controls.update();
       }
@@ -586,7 +648,7 @@ export default function KybosPage() {
           <div style={gh}>object</div>
           <select
             value={shape}
-            onChange={e => selectShape(e.target.value as "cube" | "sphere" | "24cell" | "600cell")}
+            onChange={e => selectShape(e.target.value as "cube" | "sphere" | "24cell" | "600cell" | "nsphere")}
             style={{ background: "black", color: "#aaa", border: "0.5px solid dimgrey", width: "100%", padding: "2px 4px", fontSize: "0.7rem", cursor: "pointer", outline: "none", marginBottom: "2px" }}
           >
             <option value="cube">hypercube</option>
