@@ -5,6 +5,7 @@ import Projects from './components/Projects';
 import Portfolio from './components/Portfolio';
 import ProgramsPage from './programs/page';
 import WoodlandFortressPage from './programs/woodlandfortress/page';
+import KybosPage from './programs/kybos/page';
 
 function HomePage() {
   return (
@@ -15,20 +16,23 @@ function HomePage() {
   );
 }
 
+const Contained = ({ children }) => (
+  <div className="max-w-4xl mx-auto px-6 py-12">{children}</div>
+);
+
 function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-black text-white">
         <Header />
-        <div className="max-w-4xl mx-auto px-6 py-12">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/resume" element={<Profile />} />
-            <Route path="/programs" element={<ProgramsPage />} />
-            <Route path="/programs/woodlandfortress" element={<WoodlandFortressPage />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/programs/kybos" element={<KybosPage />} />
+          <Route path="/programs/woodlandfortress" element={<WoodlandFortressPage />} />
+          <Route path="/" element={<Contained><HomePage /></Contained>} />
+          <Route path="/portfolio" element={<Contained><Portfolio /></Contained>} />
+          <Route path="/resume" element={<Contained><Profile /></Contained>} />
+          <Route path="/programs" element={<Contained><ProgramsPage /></Contained>} />
+        </Routes>
       </div>
     </BrowserRouter>
   );

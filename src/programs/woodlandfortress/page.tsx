@@ -202,6 +202,11 @@ export default function WoodlandFortressPage() {
                   Listen on Bandcamp ↗
                 </Box>
               )}
+              {selectedAlbum.description && (
+                <Typography variant="body2" sx={{ mt: 2, color: "grey.400", whiteSpace: "pre-line" }}>
+                  {selectedAlbum.description}
+                </Typography>
+              )}
             </>
           ) : (
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center",
