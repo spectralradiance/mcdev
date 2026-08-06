@@ -2,6 +2,7 @@
 export class Hypercube {
   points: number[][];
   edges: [number, number][];
+  faces: [number, number, number, number][];
 
   constructor(n: number) {
     const nPts = 1 << n;
@@ -24,6 +25,18 @@ export class Hypercube {
           if (this.points[i][k] !== this.points[j][k] && ++diff >= 2) break;
         }
         if (diff === 1) this.edges.push([i, j]);
+      }
+    }
+
+    // Enumerate all 2D square faces: fix n-2 axes, vary two
+    this.faces = [];
+    for (let di = 0; di < n; di++) {
+      for (let dj = di + 1; dj < n; dj++) {
+        const mask = (1 << di) | (1 << dj);
+        for (let base = 0; base < (1 << n); base++) {
+          if ((base & mask) === 0)
+            this.faces.push([base, base | (1 << di), base | (1 << di) | (1 << dj), base | (1 << dj)]);
+        }
       }
     }
   }

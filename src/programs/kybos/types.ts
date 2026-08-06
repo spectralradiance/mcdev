@@ -4,6 +4,7 @@ export interface Params {
   speed: number;
   accentuation: number;
   line_width: number;
+  face_alpha: number;
 }
 
 export const INIT: Params = {
@@ -12,4 +13,5 @@ export const INIT: Params = {
   speed: 10,
   accentuation: 95,
   line_width: 4,
+  face_alpha: 12,
 };

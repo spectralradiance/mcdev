@@ -13,6 +13,8 @@ export interface ThreeScene {
   cylGeo: THREE.CylinderGeometry | null;
   sphereMat: THREE.MeshPhongMaterial;
   cylinderMat: THREE.MeshPhongMaterial;
+  faceMesh: THREE.Mesh | null;
+  faceMat: THREE.MeshBasicMaterial;
 }
 
 /** Creates renderer, scene, camera, lights, and OrbitControls; attaches the WebGL canvas to container. */
@@ -55,6 +57,9 @@ export function createThreeScene(container: HTMLDivElement): ThreeScene {
     sphereGeo: null, cylGeo: null,
     sphereMat: new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 100 }),
     cylinderMat: new THREE.MeshPhongMaterial({ color: 0xcccccc, shininess: 40 }),
+    faceMesh: null,
+    // depthWrite:false prevents z-fighting with edges drawn on top
+    faceMat: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false }),
   };
 }
 
@@ -81,4 +86,12 @@ export function rebuildMeshes(ts: ThreeScene, hc: Hypercube): void {
     ts.scene.add(m);
     return m;
   });
+
+  // Single merged mesh for all faces; position buffer is overwritten each frame
+  if (ts.faceMesh) { ts.scene.remove(ts.faceMesh); ts.faceMesh.geometry.dispose(); }
+  const faceGeo = new THREE.BufferGeometry();
+  faceGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(hc.faces.length * 18), 3));
+  ts.faceMesh = new THREE.Mesh(faceGeo, ts.faceMat);
+  ts.faceMesh.visible = false;
+  ts.scene.add(ts.faceMesh);
 }

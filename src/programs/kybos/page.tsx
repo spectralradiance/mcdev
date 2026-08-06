@@ -19,6 +19,17 @@ type RowRefs = {
 
 // ─── component ───────────────────────────────────────────────────────────────
 
+function Toggle({ label, on, onToggle }: { label: string; on: boolean; onToggle: () => void }) {
+  return (
+    <div className="flex items-center justify-between px-1 py-0.5 mt-1 cursor-pointer select-none" onClick={onToggle}>
+      <span className="text-xs text-gray-500">{label}</span>
+      <div className={`relative w-7 h-3.5 rounded-full transition-colors ${on ? "bg-white" : "bg-gray-700"}`}>
+        <span className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-black transition-transform ${on ? "translate-x-3.5" : "translate-x-0"}`} />
+      </div>
+    </div>
+  );
+}
+
 export default function KybosPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -35,6 +46,12 @@ export default function KybosPage() {
   const [params, setParams] = useState<Params>(INIT);
   const [rows, setRows] = useState<Array<{ id: number; i: number; j: number }>>([]);
   const [mode, setMode] = useState<"2d" | "3d">("2d");
+  const [showFaces, setShowFaces] = useState(false);
+  const showFacesRef = useRef(false);
+  const [showEdges, setShowEdges] = useState(true);
+  const showEdgesRef = useRef(true);
+  const [showVertices, setShowVertices] = useState(true);
+  const showVerticesRef = useRef(true);
 
   // DOM refs for per-frame updates (bypassing React)
   const rowRefs = useRef<Record<number, RowRefs>>({});
@@ -203,15 +220,39 @@ export default function KybosPage() {
       transforms.current.forEach(t => t.apply(p));
       return [p[0] * s + cx, cy - p[1] * s];
     });
-    ctx.lineWidth = line_width;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#fff";
-    ctx.beginPath();
-    hc.edges.forEach(([a, b]) => {
-      ctx.moveTo(p2d[a][0], p2d[a][1]);
-      ctx.lineTo(p2d[b][0], p2d[b][1]);
-    });
-    ctx.stroke();
+    if (showFacesRef.current) {
+      ctx.globalAlpha = mp.current.face_alpha / 100;
+      ctx.fillStyle = "#fff";
+      hc.faces.forEach(([a, b, c, d]) => {
+        ctx.beginPath();
+        ctx.moveTo(p2d[a][0], p2d[a][1]);
+        ctx.lineTo(p2d[b][0], p2d[b][1]);
+        ctx.lineTo(p2d[c][0], p2d[c][1]);
+        ctx.lineTo(p2d[d][0], p2d[d][1]);
+        ctx.closePath();
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    }
+    if (showEdgesRef.current) {
+      ctx.lineWidth = line_width;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#fff";
+      ctx.beginPath();
+      hc.edges.forEach(([a, b]) => {
+        ctx.moveTo(p2d[a][0], p2d[a][1]);
+        ctx.lineTo(p2d[b][0], p2d[b][1]);
+      });
+      ctx.stroke();
+    }
+    if (showVerticesRef.current) {
+      ctx.fillStyle = "#fff";
+      p2d.forEach(([x, y]) => {
+        ctx.beginPath();
+        ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
   }, []);
 
   // Projects N-D → 3D: x = p[0], y = p[1], z = p[2]. Cylinders are unit-height meshes scaled and rotated to each edge.
@@ -233,15 +274,35 @@ export default function KybosPage() {
       const dir = pts[b].clone().sub(pts[a]);
       const len = dir.length();
       if (len < 1e-6) return;
-      mesh.scale.set(1, len, 1);
+      // Scale edge radius with line_width; line_width=4 matches the base cylinder radius
+      const edgeR = mp.current.line_width / 4;
+      mesh.scale.set(edgeR, len, edgeR);
       mesh.position.copy(pts[a]).addScaledVector(dir.normalize(), len / 2);
       mesh.quaternion.setFromUnitVectors(yAxis, dir);
     });
+    ts.edgeCylinders.forEach(m => { m.visible = showEdgesRef.current; });
+    ts.spheres.forEach(m => { m.visible = showVerticesRef.current; });
+    if (ts.faceMesh) {
+      ts.faceMesh.visible = showFacesRef.current;
+      if (showFacesRef.current) {
+        const pos = ts.faceMesh.geometry.attributes.position as THREE.BufferAttribute;
+        const arr = pos.array as Float32Array;
+        let idx = 0;
+        hc.faces.forEach(([a, b, c, d]) => {
+          arr[idx++] = pts[a].x; arr[idx++] = pts[a].y; arr[idx++] = pts[a].z;
+          arr[idx++] = pts[b].x; arr[idx++] = pts[b].y; arr[idx++] = pts[b].z;
+          arr[idx++] = pts[c].x; arr[idx++] = pts[c].y; arr[idx++] = pts[c].z;
+          arr[idx++] = pts[a].x; arr[idx++] = pts[a].y; arr[idx++] = pts[a].z;
+          arr[idx++] = pts[c].x; arr[idx++] = pts[c].y; arr[idx++] = pts[c].z;
+          arr[idx++] = pts[d].x; arr[idx++] = pts[d].y; arr[idx++] = pts[d].z;
+        });
+        pos.needsUpdate = true;
+        ts.faceMat.opacity = mp.current.face_alpha / 100;
+      }
+    }
     ts.controls.update();
     ts.renderer.render(ts.scene, ts.camera);
   }, []);
-
-  // ── Three.js scene init ──────────────────────────────────────────────────────
 
   // ── Three.js scene init (lazy: runs only on first 3D switch) ─────────────────
 
@@ -348,6 +409,10 @@ export default function KybosPage() {
       s: mp.current.speed,
       a: mp.current.accentuation,
       w: mp.current.line_width,
+      fa: mp.current.face_alpha,
+      sv: showVerticesRef.current ? 1 : 0,
+      se: showEdgesRef.current ? 1 : 0,
+      sf: showFacesRef.current ? 1 : 0,
       t: transforms.current.map(t => [t.angleIndex, t.animate]),
     };
     const encoded = btoa(JSON.stringify(state));
@@ -365,6 +430,7 @@ export default function KybosPage() {
     { label: "S", title: "animation speed",          min: 0, max: 10, value: params.speed,                     display: params.speed,         onChange: (v: number) => setP("speed", v) },
     { label: "A", title: "accentuation",             min: 0, max: 99,  value: params.accentuation,              display: params.accentuation,  onChange: (v: number) => setP("accentuation", v) },
     { label: "W", title: "line width",               min: 1, max: 20,  value: params.line_width,                display: params.line_width,    onChange: (v: number) => setP("line_width", v) },
+    { label: "T", title: "face opacity %",            min: 0, max: 100, value: params.face_alpha,                 display: params.face_alpha,    onChange: (v: number) => setP("face_alpha", v) },
   ];
 
   return (
@@ -400,6 +466,9 @@ export default function KybosPage() {
             border: "0.5px solid dimgrey", color: "#888",
             fontSize: "0.7rem", padding: "4px", cursor: "pointer",
           }}>copy link</button>
+          <Toggle label="vertices" on={showVertices} onToggle={() => { showVerticesRef.current = !showVerticesRef.current; setShowVertices(v => !v); }} />
+          <Toggle label="edges" on={showEdges} onToggle={() => { showEdgesRef.current = !showEdgesRef.current; setShowEdges(e => !e); }} />
+          <Toggle label="faces" on={showFaces} onToggle={() => { showFacesRef.current = !showFacesRef.current; setShowFaces(f => !f); }} />
         </div>
 
         {/* canvas / 3D viewport */}
