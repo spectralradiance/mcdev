@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { Hypercube } from "./hypercube";
+import type { SphereCurves } from "./hypersphere";
 
 export interface ThreeScene {
   renderer: THREE.WebGLRenderer;
@@ -15,6 +16,7 @@ export interface ThreeScene {
   cylinderMat: THREE.MeshPhongMaterial;
   faceMesh: THREE.Mesh | null;
   faceMat: THREE.MeshBasicMaterial;
+  sphereLines: THREE.LineSegments | null;
 }
 
 /** Creates renderer, scene, camera, lights, and OrbitControls; attaches the WebGL canvas to container. */
@@ -63,7 +65,7 @@ export function createThreeScene(container: HTMLDivElement): ThreeScene {
   };
 }
 
-/** Disposes old vertex/edge meshes and recreates them for the given hypercube topology. */
+/** Rebuilds vertex/edge meshes for the given hypercube topology. */
 export function rebuildMeshes(ts: ThreeScene, hc: Hypercube): void {
   ts.spheres.forEach(m => ts.scene.remove(m));
   ts.edgeCylinders.forEach(m => ts.scene.remove(m));
@@ -87,11 +89,37 @@ export function rebuildMeshes(ts: ThreeScene, hc: Hypercube): void {
     return m;
   });
 
-  // Single merged mesh for all faces; position buffer is overwritten each frame
+  // One merged mesh for all faces; position buffer updated each frame
   if (ts.faceMesh) { ts.scene.remove(ts.faceMesh); ts.faceMesh.geometry.dispose(); }
   const faceGeo = new THREE.BufferGeometry();
   faceGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(hc.faces.length * 18), 3));
   ts.faceMesh = new THREE.Mesh(faceGeo, ts.faceMat);
   ts.faceMesh.visible = false;
   ts.scene.add(ts.faceMesh);
+}
+
+/** Creates a single merged LineSegments mesh for all S³ curves, colour-coded by family. */
+export function rebuildSphereLines(ts: ThreeScene, sphere: SphereCurves): void {
+  if (ts.sphereLines) { ts.scene.remove(ts.sphereLines); ts.sphereLines.geometry.dispose(); }
+  const totalSegs = sphere.curves.length * sphere.segmentsPerCurve;
+  const positions = new Float32Array(totalSegs * 6);
+  const colors    = new Float32Array(totalSegs * 6);
+  // Parallels=red, meridians=green, hypermeridians=blue
+  const fc = [[1.0, 0.35, 0.35], [0.35, 1.0, 0.35], [0.35, 0.55, 1.0]];
+  let ci = 0;
+  sphere.curves.forEach((_, idx) => {
+    const f = idx < sphere.familyStarts[1] ? 0 : idx < sphere.familyStarts[2] ? 1 : 2;
+    const [r, g, b] = fc[f];
+    for (let s = 0; s < sphere.segmentsPerCurve; s++) {
+      colors[ci]   = r; colors[ci+1] = g; colors[ci+2] = b;
+      colors[ci+3] = r; colors[ci+4] = g; colors[ci+5] = b;
+      ci += 6;
+    }
+  });
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute("color",    new THREE.BufferAttribute(colors, 3));
+  ts.sphereLines = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ vertexColors: true }));
+  ts.sphereLines.visible = false;
+  ts.scene.add(ts.sphereLines);
 }

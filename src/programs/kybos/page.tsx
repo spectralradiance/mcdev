@@ -4,8 +4,9 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import * as THREE from "three";
 import { Hypercube, Transform, wrap, toIndex, toAngle } from "./hypercube";
 import { type Params, INIT } from "./types";
-import { type ThreeScene, createThreeScene, rebuildMeshes } from "./three-scene";
+import { type ThreeScene, createThreeScene, rebuildMeshes, rebuildSphereLines } from "./three-scene";
 import { parseUrlState } from "./url-state";
+import { generateSphere, stereographic, type SphereCurves } from "./hypersphere";
 
 /** Per-transform DOM refs updated directly each frame, bypassing React's reconciler. */
 type RowRefs = {
@@ -18,6 +19,9 @@ type RowRefs = {
 };
 
 // ─── component ───────────────────────────────────────────────────────────────
+
+const SPHERE_RINGS = 5;
+const SPHERE_STEPS = 60;
 
 function Toggle({ label, on, onToggle }: { label: string; on: boolean; onToggle: () => void }) {
   return (
@@ -41,11 +45,14 @@ export default function KybosPage() {
   const rafId = useRef(0);
   const modeRef = useRef<"2d" | "3d">("2d");
   const threeRef = useRef<ThreeScene | null>(null);
+  const shapeRef = useRef<"cube" | "sphere">("cube");
+  const sphereRef = useRef<SphereCurves | null>(null);
 
   // React state — only for structural re-renders (slider panel + row list)
   const [params, setParams] = useState<Params>(INIT);
   const [rows, setRows] = useState<Array<{ id: number; i: number; j: number }>>([]);
   const [mode, setMode] = useState<"2d" | "3d">("2d");
+  const [shape, setShape] = useState<"cube" | "sphere">("cube");
   const [showFaces, setShowFaces] = useState(false);
   const showFacesRef = useRef(false);
   const [showEdges, setShowEdges] = useState(true);
@@ -204,16 +211,43 @@ export default function KybosPage() {
     });
   }, []);
 
-  // Projects N-D → 2D: x = p[0], y = p[1] after all rotations.
+  // Projects N-D → 2D for cube (orthographic) or S³ (stereographic).
   const renderCanvas = useCallback(() => {
     const cnv = canvasRef.current;
-    if (!cnv || !hypercube.current) return;
-    const { line_width } = mp.current;
+    if (!cnv) return;
     const ctx = cnv.getContext("2d")!;
     ctx.clearRect(0, 0, cnv.width, cnv.height);
+    const cx = cnv.width / 2, cy = cnv.height / 2;
+
+    if (shapeRef.current === "sphere" && sphereRef.current) {
+      const sphere = sphereRef.current;
+      const S = Math.min(cnv.width, cnv.height) * 0.22;
+      const familyColors = ["#ff5050", "#50ff50", "#5080ff"];
+      const [, f1, f2] = sphere.familyStarts;
+      ctx.lineWidth = 0.8;
+      ctx.globalAlpha = 0.55;
+      sphere.curves.forEach((curve, ci) => {
+        const family = ci < f1 ? 0 : ci < f2 ? 1 : 2;
+        ctx.strokeStyle = familyColors[family];
+        ctx.beginPath();
+        let penDown = false;
+        curve.forEach(pt => {
+          const p = pt.slice();
+          transforms.current.forEach(t => t.apply(p));
+          const [X, Y] = stereographic(p);
+          if (!isFinite(X) || !isFinite(Y) || Math.hypot(X, Y) > 8) { penDown = false; return; }
+          const sx = X * S + cx, sy = -Y * S + cy;
+          if (!penDown) { ctx.moveTo(sx, sy); penDown = true; } else ctx.lineTo(sx, sy);
+        });
+        ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+      return;
+    }
+
+    if (!hypercube.current) return;
+    const { line_width } = mp.current;
     const s = Math.min(cnv.width, cnv.height) * 0.19;
-    const cx = cnv.width / 2;
-    const cy = cnv.height / 2;
     const hc = hypercube.current;
     const p2d = hc.points.map(pt => {
       const p = pt.slice();
@@ -255,51 +289,81 @@ export default function KybosPage() {
     }
   }, []);
 
-  // Projects N-D → 3D: x = p[0], y = p[1], z = p[2]. Cylinders are unit-height meshes scaled and rotated to each edge.
+  // Projects N-D → 3D for cube (orthographic) or S³ (stereographic).
   const draw3D = useCallback(() => {
     const ts = threeRef.current;
-    if (!ts || !hypercube.current) return;
-    const S = 1.5;
-    const hc = hypercube.current;
-    const pts = hc.points.map(pt => {
-      const p = pt.slice();
-      transforms.current.forEach(t => t.apply(p));
-      return new THREE.Vector3(p[0] * S, p[1] * S, p[2] * S);
-    });
-    pts.forEach((v, i) => { ts.spheres[i]?.position.copy(v); });
-    const yAxis = new THREE.Vector3(0, 1, 0);
-    hc.edges.forEach(([a, b], i) => {
-      const mesh = ts.edgeCylinders[i];
-      if (!mesh) return;
-      const dir = pts[b].clone().sub(pts[a]);
-      const len = dir.length();
-      if (len < 1e-6) return;
-      // Scale edge radius with line_width; line_width=4 matches the base cylinder radius
-      const edgeR = mp.current.line_width / 4;
-      mesh.scale.set(edgeR, len, edgeR);
-      mesh.position.copy(pts[a]).addScaledVector(dir.normalize(), len / 2);
-      mesh.quaternion.setFromUnitVectors(yAxis, dir);
-    });
-    ts.edgeCylinders.forEach(m => { m.visible = showEdgesRef.current; });
-    ts.spheres.forEach(m => { m.visible = showVerticesRef.current; });
-    if (ts.faceMesh) {
-      ts.faceMesh.visible = showFacesRef.current;
-      if (showFacesRef.current) {
-        const pos = ts.faceMesh.geometry.attributes.position as THREE.BufferAttribute;
+    if (!ts) return;
+    const isSphere = shapeRef.current === "sphere";
+
+    if (isSphere && sphereRef.current) {
+      ts.spheres.forEach(m => { m.visible = false; });
+      ts.edgeCylinders.forEach(m => { m.visible = false; });
+      if (ts.faceMesh) ts.faceMesh.visible = false;
+      if (ts.sphereLines) {
+        ts.sphereLines.visible = true;
+        const S = 2.0;
+        const sphere = sphereRef.current;
+        const pos = ts.sphereLines.geometry.attributes.position as THREE.BufferAttribute;
         const arr = pos.array as Float32Array;
         let idx = 0;
-        hc.faces.forEach(([a, b, c, d]) => {
-          arr[idx++] = pts[a].x; arr[idx++] = pts[a].y; arr[idx++] = pts[a].z;
-          arr[idx++] = pts[b].x; arr[idx++] = pts[b].y; arr[idx++] = pts[b].z;
-          arr[idx++] = pts[c].x; arr[idx++] = pts[c].y; arr[idx++] = pts[c].z;
-          arr[idx++] = pts[a].x; arr[idx++] = pts[a].y; arr[idx++] = pts[a].z;
-          arr[idx++] = pts[c].x; arr[idx++] = pts[c].y; arr[idx++] = pts[c].z;
-          arr[idx++] = pts[d].x; arr[idx++] = pts[d].y; arr[idx++] = pts[d].z;
+        sphere.curves.forEach(curve => {
+          const proj = curve.map(pt => {
+            const p = pt.slice();
+            transforms.current.forEach(t => t.apply(p));
+            const [X, Y, Z] = stereographic(p);
+            return [isFinite(X) ? X * S : 0, isFinite(Y) ? Y * S : 0, isFinite(Z) ? Z * S : 0];
+          });
+          for (let i = 0; i < sphere.segmentsPerCurve; i++) {
+            arr[idx++] = proj[i][0];   arr[idx++] = proj[i][1];   arr[idx++] = proj[i][2];
+            arr[idx++] = proj[i+1][0]; arr[idx++] = proj[i+1][1]; arr[idx++] = proj[i+1][2];
+          }
         });
         pos.needsUpdate = true;
-        ts.faceMat.opacity = mp.current.face_alpha / 100;
+      }
+    } else if (!isSphere && hypercube.current) {
+      if (ts.sphereLines) ts.sphereLines.visible = false;
+      const S = 1.5;
+      const hc = hypercube.current;
+      const pts = hc.points.map(pt => {
+        const p = pt.slice();
+        transforms.current.forEach(t => t.apply(p));
+        return new THREE.Vector3(p[0] * S, p[1] * S, p[2] * S);
+      });
+      pts.forEach((v, i) => { ts.spheres[i]?.position.copy(v); });
+      const yAxis = new THREE.Vector3(0, 1, 0);
+      hc.edges.forEach(([a, b], i) => {
+        const mesh = ts.edgeCylinders[i];
+        if (!mesh) return;
+        const dir = pts[b].clone().sub(pts[a]);
+        const len = dir.length();
+        if (len < 1e-6) return;
+        const edgeR = mp.current.line_width / 4;
+        mesh.scale.set(edgeR, len, edgeR);
+        mesh.position.copy(pts[a]).addScaledVector(dir.normalize(), len / 2);
+        mesh.quaternion.setFromUnitVectors(yAxis, dir);
+      });
+      ts.edgeCylinders.forEach(m => { m.visible = showEdgesRef.current; });
+      ts.spheres.forEach(m => { m.visible = showVerticesRef.current; });
+      if (ts.faceMesh) {
+        ts.faceMesh.visible = showFacesRef.current;
+        if (showFacesRef.current) {
+          const pos = ts.faceMesh.geometry.attributes.position as THREE.BufferAttribute;
+          const arr = pos.array as Float32Array;
+          let idx = 0;
+          hc.faces.forEach(([a, b, c, d]) => {
+            arr[idx++] = pts[a].x; arr[idx++] = pts[a].y; arr[idx++] = pts[a].z;
+            arr[idx++] = pts[b].x; arr[idx++] = pts[b].y; arr[idx++] = pts[b].z;
+            arr[idx++] = pts[c].x; arr[idx++] = pts[c].y; arr[idx++] = pts[c].z;
+            arr[idx++] = pts[a].x; arr[idx++] = pts[a].y; arr[idx++] = pts[a].z;
+            arr[idx++] = pts[c].x; arr[idx++] = pts[c].y; arr[idx++] = pts[c].z;
+            arr[idx++] = pts[d].x; arr[idx++] = pts[d].y; arr[idx++] = pts[d].z;
+          });
+          pos.needsUpdate = true;
+          ts.faceMat.opacity = mp.current.face_alpha / 100;
+        }
       }
     }
+
     ts.controls.update();
     ts.renderer.render(ts.scene, ts.camera);
   }, []);
@@ -311,6 +375,7 @@ export default function KybosPage() {
     if (!container) return;
     threeRef.current = createThreeScene(container);
     createThreeObjects();
+    if (sphereRef.current) rebuildSphereLines(threeRef.current, sphereRef.current);
   }, [createThreeObjects]);
 
   // ── init ────────────────────────────────────────────────────────────────────
@@ -345,6 +410,7 @@ export default function KybosPage() {
       }
     }
 
+    sphereRef.current = generateSphere(SPHERE_RINGS, SPHERE_STEPS);
     createHypercube(mp.current.n_dimensions);
 
     // Apply saved transform states after createHypercube sets transforms.current
@@ -489,6 +555,13 @@ export default function KybosPage() {
             color: "#aaa", fontSize: "0.7rem", padding: "2px 8px", cursor: "pointer",
           }}>
             {mode === "2d" ? "3D" : "2D"}
+          </button>
+          <button onClick={() => { const n = shapeRef.current === "cube" ? "sphere" : "cube"; shapeRef.current = n; setShape(n); }} style={{
+            position: "absolute", top: 40, right: 8,
+            background: "transparent", border: "0.5px solid dimgrey",
+            color: "#aaa", fontSize: "0.7rem", padding: "2px 8px", cursor: "pointer",
+          }}>
+            {shape === "cube" ? "S³" : "cube"}
           </button>
         </div>
 
