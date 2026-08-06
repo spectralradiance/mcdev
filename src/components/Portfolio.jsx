@@ -41,7 +41,8 @@ const ProjectCard = ({ project, onClick }) => {
 const ProjectDetail = ({ project, onBack }) => {
   const { Name, Subtitle, Category, Technology, 'Code URL': codeUrl } = project.properties;
   const description = project.description || project.properties.Overview || '';
-  const embedUrl = codeUrl ? codepenEmbedUrl(codeUrl) : null;
+  const isGitHub = codeUrl?.includes('github.com');
+  const embedUrl = codeUrl && !isGitHub ? codepenEmbedUrl(codeUrl) : null;
 
   return (
     <div>
@@ -84,6 +85,24 @@ const ProjectDetail = ({ project, onBack }) => {
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {codeUrl && isGitHub && (
+        <div className="mb-8">
+          <a
+            href={codeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gray-800 text-gray-200 hover:bg-gray-700 transition-colors text-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            View on GitHub
+          </a>
         </div>
       )}
 

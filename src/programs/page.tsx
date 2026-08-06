@@ -18,6 +18,11 @@ const projects = [
     url: "/programs/vara",
   },
   {
+    name: "Kybos",
+    description: "An interactive n-dimensional hypercube visualiser.",
+    url: "/programs/kybos",
+  },
+  {
     name: "Woodland Fortress",
     description: "Browse bands for the Woodland Fortress festival.",
     url: "/programs/woodlandfortress",

@@ -1,0 +1,571 @@
+
+
+<!-- No external dependencies required — pure vanilla JS/CSS -->
+
+<div id="outerdiv">
+  <div id="leftdiv">
+    <table>
+      <tr>
+        <td title="number of dimensions">N</td>
+        <td><input type="range" min="2" max="8" value="4" id="dim_slider"></td>
+        <td>&nbsp;<span id="dim_val">4</span>&nbsp;</td>
+      </tr>
+      <tr>
+        <td title="number of angle divisions, as a power of 2">D</td>
+        <td><input type="range" min="1" max="5" value="3" id="div_slider"></td>
+        <td>&nbsp;<span id="div_val">8</span>&nbsp;</td>
+      </tr>
+      <tr>
+        <td title="animation speed">S</td>
+        <td><input type="range" min="0" max="100" value="10" id="speed_slider"></td>
+        <td>&nbsp;<span id="speed_val">10</span>&nbsp;</td>
+      </tr>
+      <tr>
+        <td title="how accentuated transitions are between angle divisions">A</td>
+        <td><input type="range" min="0" max="99" value="95" id="acc_slider"></td>
+        <td>&nbsp;<span id="acc_val">95</span>&nbsp;</td>
+      </tr>
+      <tr>
+        <td title="line width">W</td>
+        <td><input type="range" min="1" max="20" value="4" id="lw_slider"></td>
+        <td>&nbsp;<span id="lw_val">4</span>&nbsp;</td>
+      </tr>
+    </table>
+  </div>
+  <div id="maindiv">
+    <canvas id="cmain"></canvas>
+  </div>
+  <div id="rightdiv">
+    <table id="angles_table">
+      <tr>
+        <td></td>
+        <td>
+          <div id="all_left_btn">&#9665;</div>
+          <div id="all_left_stop" style="display:none">||</div>
+        </td>
+        <td>
+          <div id="randomize_angles_bt">&#9860;</div>
+          <div id="reset_angles_bt">&#8676;</div>
+        </td>
+        <td>
+          <div id="all_right_btn">&#9655;</div>
+          <div id="all_right_stop" style="display:none">||</div>
+        </td>
+        <td></td>
+      </tr>
+      <!-- angle rows injected by JS -->
+    </table>
+  </div>
+</div>
+
+=============================================
+
+
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  color:lightgrey;
+  background-color:black;
+}
+
+hr {
+  height:0.5px;
+  border-width:0;
+	color:white;
+	background-color:white;
+}
+a:link 
+{
+	color: #FFFFE0; text-decoration:none;
+}
+a:active 
+{
+	color: #FFFFE0; text-decoration:none;
+}
+a:visited 
+{
+	color: #FFFFE0; text-decoration:none;
+}
+a:hover 
+{
+	color: #FFFFFF; text-decoration:none;
+}
+::selection {
+  background: #FFFFE0; /* WebKit/Blink Browsers */
+}
+
+
+
+
+input[type='range']
+{
+	-webkit-appearance: none;
+	background-color: #FFFFFF;
+	height: 1px;
+	vertical-align: middle;
+	outline:0;
+}
+input[type='range']::-moz-range-track
+{
+	-moz-appearance: none;
+	background-color: #FFFFFF;
+	height: 1px;
+	outline:0;
+}
+input[type='range']::-webkit-slider-thumb
+{
+	-webkit-appearance: none !important;
+	background-color: #FFFFFF;
+	height: 20px;
+	width: 1px;
+}
+input[type='range']::-moz-range-thumb
+{
+	-moz-appearance: none;
+	background-color: #FFFFFF;
+	height: 20px;
+	width: 1px;
+}
+
+
+
+
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: #fff;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+#outerdiv {
+  height: 100%;
+}
+
+#outerdiv > div {
+  display: inline-block;
+}
+
+#rightdiv {
+  width: 15%;
+  height: 100%;
+  vertical-align: top;
+  border-left: 0.5px solid dimgrey;
+}
+
+#leftdiv {
+  border-right: 0.5px solid dimgrey;
+  width: 15%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#leftdiv table, #rightdiv table {
+  width: 100%;
+  padding: 4px;
+  text-align: center;
+}
+
+#leftdiv input, #rightdiv input {
+  width: 100%;
+}
+
+#randomize_angles_bt, #reset_angles_bt {
+  font-size: 24px;
+  cursor: default;
+  text-align: center;
+  display: inline;
+}
+
+#angles_table input {
+  margin-left: 0;
+  margin-right: 0;
+  vertical-align: middle;
+}
+
+#angles_table td:nth-child(1) {
+  padding: 4px;
+  white-space: nowrap;
+}
+
+#angles_table td:nth-child(2) {
+  text-align: right;
+  margin-right: 0;
+  padding-right: 0;
+  margin-left: 4px;
+  cursor: default;
+  vertical-align: middle;
+}
+
+#angles_table td:nth-child(3) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#angles_table td:nth-child(4) {
+  text-align: left;
+  margin-left: 0;
+  padding-left: 0;
+  margin-right: 4px;
+  cursor: default;
+  vertical-align: middle;
+}
+
+#angles_table td:nth-child(5) {
+  padding: 4px;
+}
+
+#maindiv {
+  text-align: center;
+  width: 69%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  display: inline-block;
+}
+
+#cmain {
+  width: 100%;
+  height: 100%;
+}
+
+=============================================
+
+class Hypercube {
+  constructor(n_dimensions) {
+    var n_pts = 1 << n_dimensions;
+    this.points = [];
+    for (var i = 0; i < n_pts; ++i) {
+      var t = i;
+      var p = [];
+      for (var j = 0; j < n_pts; ++j) {
+        var v = (t % 2 == 0) ? -1 : 1;
+        p.push(v);
+        t = Math.floor(t / 2);
+      }
+      this.points.push(p);
+    }
+    this.edges = [];
+    for (var i = 0; i < n_pts; ++i) {
+      for (var j = i + 1; j < n_pts; ++j) {
+        var n_different = 0;
+        for (var k = 0; k < n_dimensions; ++k) {
+          if (this.points[i][k] != this.points[j][k]) {
+            n_different++;
+            if (n_different >= 2) break;
+          }
+        }
+        if (n_different === 1) this.edges.push([i, j]);
+      }
+    }
+  }
+}
+
+class Transform {
+  constructor(a, i, j) {
+    this.angle = a;
+    this.index_i = i;
+    this.index_j = j;
+    this.cos_angle = Math.cos(a);
+    this.sin_angle = Math.sin(a);
+    this.animate = 0;
+    this.goal_angle = -1;
+    this.angle_index = 0;
+  }
+  update() {
+    this.cos_angle = Math.cos(this.angle);
+    this.sin_angle = Math.sin(this.angle);
+  }
+  transform(p) {
+    var pi = p[this.index_i] * this.cos_angle - p[this.index_j] * this.sin_angle;
+    var pj = p[this.index_i] * this.sin_angle + p[this.index_j] * this.cos_angle;
+    p[this.index_i] = pi;
+    p[this.index_j] = pj;
+  }
+}
+
+// --- State ---
+var mp = { n_dimensions: 4, n_divisions: 8, speed: 10, accentuation: 95, line_width: 4 };
+var transforms = [];
+var hypercube = null;
+var any_animated = false;
+var cnv = null;
+
+// --- Helpers ---
+function wrapAngle(a) {
+  var pi2 = Math.PI * 2;
+  while (a < 0) a += pi2;
+  while (a > pi2) a -= pi2;
+  return a;
+}
+function angleToIndex(angle) {
+  var n = mp.n_divisions;
+  var ind = angle / (Math.PI * 2) * n;
+  return (ind > n - 0.5) ? 0 : Math.round(ind);
+}
+function indexToAngle(idx) {
+  return Math.PI * 2 * idx / mp.n_divisions;
+}
+function setAllAnglesToIndex() {
+  for (var i = 0; i < transforms.length; ++i)
+    transforms[i].angle = indexToAngle(transforms[i].angle_index);
+}
+
+// --- Actions ---
+function randomizeAngles() {
+  var n = mp.n_divisions;
+  for (var i = 0; i < transforms.length; ++i) {
+    var ind = Math.floor(Math.random() * n);
+    transforms[i].angle_index = ind;
+    transforms[i].goal_angle = (ind / n) * Math.PI * 2;
+  }
+}
+function resetAngles() {
+  for (var i = 0; i < transforms.length; ++i) {
+    transforms[i].goal_angle = 0;
+    transforms[i].angle_index = 0;
+  }
+}
+function checkAnyAnimated() {
+  any_animated = transforms.some(t => t.animate != 0);
+  updateAllAnimateBtns();
+}
+function stopAnimation(i) {
+  transforms[i].animate = 0;
+  transforms[i].angle = indexToAngle(transforms[i].angle_index);
+  transforms[i].update();
+  checkAnyAnimated();
+  updateRowBtns(i);
+}
+function stopAllAnimation() {
+  for (var i = 0; i < transforms.length; ++i) transforms[i].animate = 0;
+  any_animated = false;
+  updateAllAnimateBtns();
+  for (var i = 0; i < transforms.length; ++i) updateRowBtns(i);
+}
+function leftAnimationArrowClicked(i) {
+  transforms[i].animate = -1;
+  setAllAnglesToIndex();
+  any_animated = true;
+  updateAllAnimateBtns();
+  updateRowBtns(i);
+}
+function rightAnimationArrowClicked(i) {
+  transforms[i].animate = 1;
+  setAllAnglesToIndex();
+  any_animated = true;
+  updateAllAnimateBtns();
+  updateRowBtns(i);
+}
+function leftAnimateAll() {
+  for (var i = 0; i < transforms.length; ++i) transforms[i].animate = -1;
+  setAllAnglesToIndex();
+  any_animated = true;
+  updateAllAnimateBtns();
+  for (var i = 0; i < transforms.length; ++i) updateRowBtns(i);
+}
+function rightAnimateAll() {
+  for (var i = 0; i < transforms.length; ++i) transforms[i].animate = 1;
+  setAllAnglesToIndex();
+  any_animated = true;
+  updateAllAnimateBtns();
+  for (var i = 0; i < transforms.length; ++i) updateRowBtns(i);
+}
+function angleChanged(i, v) {
+  transforms[i].angle_index = parseInt(v);
+  transforms[i].goal_angle = indexToAngle(parseInt(v));
+}
+
+// --- UI updates ---
+function updateAllAnimateBtns() {
+  document.getElementById('all_left_btn').style.display = any_animated ? 'none' : '';
+  document.getElementById('all_left_stop').style.display = any_animated ? '' : 'none';
+  document.getElementById('all_right_btn').style.display = any_animated ? 'none' : '';
+  document.getElementById('all_right_stop').style.display = any_animated ? '' : 'none';
+}
+function updateRowBtns(i) {
+  var trn = transforms[i];
+  document.getElementById('la_' + i).style.display = (trn.animate == -1) ? 'none' : '';
+  document.getElementById('ls_' + i).style.display = (trn.animate == -1) ? '' : 'none';
+  document.getElementById('ra_' + i).style.display = (trn.animate == 1) ? 'none' : '';
+  document.getElementById('rs_' + i).style.display = (trn.animate == 1) ? '' : 'none';
+}
+
+// --- Build transforms table rows ---
+function renderTransformsTable() {
+  var table = document.getElementById('angles_table');
+  while (table.rows.length > 1) table.deleteRow(1);
+
+  for (var i = 0; i < transforms.length; ++i) {
+    var trn = transforms[i];
+    var row = table.insertRow(-1);
+
+    // Label
+    var c1 = row.insertCell(0);
+    c1.textContent = trn.index_i + '-' + trn.index_j;
+
+    // Left arrow / stop
+    var c2 = row.insertCell(1);
+    var la = document.createElement('div');
+    la.id = 'la_' + i; la.innerHTML = '&#9665;';
+    la.addEventListener('click', (idx => () => leftAnimationArrowClicked(idx))(i));
+    var ls = document.createElement('div');
+    ls.id = 'ls_' + i; ls.innerHTML = '||'; ls.style.display = 'none';
+    ls.addEventListener('click', (idx => () => stopAnimation(idx))(i));
+    c2.appendChild(la); c2.appendChild(ls);
+
+    // Slider
+    var c3 = row.insertCell(2);
+    var sl = document.createElement('input');
+    sl.type = 'range'; sl.min = 0; sl.max = mp.n_divisions - 1;
+    sl.value = trn.angle_index; sl.id = 'asl_' + i;
+    sl.addEventListener('input', (idx => e => angleChanged(idx, e.target.value))(i));
+    c3.appendChild(sl);
+
+    // Right arrow / stop
+    var c4 = row.insertCell(3);
+    var ra = document.createElement('div');
+    ra.id = 'ra_' + i; ra.innerHTML = '&#9655;';
+    ra.addEventListener('click', (idx => () => rightAnimationArrowClicked(idx))(i));
+    var rs = document.createElement('div');
+    rs.id = 'rs_' + i; rs.innerHTML = '||'; rs.style.display = 'none';
+    rs.addEventListener('click', (idx => () => stopAnimation(idx))(i));
+    c4.appendChild(ra); c4.appendChild(rs);
+
+    // Angle index value
+    var c5 = row.insertCell(4);
+    c5.id = 'av_' + i;
+    c5.textContent = trn.angle_index;
+  }
+}
+
+// --- Hypercube creation ---
+function createHypercube() {
+  hypercube = new Hypercube(mp.n_dimensions);
+  transforms = [];
+  for (var i = 0; i < mp.n_dimensions; ++i)
+    for (var j = i + 1; j < mp.n_dimensions; ++j)
+      transforms.push(new Transform(0.0, i, j));
+  any_animated = false;
+  renderTransformsTable();
+  updateAllAnimateBtns();
+}
+
+// --- Canvas ---
+function refreshCanvasDimensions() {
+  cnv = document.getElementById('cmain');
+  cnv.width = cnv.clientWidth;
+  cnv.height = cnv.clientHeight;
+}
+
+// --- Draw loop ---
+function draw() {
+  var speed = mp.speed / 100;
+  var n_divisions = mp.n_divisions;
+  var accentuation = mp.accentuation / 100;
+
+  for (var i = 0; i < transforms.length; ++i) {
+    var trn = transforms[i];
+
+    if (trn.goal_angle != -1) {
+      trn.angle += (trn.goal_angle - trn.angle) * speed * 2;
+      trn.angle = wrapAngle(trn.angle);
+      if (Math.abs(trn.angle - trn.goal_angle) < 0.001) {
+        trn.angle = trn.goal_angle;
+        trn.goal_angle = -1;
+      }
+      trn.update();
+      var sl = document.getElementById('asl_' + i);
+      var av = document.getElementById('av_' + i);
+      if (sl) sl.value = trn.angle_index;
+      if (av) av.textContent = trn.angle_index;
+    }
+
+    if (trn.animate != 0) {
+      var ps = speed + speed * Math.sin(trn.angle * n_divisions - Math.PI / 2) * accentuation;
+      trn.angle += (trn.animate == -1) ? -ps : ps;
+      trn.angle = wrapAngle(trn.angle);
+      trn.angle_index = angleToIndex(trn.angle);
+      trn.update();
+      var sl = document.getElementById('asl_' + i);
+      var av = document.getElementById('av_' + i);
+      if (sl) sl.value = trn.angle_index;
+      if (av) av.textContent = trn.angle_index;
+    }
+  }
+
+  var ctx = cnv.getContext('2d');
+  ctx.clearRect(0, 0, cnv.width, cnv.height);
+  var w = cnv.width, h = cnv.height;
+  var s = Math.min(w, h) * 0.19;
+  var hc = hypercube;
+  var p2d = [];
+  for (var i = 0; i < hc.points.length; ++i) {
+    var p = hc.points[i].slice(0);
+    for (var j = 0; j < transforms.length; ++j) transforms[j].transform(p);
+    p2d.push([p[0] * s + w / 2, h / 2 - p[1] * s]);
+  }
+  ctx.lineWidth = mp.line_width;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#FFFFFF';
+  ctx.beginPath();
+  for (var i = 0; i < hc.edges.length; ++i) {
+    ctx.moveTo(p2d[hc.edges[i][0]][0], p2d[hc.edges[i][0]][1]);
+    ctx.lineTo(p2d[hc.edges[i][1]][0], p2d[hc.edges[i][1]][1]);
+  }
+  ctx.stroke();
+}
+
+function animateLoop() {
+  draw();
+  requestAnimationFrame(animateLoop);
+}
+
+// --- Init ---
+window.addEventListener('load', function () {
+  refreshCanvasDimensions();
+  createHypercube();
+  window.addEventListener('resize', refreshCanvasDimensions);
+
+  document.getElementById('dim_slider').addEventListener('input', function (e) {
+    mp.n_dimensions = parseInt(e.target.value);
+    document.getElementById('dim_val').textContent = mp.n_dimensions;
+    createHypercube();
+  });
+  document.getElementById('div_slider').addEventListener('input', function (e) {
+    mp.n_divisions = Math.pow(2, parseInt(e.target.value));
+    document.getElementById('div_val').textContent = mp.n_divisions;
+    setAllAnglesToIndex();
+    for (var i = 0; i < transforms.length; ++i) {
+      var sl = document.getElementById('asl_' + i);
+      if (sl) sl.max = mp.n_divisions - 1;
+    }
+  });
+  document.getElementById('speed_slider').addEventListener('input', function (e) {
+    mp.speed = parseInt(e.target.value);
+    document.getElementById('speed_val').textContent = mp.speed;
+  });
+  document.getElementById('acc_slider').addEventListener('input', function (e) {
+    mp.accentuation = parseInt(e.target.value);
+    document.getElementById('acc_val').textContent = mp.accentuation;
+  });
+  document.getElementById('lw_slider').addEventListener('input', function (e) {
+    mp.line_width = parseInt(e.target.value);
+    document.getElementById('lw_val').textContent = mp.line_width;
+  });
+
+  document.getElementById('all_left_btn').addEventListener('click', leftAnimateAll);
+  document.getElementById('all_left_stop').addEventListener('click', stopAllAnimation);
+  document.getElementById('all_right_btn').addEventListener('click', rightAnimateAll);
+  document.getElementById('all_right_stop').addEventListener('click', stopAllAnimation);
+  document.getElementById('randomize_angles_bt').addEventListener('click', randomizeAngles);
+  document.getElementById('reset_angles_bt').addEventListener('click', resetAngles);
+
+  animateLoop();
+});
