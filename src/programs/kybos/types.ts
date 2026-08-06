@@ -5,13 +5,19 @@ export interface Params {
   accentuation: number;
   line_width: number;
   face_alpha: number;
+  glow: number;
+  persp_dist: number;
+  vertex_size: number;
 }
 
 export const INIT: Params = {
   n_dimensions: 4,
   n_divisions: 8,
-  speed: 10,
+  speed: 3,
   accentuation: 95,
   line_width: 4,
   face_alpha: 12,
+  glow: 0,
+  persp_dist: 3,
+  vertex_size: 10,
 };

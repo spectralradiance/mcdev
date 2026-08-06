@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import type { Hypercube } from "./hypercube";
+import type { Polytope } from "./hypercube";
 import type { SphereCurves } from "./hypersphere";
 
 export interface ThreeScene {
@@ -57,8 +57,8 @@ export function createThreeScene(container: HTMLDivElement): ThreeScene {
     renderer, scene, camera, controls,
     spheres: [], edgeCylinders: [],
     sphereGeo: null, cylGeo: null,
-    sphereMat: new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 100 }),
-    cylinderMat: new THREE.MeshPhongMaterial({ color: 0xcccccc, shininess: 40 }),
+    sphereMat: new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0, shininess: 100 }),
+    cylinderMat: new THREE.MeshPhongMaterial({ color: 0xcccccc, emissive: 0xcccccc, emissiveIntensity: 0, shininess: 40 }),
     faceMesh: null,
     // depthWrite:false prevents z-fighting with edges drawn on top
     faceMat: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false }),
@@ -66,7 +66,7 @@ export function createThreeScene(container: HTMLDivElement): ThreeScene {
 }
 
 /** Rebuilds vertex/edge meshes for the given hypercube topology. */
-export function rebuildMeshes(ts: ThreeScene, hc: Hypercube): void {
+export function rebuildMeshes(ts: ThreeScene, hc: Polytope): void {
   ts.spheres.forEach(m => ts.scene.remove(m));
   ts.edgeCylinders.forEach(m => ts.scene.remove(m));
   ts.sphereGeo?.dispose();
