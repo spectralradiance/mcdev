@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import * as THREE from "three";
-import { type Polytope, Cell24, Cell600, Hypercube, Transform, wrap, toIndex, toAngle } from "./hypercube";
+import { type Polytope, NSpherePolytope, Cell24, Cell600, Hypercube, Transform, wrap, toIndex, toAngle } from "./hypercube";
 import { type Params, INIT } from "./types";
 import { type ThreeScene, createThreeScene, rebuildMeshes, rebuildSphereLines } from "./three-scene";
 import { parseUrlState } from "./url-state";
@@ -45,17 +45,18 @@ export default function KybosPage() {
   const rafId = useRef(0);
   const modeRef = useRef<"2d" | "3d">("2d");
   const threeRef = useRef<ThreeScene | null>(null);
-  const shapeRef = useRef<"cube" | "sphere" | "24cell" | "600cell">("cube");
+  const shapeRef = useRef<"cube" | "sphere" | "24cell" | "600cell" | "nsphere">("cube");
   const sphereRef = useRef<SphereCurves | null>(null);
   const cell24Ref = useRef(new Cell24());
   const cell600Ref = useRef(new Cell600());
+  const nspherePlyRef = useRef<NSpherePolytope | null>(null);
   const perspRef = useRef(false);
 
   // React state — only for structural re-renders (slider panel + row list)
   const [params, setParams] = useState<Params>(INIT);
   const [rows, setRows] = useState<Array<{ id: number; i: number; j: number }>>([]);
   const [mode, setMode] = useState<"2d" | "3d">("2d");
-  const [shape, setShape] = useState<"cube" | "sphere" | "24cell" | "600cell">("cube");
+  const [shape, setShape] = useState<"cube" | "sphere" | "24cell" | "600cell" | "nsphere">("cube");
   const [persp, setPersp] = useState(false);
   const [showFaces, setShowFaces] = useState(false);
   const showFacesRef = useRef(false);
@@ -215,17 +216,18 @@ export default function KybosPage() {
     });
   }, []);
 
-  // Projects N-D → 2D for cube (orthographic) or S³ (stereographic).
+  // Zoom factor: persp_dist/5 scales all rendering (default 5 = 1×)
   const renderCanvas = useCallback(() => {
     const cnv = canvasRef.current;
     if (!cnv) return;
     const ctx = cnv.getContext("2d")!;
     ctx.clearRect(0, 0, cnv.width, cnv.height);
     const cx = cnv.width / 2, cy = cnv.height / 2;
+    const zoom = mp.current.persp_dist / 5;
 
     if (shapeRef.current === "sphere" && sphereRef.current) {
       const sphere = sphereRef.current;
-      const S = Math.min(cnv.width, cnv.height) * 0.22;
+      const S = Math.min(cnv.width, cnv.height) * 0.22 * zoom;
       const familyColors = ["#ff5050", "#50ff50", "#5080ff"];
       const [, f1, f2] = sphere.familyStarts;
       ctx.lineWidth = 0.8;
@@ -251,7 +253,7 @@ export default function KybosPage() {
 
     if (!hypercube.current) return;
     const { line_width } = mp.current;
-    const s = Math.min(cnv.width, cnv.height) * 0.19;
+    const s = Math.min(cnv.width, cnv.height) * 0.19 * zoom;
     const hc = hypercube.current;
     const p2d = hc.points.map(pt => {
       const p = pt.slice();
@@ -306,6 +308,7 @@ export default function KybosPage() {
     const ts = threeRef.current;
     if (!ts) return;
     const isSphere = shapeRef.current === "sphere";
+    const zoom = mp.current.persp_dist / 5;
 
     if (isSphere && sphereRef.current) {
       ts.spheres.forEach(m => { m.visible = false; });
@@ -313,7 +316,7 @@ export default function KybosPage() {
       if (ts.faceMesh) ts.faceMesh.visible = false;
       if (ts.sphereLines) {
         ts.sphereLines.visible = true;
-        const S = 2.0;
+        const S = 2.0 * zoom;
         const sphere = sphereRef.current;
         const pos = ts.sphereLines.geometry.attributes.position as THREE.BufferAttribute;
         const arr = pos.array as Float32Array;
@@ -334,7 +337,7 @@ export default function KybosPage() {
       }
     } else if (!isSphere && hypercube.current) {
       if (ts.sphereLines) ts.sphereLines.visible = false;
-      const S = 1.5;
+      const S = 1.5 * zoom;
       const hc = hypercube.current;
       const pts = hc.points.map(pt => {
         const p = pt.slice();
@@ -480,7 +483,15 @@ export default function KybosPage() {
     setParams(p => ({ ...p, [key]: v }));
   };
 
-  const onDim = (v: number) => { mp.current.n_dimensions = v; setParams(p => ({ ...p, n_dimensions: v })); createHypercube(v); };
+  const onDim = (v: number) => {
+    mp.current.n_dimensions = v;
+    setParams(p => ({ ...p, n_dimensions: v }));
+    createHypercube(v);
+    if (shapeRef.current === "nsphere") {
+      const ns = new NSpherePolytope(v);
+      nspherePlyRef.current = ns; hypercube.current = ns; createThreeObjects();
+    }
+  };
   const onDiv = (v: number) => {
     const nd = Math.pow(2, v);
     mp.current.n_divisions = nd;
@@ -509,12 +520,16 @@ export default function KybosPage() {
     }
   };
 
-  const selectShape = (s: "cube" | "sphere" | "24cell" | "600cell") => {
+  const selectShape = (s: "cube" | "sphere" | "24cell" | "600cell" | "nsphere") => {
     shapeRef.current = s;
     setShape(s);
     if (s === "24cell") { hypercube.current = cell24Ref.current; createThreeObjects(); }
     else if (s === "600cell") { hypercube.current = cell600Ref.current; createThreeObjects(); }
     else if (s === "cube") { createHypercube(mp.current.n_dimensions); }
+    else if (s === "nsphere") {
+      const ns = new NSpherePolytope(mp.current.n_dimensions);
+      nspherePlyRef.current = ns; hypercube.current = ns; createThreeObjects();
+    }
   };
 
   const copySettings = () => {
@@ -575,11 +590,12 @@ export default function KybosPage() {
             style={{ background: "black", color: "#aaa", border: "0.5px solid dimgrey", width: "100%", padding: "2px 4px", fontSize: "0.7rem", cursor: "pointer", outline: "none", marginBottom: "2px" }}
           >
             <option value="cube">hypercube</option>
+            <option value="nsphere">n-sphere (great circles)</option>
             <option value="sphere">S³ hypersphere</option>
             <option value="24cell">24-cell (icositetrachoron)</option>
             <option value="600cell">600-cell (hexacosichoron)</option>
           </select>
-          {shape === "cube" && (
+          {(shape === "cube" || shape === "nsphere") && (
             <table style={{ width: "100%", borderCollapse: "collapse" }}><tbody>
               {sr("dimensions", "number of dimensions", 2, 8, params.n_dimensions, params.n_dimensions, onDim)}
             </tbody></table>
@@ -614,7 +630,7 @@ export default function KybosPage() {
           <Toggle label="perspective" on={persp} onToggle={() => { perspRef.current = !perspRef.current; setPersp(p => !p); }} />
           <table style={{ width: "100%", borderCollapse: "collapse" }}><tbody>
             {sr("glow", "glow intensity", 0, 30, params.glow, params.glow, v => setP("glow", v))}
-            {sr("distance", "perspective distance", 2, 8, params.persp_dist, params.persp_dist, v => setP("persp_dist", v))}
+            {sr("zoom", "zoom / perspective distance (higher = larger / less distorted)", 1, 20, params.persp_dist, params.persp_dist, v => setP("persp_dist", v))}
           </tbody></table>
 
           <button onClick={copySettings} style={{

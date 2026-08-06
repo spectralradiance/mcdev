@@ -18,6 +18,6 @@ export const INIT: Params = {
   line_width: 4,
   face_alpha: 12,
   glow: 0,
-  persp_dist: 3,
+  persp_dist: 5,
   vertex_size: 10,
 };

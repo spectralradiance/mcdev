@@ -194,3 +194,29 @@ export class Cell600 implements Polytope {
     this.faces = [];
   }
 }
+
+/**
+ * N-sphere wireframe: one great circle per coordinate-plane pair, forming C(n,2) closed loops.
+ * Responds to the dimensions slider; shows how an n-sphere rotates in n-dimensional space.
+ */
+export class NSpherePolytope implements Polytope {
+  points: number[][];
+  edges: [number, number][];
+  faces: [number, number, number, number][];
+
+  constructor(n: number, steps = 32) {
+    this.points = []; this.edges = []; this.faces = [];
+    let base = 0;
+    for (let i = 0; i < n; i++)
+      for (let j = i + 1; j < n; j++) {
+        for (let k = 0; k < steps; k++) {
+          const t = (k / steps) * 2 * Math.PI;
+          const p = new Array(n).fill(0);
+          p[i] = Math.cos(t); p[j] = Math.sin(t);
+          this.points.push(p);
+        }
+        for (let k = 0; k < steps; k++) this.edges.push([base + k, base + (k + 1) % steps]);
+        base += steps;
+      }
+  }
+}
