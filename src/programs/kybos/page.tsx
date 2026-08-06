@@ -335,6 +335,14 @@ export default function KybosPage() {
     if (saved) {
       Object.assign(mp.current, saved.params);
       setParams({ ...mp.current });
+      if (saved.toggles) {
+        showVerticesRef.current = saved.toggles.vertices;
+        showEdgesRef.current    = saved.toggles.edges;
+        showFacesRef.current    = saved.toggles.faces;
+        setShowVertices(saved.toggles.vertices);
+        setShowEdges(saved.toggles.edges);
+        setShowFaces(saved.toggles.faces);
+      }
     }
 
     createHypercube(mp.current.n_dimensions);
