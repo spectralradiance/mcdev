@@ -13,7 +13,7 @@ const Header = () => {
         <nav className="flex gap-6 text-sm">
           <NavLink to="/" end className={linkClass}>Home</NavLink>
           <NavLink to="/resume" className={linkClass}>Resume</NavLink>
-          <NavLink to="/portfolio" className={linkClass}>Portfolio</NavLink>
+          <NavLink to="/projects" className={linkClass}>Projects</NavLink>
         </nav>
       </div>
     </header>
