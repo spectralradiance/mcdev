@@ -21,6 +21,13 @@ precision highp int;
 #define OBJ_BOX 1
 #define color_type vec3
 
+// Which integrator's render() gets compiled in below — see renderer.ts, which
+// substitutes this and recompiles the program when the engine dropdown changes.
+#define MODE_WHITTED 0
+#define MODE_PATH 1
+#define MODE_NEE_MIS 2
+#define RENDER_MODE __RENDER_MODE__
+
 out vec4 fragColor;
 
 uniform vec2 u_resolution;
@@ -378,11 +385,14 @@ float sampling_pdf(int material_id, vec3 normal, vec3 ray_in, vec3 ray_out) {
 }
 
 // Returns the sampling pdf, a negative sentinel for specular (delta) events, or 0.0 for an invalid sample.
-float sample_ray_and_prob(int material_id, bool going_out, vec3 normal, inout vec3 ray, out color_type weight, inout rand_state rng) {
+// `specular_event` reports which lobe was sampled (reflection/transmission vs. diffuse) — used by
+// the Whitted integrator below to decide whether a bounce continues the ray or terminates it.
+float sample_ray_and_prob(int material_id, bool going_out, vec3 normal, inout vec3 ray, out color_type weight, out bool specular_event, inout rand_state rng) {
     float specular = get_specular(material_id);
     vec3 ray_in = ray;
     float extra_weight = 1.0;
-    if (rand_next_uniform(rng) < specular) {
+    specular_event = rand_next_uniform(rng) < specular;
+    if (specular_event) {
         float alpha = get_roughness(material_id);
         vec3 m = sample_ggx(normal, alpha, rng);
         color_type F = fresnel_schlick_term(clamp(dot(-ray_in, m), 0.0, 1.0), get_reflectivity(material_id));
@@ -436,8 +446,172 @@ bool check_visibility(vec3 pos, vec3 shadow_ray, vec3 normal, vec3 light_normal,
     return shadow_object == 0 || shadow_object == light_object;
 }
 
-// ─── path tracing ─────────────────────────────────────────────────────────────
+// ─── integrators ──────────────────────────────────────────────────────────────
+// The three modes share every helper above; only the top-level light-transport
+// loop differs; see RENDER_MODE at the top of the file.
 
+#if RENDER_MODE == MODE_WHITTED
+
+// Classic (Whitted-style) backward ray tracing: direct lighting via shadow rays,
+// plus recursive mirror/glass bounces. A diffuse hit is lit directly and then
+// terminates the ray — no indirect bounce, so no color bleeding between surfaces.
+// GLSL has no recursion, so a glossy or refractive event still has to pick a
+// single direction stochastically rather than truly splitting the ray in two;
+// that's the one concession to the fragment-shader/accumulation-buffer model.
+vec3 render(vec2 xy, vec2 resolution) {
+    rand_state rng;
+    rand_init(rng, xy, u_frameNumber + u_seed);
+
+    vec3 ray_pos, ray;
+    get_camera_ray(xy, resolution, ray_pos, ray, rng);
+
+    vec3 ray_color = vec3(1.0);
+    vec3 result_color = vec3(0.0);
+    int prev_object = 0;
+    int inside_object = 0;
+    int inside_material = get_material_id(inside_object);
+
+    vec3 light_point = vec3(0.0);
+    vec3 light_normal = vec3(0.0);
+    float light_area_pdf = 0.0;
+    int light_object = select_light(light_point, light_normal, light_area_pdf, rng);
+    color_type light_emission = vec3(0.0);
+    if (light_object > 0) get_emission(get_material_id(light_object), light_emission);
+
+    for (int bounce = 0; bounce <= MAX_BOUNCES; bounce++) {
+        if (bounce > u_maxBounces) break;
+
+        vec4 intersection;
+        color_type scatter_color;
+        float scattering_distance = sample_scattering_distance(inside_material, scatter_color, rng);
+        int which_object = find_intersection(ray_pos, ray, prev_object, inside_object, intersection);
+
+        if (which_object == 0 || intersection.w > scattering_distance) {
+            if (scattering_distance >= 1e10) break; // escaped the scene
+            ray_color *= scatter_color;
+            ray_pos += scattering_distance * ray;
+            ray = sample_scattered_ray(inside_material, ray, rng);
+            prev_object = 0;
+            continue;
+        }
+
+        vec3 normal = intersection.xyz;
+        ray_pos += intersection.w * ray;
+        int material_id = get_material_id(which_object);
+
+        color_type emitted;
+        if (get_emission(material_id, emitted)) {
+            result_color += ray_color * emitted;
+        }
+
+        bool going_out = which_object == inside_object;
+        if (going_out) normal = -normal;
+        vec3 ray_in = ray;
+
+        if (inside_object == 0 && light_object > 0) {
+            vec3 shadow_ray = light_point - ray_pos;
+            float shadow_dist = length(shadow_ray);
+            shadow_ray /= shadow_dist;
+            if (check_visibility(ray_pos, shadow_ray, normal, light_normal, which_object, light_object)) {
+                float change_of_vars = -dot(light_normal, shadow_ray) / (shadow_dist * shadow_dist);
+                float no_scatter = 1.0 - get_scattering_prob(inside_material, shadow_dist);
+                color_type contribution = no_scatter * brdf_cos_weighted(material_id, normal, ray_in, shadow_ray);
+                result_color += ray_color * light_emission * contribution * change_of_vars / light_area_pdf;
+            }
+        }
+
+        color_type brdf_weight;
+        bool specular_event;
+        float p = sample_ray_and_prob(material_id, going_out, normal, ray, brdf_weight, specular_event, rng);
+        if (!specular_event || p == 0.0) break; // diffuse lobe: direct light only, no GI bounce
+
+        float sample_weight = color2prob(brdf_weight) * color2prob(ray_color);
+        if (sample_weight > MAX_SAMPLE_WEIGHT) break;
+        ray_color *= brdf_weight;
+
+        if (dot(ray, normal) < 0.0) {
+            inside_object = going_out ? 0 : which_object;
+            inside_material = get_material_id(inside_object);
+        }
+        prev_object = which_object;
+    }
+
+    return result_color;
+}
+
+#elif RENDER_MODE == MODE_PATH
+
+// Naive unidirectional path tracing: every bounce is importance-sampled from the
+// BSDF alone, with no explicit light sampling. Full global illumination, but
+// noisier for small/bright lights than the NEE+MIS mode below since a path only
+// picks up light when it happens to land on one by chance.
+vec3 render(vec2 xy, vec2 resolution) {
+    rand_state rng;
+    rand_init(rng, xy, u_frameNumber + u_seed);
+
+    vec3 ray_pos, ray;
+    get_camera_ray(xy, resolution, ray_pos, ray, rng);
+
+    vec3 ray_color = vec3(1.0);
+    vec3 result_color = vec3(0.0);
+    int prev_object = 0;
+    int inside_object = 0;
+    int inside_material = get_material_id(inside_object);
+
+    for (int bounce = 0; bounce <= MAX_BOUNCES; bounce++) {
+        if (bounce > u_maxBounces) break;
+
+        vec4 intersection;
+        color_type scatter_color;
+        float scattering_distance = sample_scattering_distance(inside_material, scatter_color, rng);
+        int which_object = find_intersection(ray_pos, ray, prev_object, inside_object, intersection);
+
+        if (which_object == 0 || intersection.w > scattering_distance) {
+            if (scattering_distance >= 1e10) break; // escaped the scene
+            ray_color *= scatter_color;
+            ray_pos += scattering_distance * ray;
+            ray = sample_scattered_ray(inside_material, ray, rng);
+            prev_object = 0;
+            continue;
+        }
+
+        vec3 normal = intersection.xyz;
+        ray_pos += intersection.w * ray;
+        int material_id = get_material_id(which_object);
+
+        color_type emitted;
+        if (get_emission(material_id, emitted)) {
+            result_color += ray_color * emitted;
+        }
+
+        bool going_out = which_object == inside_object;
+        if (going_out) normal = -normal;
+
+        color_type brdf_weight;
+        bool specular_event;
+        float pdf = sample_ray_and_prob(material_id, going_out, normal, ray, brdf_weight, specular_event, rng);
+        if (pdf == 0.0) break;
+
+        float sample_weight = color2prob(brdf_weight) * color2prob(ray_color);
+        if (sample_weight > MAX_SAMPLE_WEIGHT) break;
+        ray_color *= brdf_weight;
+
+        if (dot(ray, normal) < 0.0) {
+            inside_object = going_out ? 0 : which_object;
+            inside_material = get_material_id(inside_object);
+        }
+        prev_object = which_object;
+    }
+
+    return result_color;
+}
+
+#else // MODE_NEE_MIS
+
+// Path tracing with next-event estimation and multiple importance sampling: at
+// each bounce, both continue the BSDF-sampled path AND shoot a shadow ray at an
+// explicitly sampled light point, weighting the two strategies so neither double-
+// counts. Converges much faster than plain path tracing for small/bright lights.
 vec3 render(vec2 xy, vec2 resolution) {
     rand_state rng;
     rand_init(rng, xy, u_frameNumber + u_seed);
@@ -501,7 +675,8 @@ vec3 render(vec2 xy, vec2 resolution) {
 
         vec3 ray_in = ray;
         color_type brdf_weight;
-        last_surface_p = sample_ray_and_prob(material_id, going_out, normal, ray, brdf_weight, rng);
+        bool specular_event;
+        last_surface_p = sample_ray_and_prob(material_id, going_out, normal, ray, brdf_weight, specular_event, rng);
 
         float sample_weight = color2prob(brdf_weight) * color2prob(ray_color);
         if (last_surface_p == 0.0 || sample_weight > MAX_SAMPLE_WEIGHT) break;
@@ -538,6 +713,8 @@ vec3 render(vec2 xy, vec2 resolution) {
 
     return result_color;
 }
+
+#endif
 
 void main() {
     vec3 cur_color = render(gl_FragCoord.xy, u_resolution);
