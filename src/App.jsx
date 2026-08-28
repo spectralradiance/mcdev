@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Profile from './components/Profile';
 import Projects from './components/Projects';
 import Glossary from './components/Glossary';
+import Learn from './components/Learn';
 import WoodlandFortressPage from './programs/woodlandfortress/page';
 import KybosPage from './programs/kybos/page';
 import ApaxPage from './programs/apax/page';
@@ -91,6 +92,7 @@ function App() {
           <Route path="/" element={<Contained><HomePage /></Contained>} />
           <Route path="/projects" element={<Contained><Projects /></Contained>} />
           <Route path="/glossary" element={<Contained><Glossary /></Contained>} />
+          <Route path="/learn" element={<Contained><Learn /></Contained>} />
           <Route path="/resume" element={<Contained><Profile /></Contained>} />
           <Route path="/programs" element={<Navigate to="/projects" replace />} />
         </Routes>
