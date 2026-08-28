@@ -4,8 +4,8 @@
     {
       "name": "mcdev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start"],
-      "port": 5173
+      "runtimeArgs": ["run", "start", "--", "--port", "5180", "--strictPort"],
+      "port": 5180
     }
   ]
 }
