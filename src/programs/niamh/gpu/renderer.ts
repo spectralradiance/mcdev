@@ -4,6 +4,7 @@
 // drive its render loop.
 
 import type { SceneDescription } from "../scene";
+import { RENDER_MODE_CODE, type RenderEngine } from "./engines";
 import { MAX_BOUNCES, MAX_LIGHTS, MAX_MATERIALS, MAX_OBJECTS } from "./limits";
 import { packScene, type PackedScene } from "./packScene";
 import { add, cross, length, normalize, scale, sub, type Vec3 } from "./vec3";
@@ -53,7 +54,8 @@ interface OrbitState {
 
 export class PathTracerRenderer {
     private readonly gl: WebGL2RenderingContext;
-    private readonly pathTracerProgram: WebGLProgram;
+    private readonly fullscreenVertShader: WebGLShader;
+    private pathTracerProgram: WebGLProgram;
     private readonly displayProgram: WebGLProgram;
     private readonly vao: WebGLVertexArrayObject;
     private readonly accumTextures: [WebGLTexture, WebGLTexture];
@@ -66,6 +68,7 @@ export class PathTracerRenderer {
     private frameNumber = 0;
     private seed = 0;
     private scene: PackedScene | null = null;
+    private engine: RenderEngine = "nee-mis";
 
     private orbit: OrbitState = { target: [0, 0, 0], yaw: 0, pitch: 0, distance: 500, up: WORLD_UP };
     private dragging = false;
@@ -104,16 +107,9 @@ export class PathTracerRenderer {
         this.gl = gl;
         this.canvas = canvas;
 
-        const pathTracerSrc = pathTracerSrcTemplate
-            .replace(/__MAX_OBJECTS__/g, String(MAX_OBJECTS))
-            .replace(/__MAX_MATERIALS__/g, String(MAX_MATERIALS))
-            .replace(/__MAX_LIGHTS__/g, String(MAX_LIGHTS))
-            .replace(/__MAX_BOUNCES__/g, String(MAX_BOUNCES));
-
-        const vs = compileShader(gl, gl.VERTEX_SHADER, vertSrc);
-        const displayVs = compileShader(gl, gl.VERTEX_SHADER, vertSrc);
-        this.pathTracerProgram = linkProgram(gl, vs, compileShader(gl, gl.FRAGMENT_SHADER, pathTracerSrc));
-        this.displayProgram = linkProgram(gl, displayVs, compileShader(gl, gl.FRAGMENT_SHADER, displaySrc));
+        this.fullscreenVertShader = compileShader(gl, gl.VERTEX_SHADER, vertSrc);
+        this.pathTracerProgram = this.compilePathTracerProgram(this.engine);
+        this.displayProgram = linkProgram(gl, this.fullscreenVertShader, compileShader(gl, gl.FRAGMENT_SHADER, displaySrc));
 
         this.vao = gl.createVertexArray()!;
 
@@ -129,6 +125,32 @@ export class PathTracerRenderer {
         canvas.addEventListener("pointerup", this.onPointerUp);
         canvas.addEventListener("pointercancel", this.onPointerUp);
         canvas.addEventListener("wheel", this.onWheel, { passive: false });
+    }
+
+    private compilePathTracerProgram(engine: RenderEngine): WebGLProgram {
+        const pathTracerSrc = pathTracerSrcTemplate
+            .replace(/__MAX_OBJECTS__/g, String(MAX_OBJECTS))
+            .replace(/__MAX_MATERIALS__/g, String(MAX_MATERIALS))
+            .replace(/__MAX_LIGHTS__/g, String(MAX_LIGHTS))
+            .replace(/__MAX_BOUNCES__/g, String(MAX_BOUNCES))
+            .replace(/__RENDER_MODE__/g, String(RENDER_MODE_CODE[engine]));
+        return linkProgram(this.gl, this.fullscreenVertShader, compileShader(this.gl, this.gl.FRAGMENT_SHADER, pathTracerSrc));
+    }
+
+    get currentEngine(): RenderEngine {
+        return this.engine;
+    }
+
+    setEngine(engine: RenderEngine): void {
+        if (engine === this.engine) return;
+        const gl = this.gl;
+        const newProgram = this.compilePathTracerProgram(engine);
+        gl.deleteProgram(this.pathTracerProgram);
+        this.uniformLocations.delete(this.pathTracerProgram);
+        this.pathTracerProgram = newProgram;
+        this.engine = engine;
+        if (this.scene) this.uploadStaticUniforms(this.scene);
+        this.applyOrbitCamera();
     }
 
     private createAccumTexture(): WebGLTexture {
