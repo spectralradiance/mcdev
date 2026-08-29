@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const codepenEmbedUrl = (url) => {
   return url.replace('/pen/', '/embed/') + '?default-tab=result&theme-id=dark';
@@ -31,11 +32,43 @@ const ProjectCard = ({ project, onClick }) => {
   );
 };
 
+const ImageModal = ({ src, alt, onClose }) => {
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+    >
+      <button
+        onClick={onClose}
+        aria-label="Close"
+        className="absolute top-4 right-4 text-gray-300 hover:text-white text-3xl leading-none"
+      >
+        ×
+      </button>
+      <img
+        src={src}
+        alt={alt}
+        onClick={(event) => event.stopPropagation()}
+        className="max-w-full max-h-full rounded-lg object-contain"
+      />
+    </div>
+  );
+};
+
 const ProjectDetail = ({ project, onBack }) => {
   const { title, description, embed } = project;
   const isGitHub = embed?.includes('github.com');
   const isCodePen = embed?.includes('codepen.io');
   const embedUrl = isCodePen ? codepenEmbedUrl(embed) : !isGitHub ? embed : null;
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   return (
     <div>
@@ -57,11 +90,19 @@ const ProjectDetail = ({ project, onBack }) => {
 
       {project.image && (
         <div className="mb-8">
-          <img
-            src={project.image}
-            alt={title}
-            className="rounded-lg w-full object-contain bg-gray-900 border border-gray-800"
-          />
+          <button
+            onClick={() => setLightboxOpen(true)}
+            className="rounded-lg overflow-hidden border border-gray-800 hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            <img
+              src={project.image}
+              alt={title}
+              className="w-48 h-48 object-cover bg-gray-900"
+            />
+          </button>
+          {lightboxOpen && (
+            <ImageModal src={project.image} alt={title} onClose={() => setLightboxOpen(false)} />
+          )}
         </div>
       )}
 
@@ -112,7 +153,10 @@ const ProjectDetail = ({ project, onBack }) => {
   );
 };
 
+const isInternalPage = (embed) => typeof embed === 'string' && embed.startsWith('/');
+
 const Projects = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -146,12 +190,20 @@ const Projects = () => {
     return <ProjectDetail project={selected} onBack={() => setSelected(null)} />;
   }
 
+  const handleSelect = (project) => {
+    if (isInternalPage(project.embed)) {
+      navigate(project.embed);
+      return;
+    }
+    setSelected(project);
+  };
+
   return (
     <section>
       <h2 className="text-3xl font-bold mb-6 border-b border-gray-700 pb-2">Projects</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => (
-          <ProjectCard key={project.title} project={project} onClick={setSelected} />
+          <ProjectCard key={project.title} project={project} onClick={handleSelect} />
         ))}
       </div>
     </section>
