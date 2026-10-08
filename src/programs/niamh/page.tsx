@@ -13,6 +13,8 @@ import {
 import { PathTracerRenderer } from "./gpu/renderer";
 import { defaultDisplay, type DisplaySettings, type ToneMap } from "./display";
 import { defaultRealtime, type RealtimeOptions } from "./webgpu/realtime";
+import type { Comparison } from "./webgpu/compare";
+import { ComparisonPanel } from "./ComparisonPanel";
 import { webGpuAvailable, WebGpuRenderer } from "./webgpu/renderer";
 
 // What the page needs from either backend.
@@ -63,6 +65,12 @@ const NiamhPage: React.FC = () => {
   const [channel, setChannel] = useState(0);
   const [sortMaterials, setSortMaterials] = useState(true);
   const [alive, setAlive] = useState<number[]>([]);
+
+  // CPU comparison: the result, whether one is running, and why the last one failed.
+  const [comparison, setComparison] = useState<Comparison | null>(null);
+  const [comparing, setComparing] = useState(false);
+  const [compareError, setCompareError] = useState<string | null>(null);
+  const [cpuSpp, setCpuSpp] = useState(32);
   const settingsRef = useRef({ bounces, renderScale, display, realtime, running, channel, sortMaterials });
   settingsRef.current = { bounces, renderScale, display, realtime, running, channel, sortMaterials };
   const resizeRef = useRef<(() => void) | null>(null);
@@ -184,7 +192,27 @@ const NiamhPage: React.FC = () => {
   glEngineRef.current = glEngine;
   gpuEngineRef.current = gpuEngine;
 
+  const runComparison = async () => {
+    const gpu = webgpuRef.current;
+    if (!gpu || comparing) return;
+    setComparing(true);
+    setCompareError(null);
+    // Let the button repaint as disabled first: the CPU render blocks the page until it finishes.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    try {
+      setComparison(await gpu.compareWithCpu(cpuSpp));
+    } catch (e) {
+      setComparison(null);
+      setCompareError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setComparing(false);
+    }
+  };
+
   const selectScene = (id: string) => {
+    // A comparison is of one scene; it would mislead once the scene changes.
+    setComparison(null);
+    setCompareError(null);
     setSceneId(id);
     const scene = (SCENES.find((x) => x.id === id) ?? SCENES[0]).scene;
     webgpuRef.current?.setScene(scene);
@@ -306,6 +334,28 @@ const NiamhPage: React.FC = () => {
                 ))}
               </span>
             )}
+            <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <button
+                type="button"
+                onClick={runComparison}
+                disabled={comparing}
+                style={{ ...selectStyle, opacity: comparing ? 0.6 : 1 }}
+                title="Render this scene with rtadvanced's CPU path tracer (one thread, in WebAssembly) and compare it with the GPU"
+              >
+                {comparing ? "Comparing…" : "Compare with CPU"}
+              </button>
+              <label style={labelStyle}>
+                <input
+                  type="number"
+                  min={1}
+                  max={256}
+                  value={cpuSpp}
+                  onChange={(e) => setCpuSpp(Math.max(1, Math.min(256, Number(e.target.value) || 1)))}
+                  style={{ ...selectStyle, width: 56 }}
+                />
+                spp
+              </label>
+            </span>
           </div>
         )}
         {backend === "webgpu" && gpuEngine === "realtime" && (
@@ -362,6 +412,10 @@ const NiamhPage: React.FC = () => {
           )}
         </div>
         <div ref={statsRef} style={{ color: "#666", fontSize: "0.68rem", fontFamily: "monospace", marginTop: "0.4rem" }} />
+        {backend === "webgpu" && compareError && (
+          <p style={{ color: "#f66", fontSize: "0.72rem", margin: "0.5rem 0 0" }}>{compareError}</p>
+        )}
+        {backend === "webgpu" && comparison && <ComparisonPanel comparison={comparison} display={display} />}
         {notes.length > 0 && (
           <ul style={{ color: "#a80", fontSize: "0.72rem", margin: "0.5rem 0 0", paddingLeft: "1.2rem" }}>
             {notes.map((n) => (

@@ -39,6 +39,9 @@ export interface SceneData {
   materialExtBase?: number;
   // Where the sky table starts, in vec4 units; undefined when the scene has no sky (the background is constant).
   skyBase?: number;
+  // True when the scene was loaded with its sphere lights switched off and put back afterwards. What rtadvanced holds
+  // in memory is then the patched scene, so its CPU renderer can't be used to check this one.
+  sphereLightsPatched?: boolean;
   materialCount: number;
 }
 
@@ -121,7 +124,7 @@ export class RendererB {
     const patched = '/scenes/__sphere-lights.json';
     this.module.FS.writeFile(patched, JSON.stringify(scene));
     if (!this.call('rt_load', patched)) throw new Error(this.module.UTF8ToString(this.call('rt_error')));
-    return this.collect({ radiance });
+    return { ...this.collect({ radiance }), sphereLightsPatched: true };
   }
 
   private collect(sphereLights?: SphereLights): SceneData {
