@@ -21,7 +21,7 @@ export interface PackedScene {
   objectType: Int32Array;
   objectPosition: Float32Array;
   objectRotation: Float32Array; // column-major mat3 per object
-  objectParams: Float32Array; // plane normal, or box half-size
+  objectParams: Float32Array; // plane normal, box half-size, or (sphere radius, 0, 0)
   objectMaterial: Int32Array;
 
   materialCount: number;
@@ -82,6 +82,14 @@ export function packScene(scene: SceneDescription): PackedScene {
       const [nx, ny, nz] = obj.normal;
       const len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
       objectParams.set([nx / len, ny / len, nz / len], i * 3);
+    } else if (obj.type === "sphere") {
+      objectType[i] = 2;
+      objectRotation.set(IDENTITY_MAT3, i * 9);
+      objectParams.set([obj.radius, 0, 0], i * 3);
+      const material = materials[obj.material];
+      if (material.emission && material.emission.some((c) => c > 0)) {
+        throw new Error(`Object ${i} is an emissive sphere; only boxes can be area lights.`);
+      }
     } else {
       objectType[i] = 1;
       objectRotation.set(rotationY(obj.rotationDeg ?? 0), i * 9);
