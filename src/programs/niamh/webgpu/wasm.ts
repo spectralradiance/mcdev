@@ -2,6 +2,7 @@
 // reimplemented here; this file only copies rtadvanced's packed arrays into one buffer the GPU can read.
 
 import { restoreSphereLights, sphereCentresAndRadii, type SphereLights } from './lights';
+import { buildTextureTables, type SceneJson } from './textures';
 import createModule, { type RendererBModule } from './wasm/rtwasm.mjs';
 
 // Must match the packed::Buffer enum in rtadvanced/src/gpu/pack.h.
@@ -34,6 +35,10 @@ export interface SceneData {
   mediaBase?: number;
   // Where the sphere table (centre, radius per sphere) starts, in vec4 units; sphere lights are sampled from it.
   sphereBase?: number;
+  // Where the texture table and the per-material texture bindings start, in vec4 units; undefined when no material
+  // uses a texture the GPU can evaluate.
+  textureBase?: number;
+  materialTexBase?: number;
   materialCount: number;
 }
 
@@ -59,9 +64,37 @@ export class RendererB {
     if (!this.call('rt_load', path)) {
       const message = this.module.UTF8ToString(this.call('rt_error'));
       if (!message.includes(SPHERE_LIGHT_ERROR)) throw new Error(message);
-      return this.loadWithSphereLights(path);
+      return this.withSceneTextures(path, this.loadWithSphereLights(path));
     }
-    return this.collect();
+    return this.withSceneTextures(path, this.collect());
+  }
+
+  // rtadvanced packs a textured material with its base colour only, so the textures come from the scene file.
+  private withSceneTextures(path: string, scene: SceneData): SceneData {
+    let json: SceneJson;
+    try {
+      json = JSON.parse(this.module.FS.readFile(path, { encoding: 'utf8' }));
+    } catch {
+      return scene;
+    }
+    const names = Object.keys(json.materials ?? {}).sort();
+    // The loader indexes materials in sorted-name order; if the counts disagree that assumption is already wrong.
+    if (names.length !== scene.materialCount) return scene;
+    const tables = buildTextureTables(json, names);
+    const unsupported = scene.unsupported.filter((text) => !text.startsWith('textures ('));
+    // What the flag lumped together as "textures" is now either handled or named precisely.
+    if (!tables.used && tables.unsupported.length === 0) return { ...scene, unsupported };
+    const words = new Uint32Array(scene.words.length + tables.data.length);
+    words.set(scene.words);
+    words.set(new Uint32Array(tables.data.buffer), scene.words.length);
+    const textureBase = scene.words.length / 4;
+    return {
+      ...scene,
+      words,
+      unsupported: [...unsupported, ...tables.unsupported],
+      textureBase: tables.used ? textureBase : undefined,
+      materialTexBase: tables.used ? textureBase + tables.bindingsOffset : undefined,
+    };
   }
 
   private loadWithSphereLights(path: string): SceneData {
