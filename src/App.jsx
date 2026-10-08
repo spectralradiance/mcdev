@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Link, Navigate, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Profile from './components/Profile';
 import Projects from './components/Projects';
@@ -12,22 +12,23 @@ import NiamhPage from './programs/niamh/page';
 function HomePage() {
   return (
     <main className="space-y-20 pb-8">
-      <section className="grid items-center gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,4fr)] md:gap-14">
-        <img
-          src="/profile-photo.jpg"
-          alt="Matthew Cooper in a misty forest"
-          className="aspect-[4/5] w-full max-h-[42rem] object-cover object-center border border-gray-800"
-        />
-        <div>
-          <h1 className="text-4xl font-bold sm:text-5xl">Matthew Cooper</h1>
-          <p className="mt-3 text-xl font-light leading-relaxed text-gray-300">
-            Full-Stack Engineer · Systems &amp; Data Specialist · Educator
-          </p>
-          <p className="mt-6 leading-relaxed text-gray-400">
-            I’m a Portland-based software engineer with over a decade of experience across web development,
-            database management, and technical instruction. I build flexible web architecture, custom data
-            integrations, and scalable technical infrastructure for organizations.
-          </p>
+      <section className="max-w-2xl pt-8">
+        <h1 className="text-4xl font-bold sm:text-6xl">Matthew Cooper</h1>
+        <p className="mt-4 text-xl font-light leading-relaxed text-gray-300">
+          Software Engineer · Data &amp; AI Systems · Educator
+        </p>
+        <p className="mt-6 leading-relaxed text-gray-400">
+          I’m a Portland-based software engineer with 15+ years across web development, data pipelines, AI
+          applications, and CRM integrations, plus four years teaching full-stack Python. I build and connect
+          the systems organizations run on, from WordPress and React front ends to Django and FastAPI
+          services, HubSpot and Airtable data, and local and API-based LLM pipelines.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          <Link to="/resume" className="text-white underline underline-offset-4 hover:text-gray-300">Resume</Link>
+          <Link to="/projects" className="text-white underline underline-offset-4 hover:text-gray-300">Projects</Link>
+          <a href="https://github.com/spectralradiance" className="text-gray-400 hover:text-white">GitHub</a>
+          <a href="https://www.linkedin.com/in/matthewrussellcooper/" className="text-gray-400 hover:text-white">LinkedIn</a>
+          <a href="mailto:matthewrcooper4@gmail.com" className="text-gray-400 hover:text-white">Email</a>
         </div>
       </section>
 
