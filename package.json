@@ -21,7 +21,8 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run src/programs"
   },
   "eslintConfig": {
     "extends": [
@@ -45,6 +46,7 @@
     "@tailwindcss/vite": "^4.3.2",
     "@vitejs/plugin-react": "^6.0.3",
     "tailwindcss": "^4.3.2",
-    "vite": "^8.1.3"
+    "vite": "^8.1.3",
+    "vitest": "^5.0.3"
   }
 }
