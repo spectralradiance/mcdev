@@ -105,7 +105,9 @@ fn primaryAt(pixel: u32) -> Primary {
   p.valid = false;
   if (h.y == NO_HIT) { return p; }
   let path = loadPath(pixel);
-  p.surface = surfaceAt(Hit(bitcast<f32>(h.x), h.y, bitcast<vec2f>(h.zw)), path.origin, path.direction);
+  // A primary hit, so the camera ray's cone is the footprint.
+  p.surface = surfaceAt(Hit(bitcast<f32>(h.x), h.y, bitcast<vec2f>(h.zw)), path.origin, path.direction,
+                        coneWidthAt(bitcast<f32>(h.x), 0u));
   p.material = surfaceMaterial(p.surface);
   p.frame = frameFromNormal(p.surface.shadingNormal);
   p.wo = toLocal(p.frame, -path.direction);

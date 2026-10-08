@@ -186,8 +186,7 @@ fn mixDefinition(material: u32) -> vec4f { return scene[params.materialExtBase +
 // averages the jittered samples over each pixel, which is the box filter the CPU applies analytically.
 
 const TEXTURE_CHECKER = 0u;
-const BUMP_WIDTH = 0.002;  // world-space footprint that fades fine noise octaves out of a bump
-const BUMP_DELTA = 0.001;  // finite-difference step, half the footprint
+const BUMP_WIDTH = 0.002;  // world-space footprint for a bump where the ray cone isn't tracked
 
 // (albedo texture + 1, bump texture + 1, bump scale, 0); all zero when the scene has no textures.
 fn textureBinding(material: u32) -> vec4f {
@@ -244,15 +243,36 @@ fn fractalNoise(point: vec3f, width: f32) -> f32 {
   return sum + amplitude * (octaves - f32(whole)) * gradientNoise(p);
 }
 
-fn evalTexture(texture: u32, uv: vec2f, point: vec3f, width: f32) -> vec3f {
+// The fraction of [x - r, x + r] where floor(x) is odd, from the closed-form integral of that square wave.
+fn oddIntegral(y: f32) -> f32 {
+  let half = y / 2.0;
+  let whole = floor(half);
+  return whole + 2.0 * max(half - whole - 0.5, 0.0);
+}
+
+fn oddFraction(x: f32, r: f32) -> f32 {
+  if (floor(x - r) == floor(x + r)) { return select(0.0, 1.0, isOdd(x)); }
+  return (oddIntegral(x + r) - oddIntegral(x - r)) / (2.0 * r);
+}
+
+// A checker cell is the second colour when exactly one coordinate has an odd floor; box filtering is separable.
+fn checkerWeight(st: vec2f, radius: f32) -> f32 {
+  if (radius <= 0.0) { return select(0.0, 1.0, isOdd(st.x) != isOdd(st.y)); }
+  let s = oddFraction(st.x, radius);
+  let t = oddFraction(st.y, radius);
+  return s + t - 2.0 * s * t;
+}
+
+// width is the ray cone's world-space footprint at the hit and uvWidth the same in uv units; both are zero where the
+// footprint isn't tracked (every bounce after the camera ray), which gives the unfiltered texture.
+fn evalTexture(texture: u32, uv: vec2f, point: vec3f, width: f32, uvWidth: f32) -> vec3f {
   let base = params.textureBase + 3u * texture;
   let header = scene[base];
   let color1 = scene[base + 1u].xyz;
   let color2 = scene[base + 2u].xyz;
   let scale = header.y;
   if (u32(header.x) == TEXTURE_CHECKER) {
-    let st = uv * scale;
-    return select(color1, color2, isOdd(st.x) != isOdd(st.y));
+    return mix(color1, color2, checkerWeight(uv * scale, 0.5 * uvWidth * scale));
   }
   let n = fractalNoise(point * scale, width * scale);
   return mix(color1, color2, clamp(0.5 + 0.5 * n, 0.0, 1.0));
@@ -262,16 +282,20 @@ fn luminance(c: vec3f) -> f32 { return dot(c, vec3f(0.2126, 0.7152, 0.0722)); }
 
 // Bump mapping from the noise's gradient in world space: a displaced surface's normal is the outward normal minus the
 // height's gradient across the tangent plane (what applyBump computes from uv derivatives on the CPU).
-fn bumpedNormal(material: u32, point: vec3f, outward: vec3f, frontFace: bool) -> vec3f {
+fn bumpedNormal(material: u32, point: vec3f, outward: vec3f, frontFace: bool, footprint: f32) -> vec3f {
   let binding = textureBinding(material);
   if (binding.y == 0.0) { return select(-outward, outward, frontFace); }
   let texture = u32(binding.y) - 1u;
   let t1 = frameFromNormal(outward).s;
   let t2 = cross(outward, t1);
-  let h0 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point, BUMP_WIDTH));
-  let h1 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point + t1 * BUMP_DELTA, BUMP_WIDTH));
-  let h2 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point + t2 * BUMP_DELTA, BUMP_WIDTH));
-  let bent = normalize(outward - t1 * ((h1 - h0) / BUMP_DELTA) - t2 * ((h2 - h0) / BUMP_DELTA));
+  // Finite differences across half the footprint, so bumps smaller than a pixel smooth out, as the CPU does. Where the
+  // footprint isn't tracked, a fixed small one stands in.
+  let width = select(BUMP_WIDTH, footprint, footprint > 0.0);
+  let delta = max(0.5 * width, 1e-4);
+  let h0 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point, width, 0.0));
+  let h1 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point + t1 * delta, width, 0.0));
+  let h2 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point + t2 * delta, width, 0.0));
+  let bent = normalize(outward - t1 * ((h1 - h0) / delta) - t2 * ((h2 - h0) / delta));
   return select(-bent, bent, frontFace);
 }
 
@@ -451,16 +475,26 @@ struct Surface {
   frontFace: bool,
   material: u32,
   uv: vec2f,
-  dpdu: vec3f,  // where u increases, for brushed metal; unnormalised
+  dpdu: vec3f,  // where u increases, in world units per unit of u
+  width: f32,    // the ray cone's world-space footprint here, 1 / cos wider on a tilted surface; 0 if untracked
+  uvWidth: f32,  // the same in uv units
 }
 
-fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
+// The ray cone the camera ray carries to a hit: one pixel's spread times the distance. The CPU keeps widening it along
+// the path; here only camera rays have a footprint, and later bounces get none (full texture detail).
+fn coneWidthAt(t: f32, depth: u32) -> f32 {
+  if (depth != 0u) { return 0.0; }
+  return t * 2.0 * scene[params.viewBase].w / f32(params.height);
+}
+
+fn surfaceAt(hit: Hit, o: vec3f, d: vec3f, coneWidth: f32) -> Surface {
   let p = primitiveAt(hit.primitive);
   let point = o + d * hit.t;
   var outward: vec3f;
   var interpolated = vec3f(0.0);
   var uv = hit.uv;  // quads and triangles: the intersection's (u, v) or barycentrics
   var dpdu = vec3f(1.0, 0.0, 0.0);
+  var dpdv = vec3f(0.0, 1.0, 0.0);
   if (p.x == SPHERE) {
     // The inverse transpose: toObject's transpose applied to the object-space point.
     let base = params.sphereBase + 3u * p.y;
@@ -468,22 +502,34 @@ fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
     outward = normalize(scene[base].xyz * local.x + scene[base + 1u].xyz * local.y + scene[base + 2u].xyz * local.z);
     uv = vec2f((atan2(local.z, local.x) + PI) / (2.0 * PI), acos(clamp(local.y, -1.0, 1.0)) / PI);
     // u runs around the y axis in object space; carry that direction to world space like a normal.
-    let around = vec3f(-local.z, 0.0, local.x);
-    dpdu = scene[base].xyz * around.x + scene[base + 1u].xyz * around.y + scene[base + 2u].xyz * around.z;
+    // With uniform scale, A^-1 = r^2 A^T, so r^2 times the transpose gives world lengths.
+    let r2 = pow(sphereInfo(p.y).w, 2.0);
+    let around = vec3f(-local.z, 0.0, local.x) * (2.0 * PI);
+    let sinTheta = max(sqrt(local.x * local.x + local.z * local.z), 1e-6);
+    let down = vec3f(local.y * local.x / sinTheta, -sinTheta, local.y * local.z / sinTheta) * PI;
+    dpdu = (scene[base].xyz * around.x + scene[base + 1u].xyz * around.y + scene[base + 2u].xyz * around.z) * r2;
+    dpdv = (scene[base].xyz * down.x + scene[base + 1u].xyz * down.y + scene[base + 2u].xyz * down.z) * r2;
   } else if (p.x == QUAD) {
     outward = normalize(scene[params.quadBase + 4u * p.y + 3u].xyz);
     dpdu = scene[params.quadBase + 4u * p.y + 1u].xyz;
+    dpdv = scene[params.quadBase + 4u * p.y + 2u].xyz;
   } else {
     let base = params.triangleBase + 6u * p.y;
     let p0 = scene[base];
     outward = normalize(cross(scene[base + 1u].xyz - p0.xyz, scene[base + 2u].xyz - p0.xyz));
     dpdu = scene[base + 1u].xyz - p0.xyz;
+    dpdv = scene[base + 2u].xyz - p0.xyz;
     if (p0.w > 0.0) {
       let b0 = 1.0 - hit.uv.x - hit.uv.y;
       interpolated = normalize(scene[base + 3u].xyz * b0 + scene[base + 4u].xyz * hit.uv.x + scene[base + 5u].xyz * hit.uv.y);
     }
   }
   let frontFace = dot(d, outward) < 0.0;
+  // The cone's cross-section stretches by 1 / cos on a tilted surface, and |dpdu x dpdv| is world area per unit of uv
+  // area, so its square root turns world lengths into uv lengths.
+  let width = coneWidth / max(abs(dot(d, outward)), 1e-3);
+  let uvArea = length(cross(dpdu, dpdv));
+  let uvWidth = select(0.0, width / sqrt(uvArea), uvArea > 0.0);
   let normal = select(-outward, outward, frontFace);
   var shading = normal;
   if (dot(interpolated, interpolated) > 0.0) {
@@ -496,7 +542,7 @@ fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
     let mix = mixDefinition(material);
     var amount = mix.z;
     if (mix.w != 0.0 && params.textureBase != 0u) {
-      amount = luminance(evalTexture(u32(mix.w) - 1u, uv, point, 0.0));
+      amount = luminance(evalTexture(u32(mix.w) - 1u, uv, point, width, uvWidth));
     }
     var h = 0x6d6978u;
     h = mixHash(h, bitcast<u32>(point.x));
@@ -505,8 +551,8 @@ fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
     let r = f32(pcgHash(h) >> 8u) * (1.0 / 16777216.0);
     material = u32(select(mix.x, mix.y, r < amount));
   }
-  shading = bumpedNormal(material, point, select(-shading, shading, frontFace), frontFace);
-  return Surface(point, normal, shading, frontFace, material, uv, dpdu);
+  shading = bumpedNormal(material, point, select(-shading, shading, frontFace), frontFace, width);
+  return Surface(point, normal, shading, frontFace, material, uv, dpdu, width, uvWidth);
 }
 
 // The material at a surface point: its constant parameters, with the albedo replaced by its texture where it has one.
@@ -514,7 +560,7 @@ fn surfaceMaterial(surface: Surface) -> Material {
   var material = materialAt(surface.material);
   let binding = textureBinding(surface.material);
   if (binding.x != 0.0) {
-    material.albedo = evalTexture(u32(binding.x) - 1u, surface.uv, surface.point, 0.0);
+    material.albedo = evalTexture(u32(binding.x) - 1u, surface.uv, surface.point, surface.width, surface.uvWidth);
   }
   if (material.kind == CONDUCTOR && isAnisotropic(material)) {
     // Where u points, in the plane of the frame the integrator builds from the shading normal.
@@ -1178,7 +1224,7 @@ fn extend(@builtin(global_invocation_id) id: vec3u) {
     if (pending) { recordFeatures(&path, sky, vec3f(0.0)); }
     return;
   }
-  let surface = surfaceAt(hit, path.origin, path.direction);
+  let surface = surfaceAt(hit, path.origin, path.direction, coneWidthAt(hit.t, path.depth));
   let material = surfaceMaterial(surface);
   if (path.depth == 0u) { features[2u * path.pixel].w += hit.t; }
   if (material.kind == EMISSIVE) {
@@ -1223,7 +1269,8 @@ fn shade(@builtin(global_invocation_id) id: vec3u) {
   let i = queues[select(ANY_QUEUE, MATERIAL_QUEUE + MATERIAL_CLASS, sorted) * params.pathCount + id.x];
   var path = loadPath(i);
   let h = paths[3u * params.pathCount + i];
-  let surface = surfaceAt(Hit(bitcast<f32>(h.x), h.y, bitcast<vec2f>(h.zw)), path.origin, path.direction);
+  let surface = surfaceAt(Hit(bitcast<f32>(h.x), h.y, bitcast<vec2f>(h.zw)), path.origin, path.direction,
+                          coneWidthAt(bitcast<f32>(h.x), path.depth));
   let material = surfaceMaterial(surface);
   let dimension = 4u + 8u * path.depth;
   bsdfEntering = surface.frontFace;
