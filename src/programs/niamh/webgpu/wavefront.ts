@@ -184,7 +184,7 @@ export class WavefrontTracer {
       b.nodes, b.primitives, b.spheres, b.quads,
       b.triangles, b.materials, b.lights, b.view,
       this.restir ? 1 : 0, mode, this.scene.mediaBase ?? 0, this.scene.sphereBase ?? 0,
-      this.scene.textureBase ?? 0, this.scene.materialTexBase ?? 0, this.scene.materialExtBase ?? 0, 0,
+      this.scene.textureBase ?? 0, this.scene.materialTexBase ?? 0, this.scene.materialExtBase ?? 0, this.scene.skyBase ?? 0,
     ]));
   }
 

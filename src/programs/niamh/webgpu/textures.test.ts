@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildTextureTables, EXTENSION_MIX, EXTENSION_SHEEN, TEXTURE_CHECKER, TEXTURE_NOISE, TEXTURE_VEC4S, type SceneJson } from "./textures";
+import { buildTextureTables, EXTENSION_ANISOTROPIC, EXTENSION_MIX, EXTENSION_SHEEN, TEXTURE_CHECKER, TEXTURE_NOISE, TEXTURE_VEC4S, type SceneJson } from "./textures";
 
 // Mirrors texture-study.json: a checker floor albedo, a noise albedo, and a glossy material bump-mapped by noise.
 const scene: SceneJson = {
@@ -114,5 +114,18 @@ describe("sheen and mix extensions", () => {
   it("reports a mix that names a missing material", () => {
     const bad = buildTextureTables({ materials: { m: { type: "mix", materials: ["a", "zzz"], amount: 0.5 } } }, ["m"]);
     expect(bad.unsupported.join()).toMatch(/doesn't exist/);
+  });
+});
+
+describe("brushed metal extension", () => {
+  it("keeps roughness along v for a conductor given two roughnesses", () => {
+    const t = buildTextureTables(
+      { materials: { brushed: { type: "conductor", roughness: [0.08, 0.55] }, smooth: { type: "conductor", roughness: 0.2 } } },
+      ["brushed", "smooth"],
+    );
+    const at = (m: number) => Array.from(t.data.slice(4 * (t.extensionsOffset + 2 * m), 4 * (t.extensionsOffset + 2 * m) + 4));
+    expect(at(0)).toEqual([Math.fround(0.55), 0, 0, EXTENSION_ANISOTROPIC]);
+    expect(at(1)).toEqual([0, 0, 0, 0]); // a single roughness is already in the packed material
+    expect(t.used).toBe(true);
   });
 });
