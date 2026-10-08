@@ -58,20 +58,29 @@ const NiamhPage: React.FC = () => {
   const [renderScale, setRenderScale] = useState(1);
   const [display, setDisplay] = useState<DisplaySettings>({ ...defaultDisplay });
   const [realtime, setRealtime] = useState<RealtimeOptions>({ ...defaultRealtime });
-  const settingsRef = useRef({ bounces, renderScale, display, realtime });
-  settingsRef.current = { bounces, renderScale, display, realtime };
+  // WebGPU-only view controls.
+  const [running, setRunning] = useState(true);
+  const [channel, setChannel] = useState(0);
+  const [sortMaterials, setSortMaterials] = useState(true);
+  const [alive, setAlive] = useState<number[]>([]);
+  const settingsRef = useRef({ bounces, renderScale, display, realtime, running, channel, sortMaterials });
+  settingsRef.current = { bounces, renderScale, display, realtime, running, channel, sortMaterials };
   const resizeRef = useRef<(() => void) | null>(null);
 
+
   const applySettings = () => {
-    const { bounces: b, display: d, realtime: r } = settingsRef.current;
+    const { bounces: b, display: d, realtime: r, running: run, channel: ch, sortMaterials: sort } = settingsRef.current;
     for (const renderer of [webglRef.current, webgpuRef.current]) {
       if (!renderer) continue;
       if (b !== null) renderer.setMaxBounces(b);
       renderer.setDisplay(d);
     }
     webgpuRef.current?.setRealtimeOptions(r);
+    webgpuRef.current?.setPaused(!run);
+    webgpuRef.current?.setChannel(ch);
+    webgpuRef.current?.setSortMaterials(sort);
   };
-  useEffect(applySettings, [bounces, display, realtime]);
+  useEffect(applySettings, [bounces, display, realtime, running, channel, sortMaterials]);
   useEffect(() => resizeRef.current?.(), [renderScale]);
 
   useEffect(() => {
@@ -147,6 +156,8 @@ const NiamhPage: React.FC = () => {
           // A scene that fails to load reports here and leaves the previous render running.
           const loadError = webgpuRef.current.loadError ?? null;
           setError((prev) => (prev === loadError ? prev : loadError));
+          const nextAlive = webgpuRef.current.alive;
+          setAlive((prev) => (prev.length === nextAlive.length && prev.every((v, i) => v === nextAlive[i]) ? prev : nextAlive));
           const next = webgpuRef.current.unsupported;
           setNotes((prev) => (prev.join("|") === next.join("|") ? prev : next));
         }
@@ -268,6 +279,35 @@ const NiamhPage: React.FC = () => {
             <option value="aces">ACES</option>
           </select>
         </div>
+        {backend === "webgpu" && (
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem", flexWrap: "wrap", color: "#888", fontSize: "0.72rem" }}>
+            <label style={labelStyle}>
+              <input type="checkbox" checked={running} onChange={(e) => setRunning(e.target.checked)} />
+              running
+            </label>
+            <select value={channel} onChange={(e) => setChannel(Number(e.target.value))} style={selectStyle}>
+              <option value={0}>Radiance</option>
+              <option value={1}>Albedo</option>
+              <option value={2}>Normal</option>
+              <option value={3}>Depth</option>
+            </select>
+            <label style={labelStyle} title="Sort paths into per-material queues to cut shader divergence">
+              <input type="checkbox" checked={sortMaterials} onChange={(e) => setSortMaterials(e.target.checked)} />
+              sort by material
+            </label>
+            {gpuEngine !== "realtime" && alive.length > 0 && (
+              <span style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 24 }} title="paths still alive entering each bounce">
+                {alive.map((fraction, bounce) => (
+                  <span
+                    key={bounce}
+                    title={`bounce ${bounce}: ${(fraction * 100).toFixed(0)}% alive`}
+                    style={{ width: 6, height: `${Math.max(1, fraction * 100)}%`, background: "#58a" }}
+                  />
+                ))}
+              </span>
+            )}
+          </div>
+        )}
         {backend === "webgpu" && gpuEngine === "realtime" && (
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem", flexWrap: "wrap", color: "#888", fontSize: "0.72rem" }}>
             <label style={labelStyle}>

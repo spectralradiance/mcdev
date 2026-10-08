@@ -49,6 +49,13 @@ export class WebGpuRenderer {
   private displaySettings: DisplaySettings = { ...defaultDisplay };
   private maxDepthOverride: number | null = null;
   private realtimeOptions: RealtimeOptions = { ...defaultRealtime };
+  private paused = false;
+  private channel = 0;
+  private sortMaterials = true;
+  private aliveBusy = false;
+  private aliveAt = 0;
+  /** Fraction of paths still alive entering each bounce, averaged over samples (wavefront modes only). */
+  alive: number[] = [];
   private frameMs = 0;
   private lastFrame = 0;
 
@@ -168,6 +175,21 @@ export class WebGpuRenderer {
     if (this.tracer instanceof RealtimeTracer) this.tracer.realtime = { ...options };
   }
 
+  setPaused(paused: boolean): void {
+    this.paused = paused;
+  }
+
+  /** Which buffer the display shows: 0 radiance, 1 albedo, 2 normal, 3 depth. */
+  setChannel(channel: number): void {
+    this.channel = channel;
+  }
+
+  /** Sorting paths into per-material queues cuts divergence; it can change between samples, so nothing rebuilds. */
+  setSortMaterials(sort: boolean): void {
+    this.sortMaterials = sort;
+    if (this.tracer) this.tracer.options.sortMaterials = sort;
+  }
+
   get currentEngine(): WebGpuEngine {
     return this.engine;
   }
@@ -243,7 +265,7 @@ export class WebGpuRenderer {
       width,
       height,
       maxDepth: this.maxDepthOverride ?? (native ? NATIVE_MAX_DEPTH : (this.scene as SceneDescription).maxBounces ?? 6),
-      sortMaterials: true,
+      sortMaterials: this.sortMaterials,
       mode: WAVEFRONT_MODE[this.engine] ?? 2,
     };
     // Only now, with the scene loaded, is the old tracer safe to drop: a failed load leaves it on screen.
@@ -320,7 +342,21 @@ export class WebGpuRenderer {
     const tracer = this.tracer;
     if (!tracer || !this.displayGroup) return;
 
-    if (!this.inFlight) {
+    if (!(tracer instanceof RealtimeTracer) && !this.aliveBusy && tracer.samples > 0 && now - this.aliveAt > 1000) {
+      this.aliveBusy = true;
+      this.aliveAt = now;
+      tracer
+        .readAlive()
+        .then((counts) => {
+          this.alive = counts.map((c) => c / tracer.pathCount);
+        })
+        .catch(() => {}) // the tracer was destroyed before the readback finished
+        .finally(() => {
+          this.aliveBusy = false;
+        });
+    }
+
+    if (!this.inFlight && !this.paused) {
       this.inFlight = true;
       const before = performance.now();
       // Real time renders one sample a frame; accumulation mode fills the frame budget.
@@ -341,7 +377,7 @@ export class WebGpuRenderer {
   private draw(tracer: WavefrontTracer | RealtimeTracer): void {
     const view = new ArrayBuffer(32);
     const realtime = tracer instanceof RealtimeTracer;
-    new Uint32Array(view, 0, 4).set([tracer.options.width, tracer.options.height, realtime ? 1 : tracer.samples, 0]);
+    new Uint32Array(view, 0, 4).set([tracer.options.width, tracer.options.height, realtime ? 1 : tracer.samples, this.channel]);
     new Float32Array(view, 16, 1)[0] = 2 ** this.displaySettings.exposure;
     new Uint32Array(view, 20, 1)[0] = TONE_MAP_CODE[this.displaySettings.toneMap];
     this.device.queue.writeBuffer(this.viewBuffer, 0, view);
