@@ -33,6 +33,8 @@ export class WebGpuRenderer {
   unsupported: string[] = [];
   /** First uncaptured GPU validation/out-of-memory error, if any. */
   deviceError?: string;
+  /** Why the last scene or mode change failed to load; the previous render stays up. Cleared by the next success. */
+  loadError?: string;
 
   private tracer: WavefrontTracer | RealtimeTracer | null = null;
   private scene: SceneDescription | NativeScene | null = null;
@@ -205,7 +207,6 @@ export class WebGpuRenderer {
   // Tracers are built for a fixed image size, scene, and mode, so any of those changing rebuilds them.
   private rebuild(): void {
     if (!this.scene || this.width === 0) return;
-    this.tracer?.destroy();
     // Keep the largest per-pixel buffer inside the device's binding limit by rendering below display resolution.
     const bytesPerPixel = this.engine === "realtime" ? REALTIME_BYTES_PER_PIXEL : WAVEFRONT_BYTES_PER_PIXEL;
     const maxPixels = Math.floor(this.device.limits.maxStorageBufferBindingSize / bytesPerPixel);
@@ -245,6 +246,10 @@ export class WebGpuRenderer {
       sortMaterials: true,
       mode: WAVEFRONT_MODE[this.engine] ?? 2,
     };
+    // Only now, with the scene loaded, is the old tracer safe to drop: a failed load leaves it on screen.
+    this.tracer?.destroy();
+    this.tracer = null;
+    this.displayGroup = null;
     const tracer = this.engine === "realtime"
       ? new RealtimeTracer(this.device, this.sceneData, options, { ...this.realtimeOptions })
       : new WavefrontTracer(this.device, this.sceneData, options);
@@ -302,7 +307,16 @@ export class WebGpuRenderer {
     if (this.lastFrame > 0) this.frameMs = 0.9 * this.frameMs + 0.1 * (now - this.lastFrame);
     this.lastFrame = now;
     if (this.deviceError) throw new Error(`WebGPU error: ${this.deviceError}`);
-    if (this.dirty) this.rebuild();
+    if (this.dirty) {
+      try {
+        this.rebuild();
+        this.loadError = undefined;
+      } catch (e) {
+        // Don't retry every frame; the next scene or mode change sets dirty again.
+        this.loadError = e instanceof Error ? e.message : String(e);
+        this.dirty = false;
+      }
+    }
     const tracer = this.tracer;
     if (!tracer || !this.displayGroup) return;
 

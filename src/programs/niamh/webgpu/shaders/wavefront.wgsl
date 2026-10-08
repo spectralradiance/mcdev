@@ -14,7 +14,8 @@ struct Params {
   mode: u32,
   // Where the per-material participating-medium table starts, in vec4s; 0 when the scene has none.
   mediaBase: u32,
-  pad2: u32,
+  // Where the sphere table starts, in vec4s: (centre, radius) per sphere, for sampling sphere lights.
+  sphereTableBase: u32,
 }
 
 @group(0) @binding(0) var<uniform> params: Params;
@@ -621,8 +622,14 @@ fn sampleBsdf(m: Material, wo: vec3f, uLobe: f32, u: vec2f, entering: bool) -> B
 
 // ---- Lights, as Scene::sampleLightPoint and Scene::lightPdf
 
+fn sphereInfo(index: u32) -> vec4f { return scene[params.sphereTableBase + index]; }
+
 fn lightArea(primitive: u32) -> f32 {
   let p = primitiveAt(primitive);
+  if (p.x == SPHERE) {
+    let radius = sphereInfo(p.y).w;
+    return 4.0 * PI * radius * radius;
+  }
   if (p.x == QUAD) { return scene[params.quadBase + 4u * p.y].w; }
   let base = params.triangleBase + 6u * p.y;
   let p0 = scene[base].xyz;
@@ -647,7 +654,15 @@ fn lightPointOn(primitive: u32, u: vec2f) -> LightPoint {
   let p = primitiveAt(primitive);
   var point: vec3f;
   var normal: vec3f;
-  if (p.x == QUAD) {
+  if (p.x == SPHERE) {
+    // Uniform by area. Points on the far side face away from the shading point and are rejected by the cosine test.
+    let s = sphereInfo(p.y);
+    let z = 1.0 - 2.0 * u.x;
+    let ring = sqrt(max(0.0, 1.0 - z * z));
+    let phi = 2.0 * PI * u.y;
+    normal = vec3f(ring * cos(phi), ring * sin(phi), z);
+    point = s.xyz + normal * s.w;
+  } else if (p.x == QUAD) {
     let base = params.quadBase + 4u * p.y;
     point = scene[base].xyz + scene[base + 1u].xyz * u.x + scene[base + 2u].xyz * u.y;
     normal = normalize(scene[base + 3u].xyz);
