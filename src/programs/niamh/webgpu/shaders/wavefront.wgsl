@@ -19,7 +19,9 @@ struct Params {
   // Texture table and per-material texture bindings, in vec4s; 0 when no material is textured.
   textureBase: u32, materialTexBase: u32,
   // Per-material extensions (sheen colour, mix definition), two vec4s each, in vec4s; 0 when there are none.
-  materialExtBase: u32, pad1: u32,
+  materialExtBase: u32,
+  // The sky table (zenith, horizon, ground, sun direction, sun radiance), in vec4s; 0 for a constant background.
+  skyBase: u32,
 }
 
 @group(0) @binding(0) var<uniform> params: Params;
@@ -75,6 +77,7 @@ const EMISSIVE = 4u;
 const SUBSURFACE = 5u;
 const SHEEN = 6u;  // not in rtadvanced's packed kinds (it packs sheen as diffuse); set from the extension table
 const MIX = 7u;    // likewise, and resolved to one of its parts before shading
+const ANISOTROPIC = 8u;  // an extension kind only: a conductor brushed along the surface's u direction
 
 const FLAG_PREVIOUS_DELTA = 256u;
 const FLAG_FEATURES_PENDING = 512u;
@@ -150,6 +153,9 @@ struct Material {
   ior: f32,
   k: vec3f,
   sheen: vec3f,
+  // Brushed metal: roughness along v (negative when isotropic) and where u points in the shading frame, (cos, sin).
+  roughnessV: f32,
+  tangent: vec2f,
 }
 
 fn materialAt(i: u32) -> Material {
@@ -157,11 +163,13 @@ fn materialAt(i: u32) -> Material {
   let a = scene[base];
   let b = scene[base + 1u];
   let c = scene[base + 2u];
-  var m = Material(a.xyz, u32(a.w), b.xyz, b.w, c.xyz, c.w, scene[base + 3u].xyz, vec3f(0.0));
+  var m = Material(a.xyz, u32(a.w), b.xyz, b.w, c.xyz, c.w, scene[base + 3u].xyz, vec3f(0.0), -1.0, vec2f(1.0, 0.0));
   let extension = materialExtension(i);
   if (u32(extension.w) == SHEEN) {
     m.kind = SHEEN;
     m.sheen = extension.xyz;
+  } else if (u32(extension.w) == ANISOTROPIC) {
+    m.roughnessV = extension.x;
   }
   return m;
 }
@@ -268,7 +276,7 @@ fn bumpedNormal(material: u32, point: vec3f, outward: vec3f, frontFace: bool) ->
 }
 
 fn isDelta(m: Material) -> bool {
-  return (m.kind == DIELECTRIC || m.kind == CONDUCTOR) && m.roughness < 0.01;
+  return (m.kind == DIELECTRIC || m.kind == CONDUCTOR) && max(m.roughness, m.roughnessV) < 0.01;
 }
 
 // ---- Participating media. A material with a scattering distance fills the objects that use it with a homogeneous
@@ -443,6 +451,7 @@ struct Surface {
   frontFace: bool,
   material: u32,
   uv: vec2f,
+  dpdu: vec3f,  // where u increases, for brushed metal; unnormalised
 }
 
 fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
@@ -451,18 +460,24 @@ fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
   var outward: vec3f;
   var interpolated = vec3f(0.0);
   var uv = hit.uv;  // quads and triangles: the intersection's (u, v) or barycentrics
+  var dpdu = vec3f(1.0, 0.0, 0.0);
   if (p.x == SPHERE) {
     // The inverse transpose: toObject's transpose applied to the object-space point.
     let base = params.sphereBase + 3u * p.y;
     let local = toSphereSpace(p.y, point, 1.0);
     outward = normalize(scene[base].xyz * local.x + scene[base + 1u].xyz * local.y + scene[base + 2u].xyz * local.z);
     uv = vec2f((atan2(local.z, local.x) + PI) / (2.0 * PI), acos(clamp(local.y, -1.0, 1.0)) / PI);
+    // u runs around the y axis in object space; carry that direction to world space like a normal.
+    let around = vec3f(-local.z, 0.0, local.x);
+    dpdu = scene[base].xyz * around.x + scene[base + 1u].xyz * around.y + scene[base + 2u].xyz * around.z;
   } else if (p.x == QUAD) {
     outward = normalize(scene[params.quadBase + 4u * p.y + 3u].xyz);
+    dpdu = scene[params.quadBase + 4u * p.y + 1u].xyz;
   } else {
     let base = params.triangleBase + 6u * p.y;
     let p0 = scene[base];
     outward = normalize(cross(scene[base + 1u].xyz - p0.xyz, scene[base + 2u].xyz - p0.xyz));
+    dpdu = scene[base + 1u].xyz - p0.xyz;
     if (p0.w > 0.0) {
       let b0 = 1.0 - hit.uv.x - hit.uv.y;
       interpolated = normalize(scene[base + 3u].xyz * b0 + scene[base + 4u].xyz * hit.uv.x + scene[base + 5u].xyz * hit.uv.y);
@@ -491,7 +506,7 @@ fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
     material = u32(select(mix.x, mix.y, r < amount));
   }
   shading = bumpedNormal(material, point, select(-shading, shading, frontFace), frontFace);
-  return Surface(point, normal, shading, frontFace, material, uv);
+  return Surface(point, normal, shading, frontFace, material, uv, dpdu);
 }
 
 // The material at a surface point: its constant parameters, with the albedo replaced by its texture where it has one.
@@ -500,6 +515,13 @@ fn surfaceMaterial(surface: Surface) -> Material {
   let binding = textureBinding(surface.material);
   if (binding.x != 0.0) {
     material.albedo = evalTexture(u32(binding.x) - 1u, surface.uv, surface.point, 0.0);
+  }
+  if (material.kind == CONDUCTOR && isAnisotropic(material)) {
+    // Where u points, in the plane of the frame the integrator builds from the shading normal.
+    let frame = frameFromNormal(surface.shadingNormal);
+    let t = vec2f(dot(surface.dpdu, frame.s), dot(surface.dpdu, frame.t));
+    let size = length(t);
+    if (size > 0.0) { material.tangent = t / size; }
   }
   return material;
 }
@@ -541,6 +563,48 @@ fn concentricDisk(u: vec2f) -> vec2f {
 fn cosineHemisphere(u: vec2f) -> vec3f {
   let d = concentricDisk(u);
   return vec3f(d, sqrt(max(0.0, 1.0 - dot(d, d))));
+}
+
+// ---- The sky and the sun, as Scene::skyRadiance / sunRadiance / sampleSun. Without a sky table the background is the
+// constant one in the view block, as before.
+
+fn skyRadiance(direction: vec3f) -> vec3f {
+  let base = params.skyBase;
+  if (base == 0u || scene[base].w == 0.0) { return scene[params.viewBase + 4u].xyz; }
+  let zenith = scene[base].xyz;
+  let horizon = scene[base + 1u].xyz;
+  let ground = scene[base + 2u].xyz;
+  let y = direction.y / length(direction);
+  // The square root keeps the sky pale near the horizon and deepens it overhead; below, the ground fades in.
+  if (y >= 0.0) { return horizon + (zenith - horizon) * sqrt(y); }
+  return horizon + (ground - horizon) * min(1.0, -y * 10.0);
+}
+
+fn hasSun() -> bool { return params.skyBase != 0u && scene[params.skyBase + 1u].w != 0.0; }
+
+fn sunRadiance(direction: vec3f) -> vec3f {
+  if (!hasSun()) { return vec3f(0.0); }
+  let base = params.skyBase;
+  if (dot(direction, scene[base + 3u].xyz) < scene[base + 2u].w * length(direction)) { return vec3f(0.0); }
+  return scene[base + 4u].xyz;
+}
+
+fn sunPdf() -> f32 { return 1.0 / (2.0 * PI * (1.0 - scene[params.skyBase + 2u].w)); }
+
+// The chance a light sample goes to the sun, which competes with the area lights as one more light. ReSTIR resamples
+// area lights only, so with it the sun is found by BSDF sampling alone.
+fn sunChoice() -> f32 {
+  if (!hasSun() || params.restir != 0u) { return 0.0; }
+  return 1.0 / (f32(params.lightCount) + 1.0);
+}
+
+// Uniform over the cone of directions the disc subtends.
+fn sampleSunDirection(u: vec2f) -> vec3f {
+  let base = params.skyBase;
+  let cosTheta = 1.0 - u.x * (1.0 - scene[base + 2u].w);
+  let sinTheta = sqrt(max(0.0, 1.0 - cosTheta * cosTheta));
+  let phi = 2.0 * PI * u.y;
+  return toWorld(frameFromNormal(scene[base + 3u].xyz), vec3f(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta));
 }
 
 // ---- The camera, as rtadvanced/src/camera/camera.h. The view block adds (background, projection) and
@@ -776,6 +840,50 @@ fn sampleRoughDielectric(m: Material, wo: vec3f, uLobe: f32, u: vec2f, entering:
   return s;
 }
 
+// ---- Brushed metal: GGX with a different alpha along each tangent axis, as rtadvanced/src/materials/bsdf.cpp.
+
+fn isAnisotropic(m: Material) -> bool { return m.roughnessV >= 0.0 && m.roughnessV != m.roughness; }
+
+// Turns a local direction so the surface's u direction lies along +x, where the anisotropic formulas expect it.
+fn toTangentFrame(w: vec3f, t: vec2f) -> vec3f { return vec3f(t.x * w.x + t.y * w.y, -t.y * w.x + t.x * w.y, w.z); }
+fn fromTangentFrame(w: vec3f, t: vec2f) -> vec3f { return vec3f(t.x * w.x - t.y * w.y, t.y * w.x + t.x * w.y, w.z); }
+
+fn brushedAlpha(m: Material) -> vec2f { return vec2f(alphaFor(m.roughness), alphaFor(m.roughnessV)); }
+
+fn ggxDAniso(h: vec3f, alpha: vec2f) -> f32 {
+  let e = h.x * h.x / (alpha.x * alpha.x) + h.y * h.y / (alpha.y * alpha.y) + h.z * h.z;
+  return 1.0 / (PI * alpha.x * alpha.y * e * e);
+}
+
+fn ggxLambdaAniso(w: vec3f, alpha: vec2f) -> f32 {
+  let cos2 = w.z * w.z;
+  if (cos2 == 0.0) { return INFINITY; }
+  let tan2Alpha2 = (alpha.x * alpha.x * w.x * w.x + alpha.y * alpha.y * w.y * w.y) / cos2;
+  return (sqrt(1.0 + tan2Alpha2) - 1.0) / 2.0;
+}
+
+fn ggxGAniso(wo: vec3f, wi: vec3f, alpha: vec2f) -> f32 {
+  return 1.0 / (1.0 + ggxLambdaAniso(wo, alpha) + ggxLambdaAniso(wi, alpha));
+}
+
+fn sampleGgxVisibleNormalAniso(wo: vec3f, alpha: vec2f, u: vec2f) -> vec3f {
+  let v = normalize(vec3f(alpha.x * wo.x, alpha.y * wo.y, wo.z));
+  let lengthSquared = v.x * v.x + v.y * v.y;
+  let t1 = select(vec3f(1.0, 0.0, 0.0), vec3f(-v.y, v.x, 0.0) / sqrt(lengthSquared), lengthSquared > 0.0);
+  let t2 = cross(v, t1);
+  let r = sqrt(u.x);
+  let phi = 2.0 * PI * u.y;
+  let p1 = r * cos(phi);
+  let s = 0.5 * (1.0 + v.z);
+  let p2 = (1.0 - s) * sqrt(max(0.0, 1.0 - p1 * p1)) + s * r * sin(phi);
+  let n = t1 * p1 + t2 * p2 + v * sqrt(max(0.0, 1.0 - p1 * p1 - p2 * p2));
+  return normalize(vec3f(alpha.x * n.x, alpha.y * n.y, max(1e-6, n.z)));
+}
+
+fn ggxReflectionPdfAniso(wo: vec3f, h: vec3f, alpha: vec2f) -> f32 {
+  return ggxDAniso(h, alpha) / ((1.0 + ggxLambdaAniso(wo, alpha)) * 4.0 * wo.z);
+}
+
 const GLOSSY_SPECULAR_PROBABILITY = 0.5;
 
 fn evalBsdf(m: Material, wo: vec3f, wi: vec3f) -> vec3f {
@@ -787,6 +895,13 @@ fn evalBsdf(m: Material, wo: vec3f, wi: vec3f) -> vec3f {
     let specular = ggxD(h, alpha) * ggxG(wo, wi, alpha) * fresnelDielectric(dot(wo, h), m.ior) / (4.0 * wo.z * wi.z);
     let coat = (1.0 - fresnelDielectric(wo.z, m.ior)) * (1.0 - fresnelDielectric(wi.z, m.ior));
     return m.albedo * (coat * INV_PI) + vec3f(specular);
+  }
+  if (m.kind == CONDUCTOR && isAnisotropic(m)) {
+    let o = toTangentFrame(wo, m.tangent);
+    let i = toTangentFrame(wi, m.tangent);
+    let alpha = brushedAlpha(m);
+    let h = normalize(o + i);
+    return conductorFresnel(m, dot(o, h)) * (ggxDAniso(h, alpha) * ggxGAniso(o, i, alpha) / (4.0 * o.z * i.z));
   }
   if (m.kind == CONDUCTOR) {
     let alpha = alphaFor(m.roughness);
@@ -814,6 +929,11 @@ fn bsdfPdf(m: Material, wo: vec3f, wi: vec3f) -> f32 {
   if (m.kind == GLOSSY) {
     return GLOSSY_SPECULAR_PROBABILITY * ggxReflectionPdf(wo, normalize(wo + wi), alphaFor(m.roughness)) +
            (1.0 - GLOSSY_SPECULAR_PROBABILITY) * wi.z * INV_PI;
+  }
+  if (m.kind == CONDUCTOR && isAnisotropic(m)) {
+    let o = toTangentFrame(wo, m.tangent);
+    let i = toTangentFrame(wi, m.tangent);
+    return ggxReflectionPdfAniso(o, normalize(o + i), brushedAlpha(m));
   }
   if (m.kind == CONDUCTOR) { return ggxReflectionPdf(wo, normalize(wo + wi), alphaFor(m.roughness)); }
   return wi.z * INV_PI;
@@ -858,7 +978,10 @@ fn sampleBsdf(m: Material, wo: vec3f, uLobe: f32, u: vec2f, entering: bool) -> B
     s.ok = true;
     return s;
   }
-  if (m.kind == CONDUCTOR || (m.kind == GLOSSY && uLobe < GLOSSY_SPECULAR_PROBABILITY)) {
+  if (m.kind == CONDUCTOR && isAnisotropic(m)) {
+    let local = toTangentFrame(wo, m.tangent);
+    s.wi = fromTangentFrame(reflectAbout(local, sampleGgxVisibleNormalAniso(local, brushedAlpha(m), u)), m.tangent);
+  } else if (m.kind == CONDUCTOR || (m.kind == GLOSSY && uLobe < GLOSSY_SPECULAR_PROBABILITY)) {
     s.wi = reflectAbout(wo, sampleGgxVisibleNormal(wo, alphaFor(m.roughness), u));
   } else {
     s.wi = cosineHemisphere(u);
@@ -1037,9 +1160,22 @@ fn extend(@builtin(global_invocation_id) id: vec3u) {
     }
   }
   if (hit.primitive == NO_HIT) {
-    let background = scene[params.viewBase + 4u].xyz;
-    addRadiance(path.pixel, path.throughput * background);
-    if (pending) { recordFeatures(&path, background, vec3f(0.0)); }
+    let sky = skyRadiance(path.direction);
+    var arriving = sky;
+    let sun = sunRadiance(path.direction);
+    if (any(sun > vec3f(0.0))) {
+      var weight = 1.0;
+      if (params.mode != MODE_PATH && (path.flags & FLAG_PREVIOUS_DELTA) == 0u) {
+        if (params.mode == MODE_NEE) {
+          if (sunChoice() > 0.0) { weight = powerHeuristic(path.previousPdf, sunPdf() * sunChoice()); }
+        } else {
+          weight = 0.0;  // the shadow ray toward the sun already counted it
+        }
+      }
+      arriving += sun * weight;
+    }
+    addRadiance(path.pixel, path.throughput * arriving);
+    if (pending) { recordFeatures(&path, sky, vec3f(0.0)); }
     return;
   }
   let surface = surfaceAt(hit, path.origin, path.direction);
@@ -1051,7 +1187,7 @@ fn extend(@builtin(global_invocation_id) id: vec3u) {
       var weight = 1.0;
       if (params.lightCount > 0u && (path.flags & FLAG_PREVIOUS_DELTA) == 0u) {
         if (params.mode == MODE_NEE) {
-          weight = powerHeuristic(path.previousPdf, lightPdf(path.origin, surface.point, surface.normal, hit.primitive));
+          weight = powerHeuristic(path.previousPdf, lightPdf(path.origin, surface.point, surface.normal, hit.primitive) * (1.0 - sunChoice()));
           // ReSTIR already counted all direct light at the primary hit.
           if (params.restir != 0u && path.depth == 1u) { weight = 0.0; }
         } else if (params.mode == MODE_WHITTED) {
@@ -1094,18 +1230,34 @@ fn shade(@builtin(global_invocation_id) id: vec3u) {
   let frame = frameFromNormal(surface.shadingNormal);
   let wo = toLocal(frame, -path.direction);
 
-  if (params.mode != MODE_PATH && params.lightCount > 0u && !isDelta(material) && !(params.restir != 0u && path.depth == 0u)) {
-    let light = sampleLightPoint(random(path.pixel, dimension), random2(path.pixel, dimension + 1u));
-    let toLight = light.point - surface.point;
-    let distance = length(toLight);
-    let wiWorld = toLight / distance;
-    let cosLight = -dot(wiWorld, light.normal);
-    if (distance > 0.0 && cosLight > 0.0 && (dot(wiWorld, surface.normal) > 0.0 || isRoughDielectric(material))) {
+  let sun = sunChoice();
+  if (params.mode != MODE_PATH && (params.lightCount > 0u || sun > 0.0) && !isDelta(material) &&
+      !(params.restir != 0u && path.depth == 0u)) {
+    // One light is picked: the sun with probability sunChoice, otherwise an area light.
+    let uSelect = random(path.pixel, dimension);
+    var wiWorld = vec3f(0.0);
+    var distance = INFINITY;
+    var pdf = 0.0;
+    var emission = vec3f(0.0);
+    if (uSelect < sun) {
+      wiWorld = sampleSunDirection(random2(path.pixel, dimension + 1u));
+      pdf = sunPdf() * sun;
+      emission = sunRadiance(wiWorld);
+    } else {
+      let light = sampleLightPoint(min((uSelect - sun) / (1.0 - sun), 0.99999994), random2(path.pixel, dimension + 1u));
+      let toLight = light.point - surface.point;
+      distance = length(toLight);
+      wiWorld = toLight / distance;
+      let cosLight = -dot(wiWorld, light.normal);
+      if (distance > 0.0 && cosLight > 0.0) {
+        pdf = light.areaPdf * (1.0 - sun) * distance * distance / cosLight;
+        emission = materialAt(primitiveAt(light.primitive).z).emission;
+      }
+    }
+    if (pdf > 0.0 && (dot(wiWorld, surface.normal) > 0.0 || isRoughDielectric(material))) {
       let wi = toLocal(frame, wiWorld);
       let f = evalBsdf(material, wo, wi);
       if (any(f > vec3f(0.0))) {
-        let pdf = light.areaPdf * distance * distance / cosLight;
-        let emission = materialAt(primitiveAt(light.primitive).z).emission;
         // Whitted shades direct light only, so there is no BSDF strategy to weigh the light sample against.
         let misWeight = select(1.0, powerHeuristic(pdf, bsdfPdf(material, wo, wi)), params.mode == MODE_NEE);
         let contribution = path.throughput * f * emission * (abs(wi.z) * misWeight / pdf);

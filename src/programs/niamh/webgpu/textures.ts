@@ -9,6 +9,8 @@ export const TEXTURE_NOISE = 1;
 /** Extension kinds, in the w of a material's first extension vec4; 0 means the packed material is complete. */
 export const EXTENSION_SHEEN = 6;
 export const EXTENSION_MIX = 7;
+/** Brushed metal: the first extension vec4 is (roughness along v, 0, 0, kind). */
+export const EXTENSION_ANISOTROPIC = 8;
 
 /** vec4s per texture: (kind, scale, 0, 0), first colour, second colour. */
 export const TEXTURE_VEC4S = 3;
@@ -21,6 +23,7 @@ interface SceneTextureJson {
 
 interface SceneMaterialJson {
   type?: string;
+  roughness?: number | number[];
   sheen?: number[];
   materials?: string[];
   amount?: number | string;
@@ -112,6 +115,10 @@ export function buildTextureTables(scene: SceneJson, materialNames: string[]): T
     const at = 4 * (extensionsOffset + 2 * m);
     if (material.type === "sheen") {
       data.set([...(material.sheen ?? [0, 0, 0]), EXTENSION_SHEEN], at);
+      used = true;
+    } else if (material.type === "conductor" && Array.isArray(material.roughness)) {
+      // Roughness is [along u, along v]; the packed material keeps only the first.
+      data.set([material.roughness[1], 0, 0, EXTENSION_ANISOTROPIC], at);
       used = true;
     } else if (material.type === "mix") {
       const [a, b] = material.materials ?? [];

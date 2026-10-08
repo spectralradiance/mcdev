@@ -2,6 +2,7 @@
 // reimplemented here; this file only copies rtadvanced's packed arrays into one buffer the GPU can read.
 
 import { restoreSphereLights, sphereCentresAndRadii, type SphereLights } from './lights';
+import { buildSkyTable, type SkyJson } from './sky';
 import { buildTextureTables, type SceneJson } from './textures';
 import createModule, { type RendererBModule } from './wasm/rtwasm.mjs';
 
@@ -14,8 +15,6 @@ const UNSUPPORTED: [number, string][] = [
   [2, 'participating media (ignored)'],
   [4, 'subsurface scattering (shaded as diffuse)'],
   [8, 'dispersion (one index of refraction)'],
-  [128, 'sky and sun (a constant background, the horizon colour)'],
-  [256, 'brushed metal (isotropic roughness)'],
 ];
 
 export interface SceneData {
@@ -38,6 +37,8 @@ export interface SceneData {
   materialTexBase?: number;
   // Where the per-material extensions (sheen colour, mix definition) start, in vec4 units.
   materialExtBase?: number;
+  // Where the sky table starts, in vec4 units; undefined when the scene has no sky (the background is constant).
+  skyBase?: number;
   materialCount: number;
 }
 
@@ -70,7 +71,7 @@ export class RendererB {
 
   // rtadvanced packs a textured material with its base colour only, so the textures come from the scene file.
   private withSceneTextures(path: string, scene: SceneData): SceneData {
-    let json: SceneJson;
+    let json: SceneJson & SkyJson;
     try {
       json = JSON.parse(this.module.FS.readFile(path, { encoding: 'utf8' }));
     } catch {
@@ -80,20 +81,29 @@ export class RendererB {
     // The loader indexes materials in sorted-name order; if the counts disagree that assumption is already wrong.
     if (names.length !== scene.materialCount) return scene;
     const tables = buildTextureTables(json, names);
+    const sky = buildSkyTable(json);
     const unsupported = scene.unsupported.filter((text) => !text.startsWith('textures ('));
     // What the flag lumped together as "textures" is now either handled or named precisely.
-    if (!tables.used && tables.unsupported.length === 0) return { ...scene, unsupported };
-    const words = new Uint32Array(scene.words.length + tables.data.length);
+    if (!tables.used && tables.unsupported.length === 0 && !sky) return { ...scene, unsupported };
+    const appended = [...(tables.used ? [tables.data] : []), ...(sky ? [sky] : [])];
+    const words = new Uint32Array(scene.words.length + appended.reduce((n, a) => n + a.length, 0));
     words.set(scene.words);
-    words.set(new Uint32Array(tables.data.buffer), scene.words.length);
-    const textureBase = scene.words.length / 4;
+    let offset = scene.words.length;
+    const bases: number[] = [];
+    for (const array of appended) {
+      bases.push(offset / 4);
+      words.set(new Uint32Array(array.buffer), offset);
+      offset += array.length;
+    }
+    const textureBase = tables.used ? bases[0] : undefined;
     return {
       ...scene,
       words,
       unsupported: [...unsupported, ...tables.unsupported],
-      textureBase: tables.used ? textureBase : undefined,
-      materialTexBase: tables.used ? textureBase + tables.bindingsOffset : undefined,
-      materialExtBase: tables.used ? textureBase + tables.extensionsOffset : undefined,
+      textureBase,
+      materialTexBase: textureBase === undefined ? undefined : textureBase + tables.bindingsOffset,
+      materialExtBase: textureBase === undefined ? undefined : textureBase + tables.extensionsOffset,
+      skyBase: sky ? bases[bases.length - 1] : undefined,
     };
   }
 
