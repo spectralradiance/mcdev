@@ -16,6 +16,8 @@ struct Params {
   mediaBase: u32,
   // Where the sphere table starts, in vec4s: (centre, radius) per sphere, for sampling sphere lights.
   sphereTableBase: u32,
+  // Texture table and per-material texture bindings, in vec4s; 0 when no material is textured.
+  textureBase: u32, materialTexBase: u32, pad0: u32, pad1: u32,
 }
 
 @group(0) @binding(0) var<uniform> params: Params;
@@ -151,6 +153,99 @@ fn materialAt(i: u32) -> Material {
   let b = scene[base + 1u];
   let c = scene[base + 2u];
   return Material(a.xyz, u32(a.w), b.xyz, b.w, c.xyz, c.w, scene[base + 3u].xyz);
+}
+
+// ---- Procedural textures, as rtadvanced/src/textures/texture.cpp. Lookups are point-sampled: progressive accumulation
+// averages the jittered samples over each pixel, which is the box filter the CPU applies analytically.
+
+const TEXTURE_CHECKER = 0u;
+const BUMP_WIDTH = 0.002;  // world-space footprint that fades fine noise octaves out of a bump
+const BUMP_DELTA = 0.001;  // finite-difference step, half the footprint
+
+// (albedo texture + 1, bump texture + 1, bump scale, 0); all zero when the scene has no textures.
+fn textureBinding(material: u32) -> vec4f {
+  if (params.materialTexBase == 0u) { return vec4f(0.0); }
+  return scene[params.materialTexBase + material];
+}
+
+fn isOdd(x: f32) -> bool { return (i32(floor(x)) & 1) != 0; }
+
+fn fade(t: f32) -> f32 { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
+
+fn gradientAt(h: u32) -> vec3f {
+  var gradients = array<vec3f, 12>(
+    vec3f(1, 1, 0), vec3f(-1, 1, 0), vec3f(1, -1, 0), vec3f(-1, -1, 0), vec3f(1, 0, 1), vec3f(-1, 0, 1),
+    vec3f(1, 0, -1), vec3f(-1, 0, -1), vec3f(0, 1, 1), vec3f(0, -1, 1), vec3f(0, 1, -1), vec3f(0, -1, -1));
+  return gradients[h % 12u];
+}
+
+// Perlin's gradient noise with a hash in place of the permutation table, the same lattice gradients as the CPU.
+fn gradientNoise(p: vec3f) -> f32 {
+  let cell = floor(p);
+  let f = p - cell;
+  let c = vec3i(cell);
+  var corners: array<f32, 8>;
+  for (var k = 0u; k < 8u; k += 1u) {
+    let d = vec3i(i32(k & 1u), i32((k >> 1u) & 1u), i32((k >> 2u) & 1u));
+    let q = c + d;
+    let h = mixHash(mixHash(pcgHash(bitcast<u32>(q.x)), bitcast<u32>(q.y)), bitcast<u32>(q.z));
+    corners[k] = dot(gradientAt(h), f - vec3f(d));
+  }
+  let u = fade(f.x);
+  let v = fade(f.y);
+  let w = fade(f.z);
+  let x00 = mix(corners[0], corners[1], u);
+  let x10 = mix(corners[2], corners[3], u);
+  let x01 = mix(corners[4], corners[5], u);
+  let x11 = mix(corners[6], corners[7], u);
+  return mix(mix(x00, x10, v), mix(x01, x11, v), w);
+}
+
+// Octaves finer than the footprint fade out; width 0 keeps all eight.
+fn fractalNoise(point: vec3f, width: f32) -> f32 {
+  var octaves = 8.0;
+  if (width > 0.0) { octaves = clamp(-1.0 - log2(width), 0.0, 8.0); }
+  let whole = u32(octaves);
+  var p = point;
+  var sum = 0.0;
+  var amplitude = 1.0;
+  for (var i = 0u; i < whole; i += 1u) {
+    sum += amplitude * gradientNoise(p);
+    amplitude *= 0.5;
+    p = p * 2.0;
+  }
+  return sum + amplitude * (octaves - f32(whole)) * gradientNoise(p);
+}
+
+fn evalTexture(texture: u32, uv: vec2f, point: vec3f, width: f32) -> vec3f {
+  let base = params.textureBase + 3u * texture;
+  let header = scene[base];
+  let color1 = scene[base + 1u].xyz;
+  let color2 = scene[base + 2u].xyz;
+  let scale = header.y;
+  if (u32(header.x) == TEXTURE_CHECKER) {
+    let st = uv * scale;
+    return select(color1, color2, isOdd(st.x) != isOdd(st.y));
+  }
+  let n = fractalNoise(point * scale, width * scale);
+  return mix(color1, color2, clamp(0.5 + 0.5 * n, 0.0, 1.0));
+}
+
+fn luminance(c: vec3f) -> f32 { return dot(c, vec3f(0.2126, 0.7152, 0.0722)); }
+
+// Bump mapping from the noise's gradient in world space: a displaced surface's normal is the outward normal minus the
+// height's gradient across the tangent plane (what applyBump computes from uv derivatives on the CPU).
+fn bumpedNormal(material: u32, point: vec3f, outward: vec3f, frontFace: bool) -> vec3f {
+  let binding = textureBinding(material);
+  if (binding.y == 0.0) { return select(-outward, outward, frontFace); }
+  let texture = u32(binding.y) - 1u;
+  let t1 = frameFromNormal(outward).s;
+  let t2 = cross(outward, t1);
+  let h0 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point, BUMP_WIDTH));
+  let h1 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point + t1 * BUMP_DELTA, BUMP_WIDTH));
+  let h2 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point + t2 * BUMP_DELTA, BUMP_WIDTH));
+  let bent = normalize(outward - t1 * ((h1 - h0) / BUMP_DELTA) - t2 * ((h2 - h0) / BUMP_DELTA));
+  return select(-bent, bent, frontFace);
 }
 
 fn isDelta(m: Material) -> bool {
@@ -328,6 +423,7 @@ struct Surface {
   shadingNormal: vec3f,  // interpolated on smooth meshes, on the same side as normal
   frontFace: bool,
   material: u32,
+  uv: vec2f,
 }
 
 fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
@@ -335,11 +431,13 @@ fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
   let point = o + d * hit.t;
   var outward: vec3f;
   var interpolated = vec3f(0.0);
+  var uv = hit.uv;  // quads and triangles: the intersection's (u, v) or barycentrics
   if (p.x == SPHERE) {
     // The inverse transpose: toObject's transpose applied to the object-space point.
     let base = params.sphereBase + 3u * p.y;
     let local = toSphereSpace(p.y, point, 1.0);
     outward = normalize(scene[base].xyz * local.x + scene[base + 1u].xyz * local.y + scene[base + 2u].xyz * local.z);
+    uv = vec2f((atan2(local.z, local.x) + PI) / (2.0 * PI), acos(clamp(local.y, -1.0, 1.0)) / PI);
   } else if (p.x == QUAD) {
     outward = normalize(scene[params.quadBase + 4u * p.y + 3u].xyz);
   } else {
@@ -357,7 +455,18 @@ fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
   if (dot(interpolated, interpolated) > 0.0) {
     shading = select(interpolated, -interpolated, dot(interpolated, normal) < 0.0);
   }
-  return Surface(point, normal, shading, frontFace, p.z);
+  shading = bumpedNormal(p.z, point, select(-shading, shading, frontFace), frontFace);
+  return Surface(point, normal, shading, frontFace, p.z, uv);
+}
+
+// The material at a surface point: its constant parameters, with the albedo replaced by its texture where it has one.
+fn surfaceMaterial(surface: Surface) -> Material {
+  var material = materialAt(surface.material);
+  let binding = textureBinding(surface.material);
+  if (binding.x != 0.0) {
+    material.albedo = evalTexture(u32(binding.x) - 1u, surface.uv, surface.point, 0.0);
+  }
+  return material;
 }
 
 fn spawnOrigin(point: vec3f, normal: vec3f, direction: vec3f) -> vec3f {
@@ -793,7 +902,7 @@ fn extend(@builtin(global_invocation_id) id: vec3u) {
     return;
   }
   let surface = surfaceAt(hit, path.origin, path.direction);
-  let material = materialAt(surface.material);
+  let material = surfaceMaterial(surface);
   if (path.depth == 0u) { features[2u * path.pixel].w += hit.t; }
   if (material.kind == EMISSIVE) {
     if (pending) { recordFeatures(&path, material.emission, surface.shadingNormal); }
@@ -838,7 +947,7 @@ fn shade(@builtin(global_invocation_id) id: vec3u) {
   var path = loadPath(i);
   let h = paths[3u * params.pathCount + i];
   let surface = surfaceAt(Hit(bitcast<f32>(h.x), h.y, bitcast<vec2f>(h.zw)), path.origin, path.direction);
-  let material = materialAt(surface.material);
+  let material = surfaceMaterial(surface);
   let dimension = 4u + 8u * path.depth;
   let frame = frameFromNormal(surface.shadingNormal);
   let wo = toLocal(frame, -path.direction);

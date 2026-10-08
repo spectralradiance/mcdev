@@ -106,7 +106,7 @@ fn primaryAt(pixel: u32) -> Primary {
   if (h.y == NO_HIT) { return p; }
   let path = loadPath(pixel);
   p.surface = surfaceAt(Hit(bitcast<f32>(h.x), h.y, bitcast<vec2f>(h.zw)), path.origin, path.direction);
-  p.material = materialAt(p.surface.material);
+  p.material = surfaceMaterial(p.surface);
   p.frame = frameFromNormal(p.surface.shadingNormal);
   p.wo = toLocal(p.frame, -path.direction);
   p.valid = !isDelta(p.material) && p.material.kind != EMISSIVE;
