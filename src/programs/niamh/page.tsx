@@ -11,6 +11,8 @@ import {
   type WebGpuEngineId,
 } from "./gpu/engines";
 import { PathTracerRenderer } from "./gpu/renderer";
+import { defaultDisplay, type DisplaySettings, type ToneMap } from "./display";
+import { defaultRealtime, type RealtimeOptions } from "./webgpu/realtime";
 import { webGpuAvailable, WebGpuRenderer } from "./webgpu/renderer";
 
 // What the page needs from either backend.
@@ -31,6 +33,8 @@ const selectStyle = {
   outline: "none",
 } as const;
 
+const labelStyle = { display: "flex", alignItems: "center", gap: "0.4rem" } as const;
+
 const NiamhPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,6 +52,27 @@ const NiamhPage: React.FC = () => {
   const sceneIdRef = useRef(sceneId);
   sceneIdRef.current = sceneId;
   const gpuAvailable = webGpuAvailable();
+
+  // Render settings. Both backends take bounces, resolution scale and display settings; the ReSTIR block is WebGPU-only.
+  const [bounces, setBounces] = useState<number | null>(null); // null keeps the scene's own limit
+  const [renderScale, setRenderScale] = useState(1);
+  const [display, setDisplay] = useState<DisplaySettings>({ ...defaultDisplay });
+  const [realtime, setRealtime] = useState<RealtimeOptions>({ ...defaultRealtime });
+  const settingsRef = useRef({ bounces, renderScale, display, realtime });
+  settingsRef.current = { bounces, renderScale, display, realtime };
+  const resizeRef = useRef<(() => void) | null>(null);
+
+  const applySettings = () => {
+    const { bounces: b, display: d, realtime: r } = settingsRef.current;
+    for (const renderer of [webglRef.current, webgpuRef.current]) {
+      if (!renderer) continue;
+      if (b !== null) renderer.setMaxBounces(b);
+      renderer.setDisplay(d);
+    }
+    webgpuRef.current?.setRealtimeOptions(r);
+  };
+  useEffect(applySettings, [bounces, display, realtime]);
+  useEffect(() => resizeRef.current?.(), [renderScale]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -77,12 +102,14 @@ const NiamhPage: React.FC = () => {
           gpu.setEngine(gpuEngineRef.current);
           webgpuRef.current = gpu;
           renderer = gpu;
+          applySettings();
         } else {
           const gl = new PathTracerRenderer(canvas);
           gl.setScene(currentScene());
           gl.setEngine(glEngineRef.current);
           webglRef.current = gl;
           renderer = gl;
+          applySettings();
         }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
@@ -90,7 +117,8 @@ const NiamhPage: React.FC = () => {
       }
 
       const resize = () => {
-        const width = Math.round(container.clientWidth);
+        // Render below display resolution when asked; CSS stretches the canvas back up.
+        const width = Math.max(1, Math.round(container.clientWidth * settingsRef.current.renderScale));
         const height = Math.round(width * 0.75);
         // A canvas that already owns a WebGPU context is resized by the renderer when it rebuilds.
         if (backend === "webgl2") {
@@ -100,6 +128,7 @@ const NiamhPage: React.FC = () => {
         renderer!.setSize(width, height);
       };
       resize();
+      resizeRef.current = resize;
       observer = new ResizeObserver(resize);
       observer.observe(container);
 
@@ -126,6 +155,7 @@ const NiamhPage: React.FC = () => {
 
     return () => {
       cancelled = true;
+      resizeRef.current = null;
       cancelAnimationFrame(rafRef.current);
       observer?.disconnect();
       renderer?.dispose();
@@ -216,6 +246,49 @@ const NiamhPage: React.FC = () => {
           </select>
           <span style={{ color: "#666", fontSize: "0.72rem" }}>{description}</span>
         </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem", flexWrap: "wrap", color: "#888", fontSize: "0.72rem" }}>
+          <label style={labelStyle}>
+            bounces {bounces ?? 6}
+            <input type="range" min={1} max={16} value={bounces ?? 6} onChange={(e) => setBounces(Number(e.target.value))} />
+          </label>
+          <label style={labelStyle}>
+            resolution {Math.round(renderScale * 100)}%
+            <input type="range" min={0.25} max={1} step={0.25} value={renderScale} onChange={(e) => setRenderScale(Number(e.target.value))} />
+          </label>
+          <label style={labelStyle}>
+            exposure {display.exposure.toFixed(1)}
+            <input type="range" min={-4} max={4} step={0.25} value={display.exposure} onChange={(e) => setDisplay({ ...display, exposure: Number(e.target.value) })} />
+          </label>
+          <select value={display.toneMap} onChange={(e) => setDisplay({ ...display, toneMap: e.target.value as ToneMap })} style={selectStyle}>
+            <option value="clamp">Clamp</option>
+            <option value="reinhard">Reinhard</option>
+            <option value="aces">ACES</option>
+          </select>
+        </div>
+        {backend === "webgpu" && gpuEngine === "realtime" && (
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem", flexWrap: "wrap", color: "#888", fontSize: "0.72rem" }}>
+            <label style={labelStyle}>
+              candidates {realtime.candidates}
+              <input type="range" min={1} max={32} value={realtime.candidates} onChange={(e) => setRealtime({ ...realtime, candidates: Number(e.target.value) })} />
+            </label>
+            <label style={labelStyle}>
+              <input type="checkbox" checked={realtime.temporalReuse} onChange={(e) => setRealtime({ ...realtime, temporalReuse: e.target.checked })} />
+              temporal reuse
+            </label>
+            <label style={labelStyle}>
+              <input type="checkbox" checked={realtime.spatialReuse} onChange={(e) => setRealtime({ ...realtime, spatialReuse: e.target.checked })} />
+              spatial reuse
+            </label>
+            <label style={labelStyle}>
+              history {realtime.maxHistory}
+              <input type="range" min={1} max={64} value={realtime.maxHistory} onChange={(e) => setRealtime({ ...realtime, maxHistory: Number(e.target.value) })} />
+            </label>
+            <label style={labelStyle}>
+              filter passes {realtime.filterPasses}
+              <input type="range" min={0} max={5} value={realtime.filterPasses} onChange={(e) => setRealtime({ ...realtime, filterPasses: Number(e.target.value) })} />
+            </label>
+          </div>
+        )}
         <div ref={containerRef} style={{ width: "100%", position: "relative" }}>
           <canvas
             key={backend}
