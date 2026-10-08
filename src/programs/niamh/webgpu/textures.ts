@@ -1,9 +1,14 @@
-// Procedural textures for the WebGPU backend. rtadvanced's packer drops texture data, so the scene JSON is read here
-// and turned into two small tables appended to the scene buffer: one entry per texture, then one binding per material.
-// Pure data, no WebAssembly or GPU, so it can be tested alone.
+// Procedural textures, sheen and mixed materials for the WebGPU backend. rtadvanced's packer drops all three (a sheen
+// material is packed as diffuse, a mix as its first part), so the scene JSON is read here and turned into small tables
+// appended to the scene buffer: one entry per texture, one texture binding per material, and one extension per material
+// for what the packed material can't say. Pure data, no WebAssembly or GPU, so it can be tested alone.
 
 export const TEXTURE_CHECKER = 0;
 export const TEXTURE_NOISE = 1;
+
+/** Extension kinds, in the w of a material's first extension vec4; 0 means the packed material is complete. */
+export const EXTENSION_SHEEN = 6;
+export const EXTENSION_MIX = 7;
 
 /** vec4s per texture: (kind, scale, 0, 0), first colour, second colour. */
 export const TEXTURE_VEC4S = 3;
@@ -15,6 +20,10 @@ interface SceneTextureJson {
 }
 
 interface SceneMaterialJson {
+  type?: string;
+  sheen?: number[];
+  materials?: string[];
+  amount?: number | string;
   albedo?: unknown;
   bumpMap?: string;
   bumpScale?: number;
@@ -31,9 +40,14 @@ export interface TextureTables {
   data: Float32Array;
   /** Offset of the per-material bindings in vec4s, relative to the start of `data`. */
   bindingsOffset: number;
+  /**
+   * Offset of the per-material extensions, two vec4s each: (sheen rgb, kind) and (mix part A, mix part B, mix amount,
+   * amount texture + 1), in vec4s relative to the start of `data`.
+   */
+  extensionsOffset: number;
   /** What the GPU still can't do for this scene (image textures, normal maps). */
   unsupported: string[];
-  /** True when at least one material uses a texture the GPU can evaluate. */
+  /** True when at least one material uses a texture, sheen or mix the GPU can evaluate. */
   used: boolean;
 }
 
@@ -47,7 +61,7 @@ export function buildTextureTables(scene: SceneJson, materialNames: string[]): T
   const index = new Map(names.map((name, i) => [name, i]));
   const unsupported = new Set<string>();
 
-  const data = new Float32Array(4 * (TEXTURE_VEC4S * names.length + materialNames.length));
+  const data = new Float32Array(4 * (TEXTURE_VEC4S * names.length + 3 * materialNames.length));
   names.forEach((name, i) => {
     const t = textures[name];
     const base = 4 * TEXTURE_VEC4S * i;
@@ -90,5 +104,31 @@ export function buildTextureTables(scene: SceneJson, materialNames: string[]): T
     data.set([albedo, bump, material.bumpScale ?? 1, 0], 4 * (bindingsOffset + m));
   });
 
-  return { data, bindingsOffset, unsupported: [...unsupported], used };
+  // Extensions follow the bindings: two vec4s per material.
+  const extensionsOffset = bindingsOffset + materialNames.length;
+  const materialIndex = new Map(materialNames.map((name, i) => [name, i]));
+  materialNames.forEach((name, m) => {
+    const material = scene.materials[name];
+    const at = 4 * (extensionsOffset + 2 * m);
+    if (material.type === "sheen") {
+      data.set([...(material.sheen ?? [0, 0, 0]), EXTENSION_SHEEN], at);
+      used = true;
+    } else if (material.type === "mix") {
+      const [a, b] = material.materials ?? [];
+      const partA = materialIndex.get(a);
+      const partB = materialIndex.get(b);
+      if (partA === undefined || partB === undefined) {
+        unsupported.add(`mix '${name}' names a material that doesn't exist (drawn as its first part)`);
+        return;
+      }
+      // The amount is a number, or the name of a texture whose luminance is the amount at each point.
+      const texture = typeof material.amount === "string" ? index.get(material.amount) : undefined;
+      const amount = typeof material.amount === "number" ? material.amount : 0.5;
+      data.set([0, 0, 0, EXTENSION_MIX], at);
+      data.set([partA, partB, amount, texture === undefined ? 0 : texture + 1], at + 4);
+      used = true;
+    }
+  });
+
+  return { data, bindingsOffset, extensionsOffset, unsupported: [...unsupported], used };
 }

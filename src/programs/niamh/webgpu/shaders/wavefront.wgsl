@@ -17,7 +17,9 @@ struct Params {
   // Where the sphere table starts, in vec4s: (centre, radius) per sphere, for sampling sphere lights.
   sphereTableBase: u32,
   // Texture table and per-material texture bindings, in vec4s; 0 when no material is textured.
-  textureBase: u32, materialTexBase: u32, pad0: u32, pad1: u32,
+  textureBase: u32, materialTexBase: u32,
+  // Per-material extensions (sheen colour, mix definition), two vec4s each, in vec4s; 0 when there are none.
+  materialExtBase: u32, pad1: u32,
 }
 
 @group(0) @binding(0) var<uniform> params: Params;
@@ -71,6 +73,8 @@ const CONDUCTOR = 2u;
 const DIELECTRIC = 3u;
 const EMISSIVE = 4u;
 const SUBSURFACE = 5u;
+const SHEEN = 6u;  // not in rtadvanced's packed kinds (it packs sheen as diffuse); set from the extension table
+const MIX = 7u;    // likewise, and resolved to one of its parts before shading
 
 const FLAG_PREVIOUS_DELTA = 256u;
 const FLAG_FEATURES_PENDING = 512u;
@@ -145,6 +149,7 @@ struct Material {
   eta: vec3f,
   ior: f32,
   k: vec3f,
+  sheen: vec3f,
 }
 
 fn materialAt(i: u32) -> Material {
@@ -152,8 +157,22 @@ fn materialAt(i: u32) -> Material {
   let a = scene[base];
   let b = scene[base + 1u];
   let c = scene[base + 2u];
-  return Material(a.xyz, u32(a.w), b.xyz, b.w, c.xyz, c.w, scene[base + 3u].xyz);
+  var m = Material(a.xyz, u32(a.w), b.xyz, b.w, c.xyz, c.w, scene[base + 3u].xyz, vec3f(0.0));
+  let extension = materialExtension(i);
+  if (u32(extension.w) == SHEEN) {
+    m.kind = SHEEN;
+    m.sheen = extension.xyz;
+  }
+  return m;
 }
+
+// What the packed material can't say: (sheen rgb, SHEEN or MIX) and, for a mix, (part A, part B, amount, texture + 1).
+fn materialExtension(material: u32) -> vec4f {
+  if (params.materialExtBase == 0u) { return vec4f(0.0); }
+  return scene[params.materialExtBase + 2u * material];
+}
+
+fn mixDefinition(material: u32) -> vec4f { return scene[params.materialExtBase + 2u * material + 1u]; }
 
 // ---- Procedural textures, as rtadvanced/src/textures/texture.cpp. Lookups are point-sampled: progressive accumulation
 // averages the jittered samples over each pixel, which is the box filter the CPU applies analytically.
@@ -455,8 +474,24 @@ fn surfaceAt(hit: Hit, o: vec3f, d: vec3f) -> Surface {
   if (dot(interpolated, interpolated) > 0.0) {
     shading = select(interpolated, -interpolated, dot(interpolated, normal) < 0.0);
   }
-  shading = bumpedNormal(p.z, point, select(-shading, shading, frontFace), frontFace);
-  return Surface(point, normal, shading, frontFace, p.z, uv);
+  // A mix is resolved to one of its parts here, so textures, bumps and the BSDF all see the part. As the CPU does, a hash
+  // of the point picks the part, so the extend and shade kernels, which both come through here, agree.
+  var material = p.z;
+  if (u32(materialExtension(material).w) == MIX) {
+    let mix = mixDefinition(material);
+    var amount = mix.z;
+    if (mix.w != 0.0 && params.textureBase != 0u) {
+      amount = luminance(evalTexture(u32(mix.w) - 1u, uv, point, 0.0));
+    }
+    var h = 0x6d6978u;
+    h = mixHash(h, bitcast<u32>(point.x));
+    h = mixHash(h, bitcast<u32>(point.y));
+    h = mixHash(h, bitcast<u32>(point.z));
+    let r = f32(pcgHash(h) >> 8u) * (1.0 / 16777216.0);
+    material = u32(select(mix.x, mix.y, r < amount));
+  }
+  shading = bumpedNormal(material, point, select(-shading, shading, frontFace), frontFace);
+  return Surface(point, normal, shading, frontFace, material, uv);
 }
 
 // The material at a surface point: its constant parameters, with the albedo replaced by its texture where it has one.
@@ -758,7 +793,19 @@ fn evalBsdf(m: Material, wo: vec3f, wi: vec3f) -> vec3f {
     let h = normalize(wo + wi);
     return conductorFresnel(m, dot(wo, h)) * (ggxD(h, alpha) * ggxG(wo, wi, alpha) / (4.0 * wo.z * wi.z));
   }
+  if (m.kind == SHEEN) { return evalSheen(m, wo, wi); }
   return m.albedo * INV_PI;
+}
+
+// Velvet and cloth: a Lambertian base plus a lobe that brightens toward grazing angles. The Charlie distribution and
+// Neubelt and Pettineo's visibility term (Estevez and Kulla 2017), as rtadvanced/src/materials/bsdf.cpp.
+fn evalSheen(m: Material, wo: vec3f, wi: vec3f) -> vec3f {
+  let h = normalize(wo + wi);
+  let inverseAlpha = 1.0 / max(m.roughness * m.roughness, 1e-3);
+  let sinTheta = sqrt(max(0.0, 1.0 - h.z * h.z));
+  let d = (2.0 + inverseAlpha) * pow(sinTheta, inverseAlpha) / (2.0 * PI);
+  let visibility = 1.0 / (4.0 * (wi.z + wo.z - wi.z * wo.z));
+  return m.albedo * INV_PI + m.sheen * (d * visibility);
 }
 
 fn bsdfPdf(m: Material, wo: vec3f, wi: vec3f) -> f32 {
@@ -1020,8 +1067,8 @@ fn extend(@builtin(global_invocation_id) id: vec3u) {
   if (path.depth >= params.maxDepth) { return; }
   storePath(i, path);
   paths[3u * params.pathCount + i] = vec4u(bitcast<u32>(hit.t), hit.primitive, bitcast<vec2u>(hit.uv));
-  // Subsurface isn't supported on the GPU and shades as diffuse; the page warns about it.
-  let k = select(material.kind, DIFFUSE, material.kind == SUBSURFACE);
+  // Subsurface isn't supported on the GPU and shades as diffuse, and sheen is a diffuse variant; the page warns about the former.
+  let k = select(material.kind, DIFFUSE, material.kind == SUBSURFACE || material.kind == SHEEN);
   if (params.sortMaterials != 0u) {
     queues[(MATERIAL_QUEUE + k) * params.pathCount + atomicAdd(&counters[MATERIAL_COUNT + k], 1u)] = i;
   } else {

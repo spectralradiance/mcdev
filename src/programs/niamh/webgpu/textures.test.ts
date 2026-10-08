@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildTextureTables, TEXTURE_CHECKER, TEXTURE_NOISE, TEXTURE_VEC4S, type SceneJson } from "./textures";
+import { buildTextureTables, EXTENSION_MIX, EXTENSION_SHEEN, TEXTURE_CHECKER, TEXTURE_NOISE, TEXTURE_VEC4S, type SceneJson } from "./textures";
 
 // Mirrors texture-study.json: a checker floor albedo, a noise albedo, and a glossy material bump-mapped by noise.
 const scene: SceneJson = {
@@ -67,5 +67,52 @@ describe("buildTextureTables", () => {
     expect(t.used).toBe(false);
     expect(t.unsupported).toEqual([]);
     expect(t.bindingsOffset).toBe(0);
+  });
+});
+
+describe("sheen and mix extensions", () => {
+  const scene: SceneJson = {
+    textures: { patina: { type: "noise", colors: [[0, 0, 0], [1, 1, 1]], scale: 4 } },
+    materials: {
+      // sorted order: agedCopper, patinated, velvet, verdigris
+      agedCopper: { type: "conductor" },
+      patinated: { type: "mix", materials: ["agedCopper", "verdigris"], amount: "patina" },
+      velvet: { type: "sheen", albedo: [0.12, 0.01, 0.03], sheen: [0.9, 0.35, 0.5] },
+      verdigris: { type: "diffuse" },
+    },
+  };
+  const names = ["agedCopper", "patinated", "velvet", "verdigris"];
+  const t = buildTextureTables(scene, names);
+  const extension = (material: number) =>
+    Array.from(t.data.slice(4 * (t.extensionsOffset + 2 * material), 4 * (t.extensionsOffset + 2 * material + 2)));
+
+  it("records the sheen colour and kind", () => {
+    expect(extension(2).slice(0, 4)).toEqual([0.9, 0.35, 0.5, EXTENSION_SHEEN].map(Math.fround));
+  });
+
+  it("records a mix's two parts by packed index, and the texture that sets its amount", () => {
+    const e = extension(1);
+    expect(e[3]).toBe(EXTENSION_MIX);
+    expect(e.slice(4, 8)).toEqual([0, 3, 0.5, 1]); // agedCopper = 0, verdigris = 3, patina = texture 0, one-based
+  });
+
+  it("leaves ordinary materials with a zero extension", () => {
+    expect(extension(0)).toEqual(new Array(8).fill(0));
+    expect(extension(3)).toEqual(new Array(8).fill(0));
+  });
+
+  it("takes a plain number as the mix amount", () => {
+    const fixed = buildTextureTables(
+      { materials: { a: {}, b: {}, m: { type: "mix", materials: ["a", "b"], amount: 0.25 } } },
+      ["a", "b", "m"],
+    );
+    const at = 4 * (fixed.extensionsOffset + 2 * 2);
+    expect(Array.from(fixed.data.slice(at + 4, at + 8))).toEqual([0, 1, 0.25, 0]);
+    expect(fixed.used).toBe(true);
+  });
+
+  it("reports a mix that names a missing material", () => {
+    const bad = buildTextureTables({ materials: { m: { type: "mix", materials: ["a", "zzz"], amount: 0.5 } } }, ["m"]);
+    expect(bad.unsupported.join()).toMatch(/doesn't exist/);
   });
 });

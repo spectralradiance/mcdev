@@ -14,8 +14,6 @@ const UNSUPPORTED: [number, string][] = [
   [2, 'participating media (ignored)'],
   [4, 'subsurface scattering (shaded as diffuse)'],
   [8, 'dispersion (one index of refraction)'],
-  [16, 'sheen (shaded as diffuse)'],
-  [32, 'mixed materials (the first of each pair)'],
   [128, 'sky and sun (a constant background, the horizon colour)'],
   [256, 'brushed metal (isotropic roughness)'],
 ];
@@ -38,6 +36,8 @@ export interface SceneData {
   // uses a texture the GPU can evaluate.
   textureBase?: number;
   materialTexBase?: number;
+  // Where the per-material extensions (sheen colour, mix definition) start, in vec4 units.
+  materialExtBase?: number;
   materialCount: number;
 }
 
@@ -93,6 +93,7 @@ export class RendererB {
       unsupported: [...unsupported, ...tables.unsupported],
       textureBase: tables.used ? textureBase : undefined,
       materialTexBase: tables.used ? textureBase + tables.bindingsOffset : undefined,
+      materialExtBase: tables.used ? textureBase + tables.extensionsOffset : undefined,
     };
   }
 
