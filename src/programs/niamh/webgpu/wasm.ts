@@ -16,7 +16,6 @@ const UNSUPPORTED: [number, string][] = [
   [8, 'dispersion (one index of refraction)'],
   [16, 'sheen (shaded as diffuse)'],
   [32, 'mixed materials (the first of each pair)'],
-  [64, 'rough glass (drawn smooth)'],
   [128, 'sky and sun (a constant background, the horizon colour)'],
   [256, 'brushed metal (isotropic roughness)'],
 ];

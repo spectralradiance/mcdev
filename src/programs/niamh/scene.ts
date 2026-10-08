@@ -132,6 +132,15 @@ export const cornellSphereScene: SceneDescription = {
   ],
 };
 
+/** The Cornell box with the glass cube frosted: GGX transmission, so it blurs what it refracts. */
+export const cornellFrostedScene: SceneDescription = {
+  ...cornellBoxScene,
+  materials: {
+    ...cornellBoxScene.materials,
+    glass: { ...cornellBoxScene.materials.glass, roughness: 0.3 },
+  },
+};
+
 /** A scene the WebGPU backend loads from rtadvanced's embedded scene files (meshes, textures, other cameras). */
 export interface NativeScene {
   native: string;
@@ -149,6 +158,7 @@ export const SCENES: SceneEntry[] = [
   { id: "cornell", label: "Cornell box", scene: cornellBoxScene },
   { id: "cornell-spheres", label: "Cornell box, spheres", scene: cornellSphereScene },
   { id: "cornell-fog", label: "Cornell box, scattering glass", scene: cornellFogScene },
+  { id: "cornell-frosted", label: "Cornell box, frosted glass", scene: cornellFrostedScene },
   { id: "rt-cornell", label: "rtoptimized: Cornell box", scene: { native: "/scenes/cornell-box.json" } },
   { id: "rt-many-lights", label: "rtoptimized: 64 lights", scene: { native: "/scenes/many-lights.json" } },
   { id: "rt-gallery", label: "rtoptimized: material gallery", scene: { native: "/scenes/material-gallery.json" } },

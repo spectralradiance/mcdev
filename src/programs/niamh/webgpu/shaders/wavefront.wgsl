@@ -249,7 +249,7 @@ fn bumpedNormal(material: u32, point: vec3f, outward: vec3f, frontFace: bool) ->
 }
 
 fn isDelta(m: Material) -> bool {
-  return m.kind == DIELECTRIC || (m.kind == CONDUCTOR && m.roughness < 0.01);
+  return (m.kind == DIELECTRIC || m.kind == CONDUCTOR) && m.roughness < 0.01;
 }
 
 // ---- Participating media. A material with a scattering distance fills the objects that use it with a homogeneous
@@ -650,9 +650,101 @@ fn conductorFresnel(m: Material, cosTheta: f32) -> vec3f {
                fresnelConductor(cosTheta, m.eta.z, m.k.z));
 }
 
+// ---- Rough dielectric: GGX microfacet reflection and transmission, after pbrt-v4's DielectricBxDF. wo is always on the
+// +z side (the shading frame faces the incoming ray); wi.z < 0 is transmission. eta is n_transmitted / n_incident for wo.
+
+// Whether the ray is entering the object; eval and pdf need it for eta. Set where a surface is shaded.
+var<private> bsdfEntering = true;
+
+fn isRoughDielectric(m: Material) -> bool { return m.kind == DIELECTRIC && !isDelta(m); }
+
+fn dielectricEta(entering: bool, ior: f32) -> f32 { return select(1.0 / ior, ior, entering); }
+
+struct Microfacet {
+  wm: vec3f,
+  valid: bool,
+  reflect: bool,
+  etap: f32,
+}
+
+// The microfacet normal that sends wo to wi, whether by reflection or refraction.
+fn dielectricHalfVector(wo: vec3f, wi: vec3f, eta: f32) -> Microfacet {
+  let cosO = wo.z;
+  let cosI = wi.z;
+  let reflect = cosI * cosO > 0.0;
+  let etap = select(eta, 1.0, reflect);
+  var wm = wi * etap + wo;
+  if (cosI == 0.0 || cosO == 0.0 || dot(wm, wm) == 0.0) { return Microfacet(vec3f(0.0), false, reflect, etap); }
+  wm = normalize(wm);
+  if (wm.z < 0.0) { wm = -wm; }
+  // A microfacet facing away from either direction can't have scattered between them.
+  if (dot(wm, wi) * cosI < 0.0 || dot(wm, wo) * cosO < 0.0) { return Microfacet(wm, false, reflect, etap); }
+  return Microfacet(wm, true, reflect, etap);
+}
+
+// The density of visible normals from wo, as sampleGgxVisibleNormal draws them.
+fn visibleNormalDensity(wo: vec3f, wm: vec3f, alpha: f32) -> f32 {
+  return ggxD(wm, alpha) / (1.0 + ggxLambda(wo, alpha)) * abs(dot(wo, wm)) / abs(wo.z);
+}
+
+fn roughDielectricEval(m: Material, wo: vec3f, wi: vec3f, eta: f32) -> vec3f {
+  if (wo.z <= 0.0) { return vec3f(0.0); }
+  let alpha = alphaFor(m.roughness);
+  let mf = dielectricHalfVector(wo, wi, eta);
+  if (!mf.valid) { return vec3f(0.0); }
+  let F = fresnelDielectric(dot(wo, mf.wm), eta);
+  let D = ggxD(mf.wm, alpha);
+  let G = ggxG(wo, wi, alpha);
+  if (mf.reflect) { return vec3f(D * G * F / abs(4.0 * wi.z * wo.z)); }
+  let denominator = pow(dot(wi, mf.wm) + dot(wo, mf.wm) / mf.etap, 2.0);
+  let transmitted = D * (1.0 - F) * G * abs(dot(wi, mf.wm) * dot(wo, mf.wm) / (wi.z * wo.z * denominator));
+  // Radiance, not importance, is what travels back along a camera path: the 1 / eta^2 compresses it.
+  return m.albedo * (transmitted / (mf.etap * mf.etap));
+}
+
+fn roughDielectricPdf(m: Material, wo: vec3f, wi: vec3f, eta: f32) -> f32 {
+  if (wo.z <= 0.0) { return 0.0; }
+  let alpha = alphaFor(m.roughness);
+  let mf = dielectricHalfVector(wo, wi, eta);
+  if (!mf.valid) { return 0.0; }
+  // Reflection or transmission is chosen with probability F or 1 - F at the sampled microfacet normal.
+  let F = fresnelDielectric(dot(wo, mf.wm), eta);
+  let density = visibleNormalDensity(wo, mf.wm, alpha);
+  if (mf.reflect) { return density / (4.0 * abs(dot(wo, mf.wm))) * F; }
+  let denominator = pow(dot(wi, mf.wm) + dot(wo, mf.wm) / mf.etap, 2.0);
+  return density * (abs(dot(wi, mf.wm)) / denominator) * (1.0 - F);
+}
+
+fn sampleRoughDielectric(m: Material, wo: vec3f, uLobe: f32, u: vec2f, entering: bool) -> BsdfSample {
+  var s = BsdfSample(vec3f(0.0), vec3f(0.0), 0.0, false, false);
+  let eta = dielectricEta(entering, m.ior);
+  let wm = sampleGgxVisibleNormal(wo, alphaFor(m.roughness), u);
+  let cosI = dot(wo, wm);
+  if (cosI <= 0.0) { return s; }
+  var wi: vec3f;
+  if (uLobe < fresnelDielectric(cosI, eta)) {
+    wi = reflectAbout(wo, wm);
+    if (wi.z <= 0.0) { return s; }
+  } else {
+    let sin2T = (1.0 - cosI * cosI) / (eta * eta);
+    if (sin2T >= 1.0) { return s; }
+    wi = -wo / eta + (cosI / eta - sqrt(1.0 - sin2T)) * wm;
+    if (wi.z >= 0.0) { return s; }
+  }
+  // Evaluate through the same functions NEE and MIS use, so the three always agree.
+  let pdf = roughDielectricPdf(m, wo, wi, eta);
+  if (pdf <= 0.0) { return s; }
+  s.wi = wi;
+  s.pdf = pdf;
+  s.weight = roughDielectricEval(m, wo, wi, eta) * (abs(wi.z) / pdf);
+  s.ok = true;
+  return s;
+}
+
 const GLOSSY_SPECULAR_PROBABILITY = 0.5;
 
 fn evalBsdf(m: Material, wo: vec3f, wi: vec3f) -> vec3f {
+  if (isRoughDielectric(m)) { return roughDielectricEval(m, wo, wi, dielectricEta(bsdfEntering, m.ior)); }
   if (isDelta(m) || wo.z <= 0.0 || wi.z <= 0.0) { return vec3f(0.0); }
   if (m.kind == GLOSSY) {
     let alpha = alphaFor(m.roughness);
@@ -670,6 +762,7 @@ fn evalBsdf(m: Material, wo: vec3f, wi: vec3f) -> vec3f {
 }
 
 fn bsdfPdf(m: Material, wo: vec3f, wi: vec3f) -> f32 {
+  if (isRoughDielectric(m)) { return roughDielectricPdf(m, wo, wi, dielectricEta(bsdfEntering, m.ior)); }
   if (isDelta(m) || wo.z <= 0.0 || wi.z <= 0.0) { return 0.0; }
   if (m.kind == GLOSSY) {
     return GLOSSY_SPECULAR_PROBABILITY * ggxReflectionPdf(wo, normalize(wo + wi), alphaFor(m.roughness)) +
@@ -692,6 +785,7 @@ fn reflectAbout(w: vec3f, h: vec3f) -> vec3f { return h * (2.0 * dot(w, h)) - w;
 fn sampleBsdf(m: Material, wo: vec3f, uLobe: f32, u: vec2f, entering: bool) -> BsdfSample {
   var s = BsdfSample(vec3f(0.0), vec3f(0.0), 0.0, false, false);
   if (wo.z <= 0.0) { return s; }
+  if (isRoughDielectric(m)) { return sampleRoughDielectric(m, wo, uLobe, u, entering); }
   if (m.kind == DIELECTRIC) {
     let eta = select(1.0 / m.ior, m.ior, entering);
     let reflectance = fresnelDielectric(wo.z, eta);
@@ -949,6 +1043,7 @@ fn shade(@builtin(global_invocation_id) id: vec3u) {
   let surface = surfaceAt(Hit(bitcast<f32>(h.x), h.y, bitcast<vec2f>(h.zw)), path.origin, path.direction);
   let material = surfaceMaterial(surface);
   let dimension = 4u + 8u * path.depth;
+  bsdfEntering = surface.frontFace;
   let frame = frameFromNormal(surface.shadingNormal);
   let wo = toLocal(frame, -path.direction);
 
@@ -958,7 +1053,7 @@ fn shade(@builtin(global_invocation_id) id: vec3u) {
     let distance = length(toLight);
     let wiWorld = toLight / distance;
     let cosLight = -dot(wiWorld, light.normal);
-    if (distance > 0.0 && cosLight > 0.0 && dot(wiWorld, surface.normal) > 0.0) {
+    if (distance > 0.0 && cosLight > 0.0 && (dot(wiWorld, surface.normal) > 0.0 || isRoughDielectric(material))) {
       let wi = toLocal(frame, wiWorld);
       let f = evalBsdf(material, wo, wi);
       if (any(f > vec3f(0.0))) {
