@@ -5,6 +5,7 @@
 
 import type { SceneDescription } from "../scene";
 import { RENDER_MODE_CODE, type RenderEngine } from "./engines";
+import { defaultDisplay, TONE_MAP_CODE, type DisplaySettings } from "../display";
 import { MAX_BOUNCES, MAX_LIGHTS, MAX_MATERIALS, MAX_OBJECTS } from "./limits";
 import { packScene, type PackedScene } from "./packScene";
 import { add, cross, length, normalize, scale, sub, type Vec3 } from "./vec3";
@@ -69,6 +70,8 @@ export class PathTracerRenderer {
     private seed = 0;
     private scene: PackedScene | null = null;
     private engine: RenderEngine = "nee-mis";
+    private display: DisplaySettings = { ...defaultDisplay };
+    private maxBouncesOverride: number | null = null;
 
     private orbit: OrbitState = { target: [0, 0, 0], yaw: 0, pitch: 0, distance: 500, up: WORLD_UP };
     private dragging = false;
@@ -135,6 +138,19 @@ export class PathTracerRenderer {
             .replace(/__MAX_BOUNCES__/g, String(MAX_BOUNCES))
             .replace(/__RENDER_MODE__/g, String(RENDER_MODE_CODE[engine]));
         return linkProgram(this.gl, this.fullscreenVertShader, compileShader(this.gl, this.gl.FRAGMENT_SHADER, pathTracerSrc));
+    }
+
+    /** Overrides the scene's bounce limit (capped at the shader's MAX_BOUNCES) and restarts accumulation. */
+    setMaxBounces(bounces: number): void {
+        this.maxBouncesOverride = bounces;
+        if (this.scene) {
+            this.uploadStaticUniforms(this.scene);
+            this.resetAccumulation();
+        }
+    }
+
+    setDisplay(display: DisplaySettings): void {
+        this.display = { ...display };
     }
 
     get currentEngine(): RenderEngine {
@@ -274,7 +290,7 @@ export class PathTracerRenderer {
         gl.uniform1f(this.loc(p, "u_camFov"), scene.camera.fov);
         gl.uniform1f(this.loc(p, "u_camAperture"), scene.camera.aperture);
         gl.uniform1f(this.loc(p, "u_camFocusDistance"), scene.camera.focusDistance);
-        gl.uniform1i(this.loc(p, "u_maxBounces"), Math.min(scene.maxBounces, MAX_BOUNCES));
+        gl.uniform1i(this.loc(p, "u_maxBounces"), Math.min(this.maxBouncesOverride ?? scene.maxBounces, MAX_BOUNCES));
     }
 
     resetAccumulation(): void {
@@ -322,6 +338,8 @@ export class PathTracerRenderer {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.accumTextures[this.readIndex]);
         gl.uniform1i(this.loc(this.displayProgram, "u_image"), 0);
+        gl.uniform1f(this.loc(this.displayProgram, "u_exposure"), 2 ** this.display.exposure);
+        gl.uniform1i(this.loc(this.displayProgram, "u_toneMap"), TONE_MAP_CODE[this.display.toneMap]);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 

@@ -3,8 +3,9 @@
 // either. rtadvanced, compiled to WebAssembly, loads the scene and builds the BVH; see ./wasm.ts.
 
 import { isNative, type NativeScene, type SceneDescription } from "../scene";
+import { defaultDisplay, TONE_MAP_CODE, type DisplaySettings } from "../display";
 import { convertScene } from "./sceneConvert";
-import { defaultRealtime, RealtimeTracer } from "./realtime";
+import { defaultRealtime, RealtimeTracer, type RealtimeOptions } from "./realtime";
 import { packedMaterial, RendererB, withMedia, type SceneData } from "./wasm";
 import { WavefrontTracer, type CameraPose, type TracerOptions } from "./wavefront";
 import displaySource from "./shaders/display.wgsl?raw";
@@ -43,6 +44,9 @@ export class WebGpuRenderer {
   private inFlight = false;
   private samplesPerFrame = 1;
   private disposed = false;
+  private displaySettings: DisplaySettings = { ...defaultDisplay };
+  private maxDepthOverride: number | null = null;
+  private realtimeOptions: RealtimeOptions = { ...defaultRealtime };
   private frameMs = 0;
   private lastFrame = 0;
 
@@ -145,6 +149,23 @@ export class WebGpuRenderer {
     return parts.join(" | ");
   }
 
+  /** Overrides the scene's bounce limit; the tracer's per-bounce timing and queues are sized by it, so it rebuilds. */
+  setMaxBounces(bounces: number): void {
+    if (bounces === this.maxDepthOverride) return;
+    this.maxDepthOverride = bounces;
+    this.dirty = true;
+  }
+
+  setDisplay(display: DisplaySettings): void {
+    this.displaySettings = { ...display };
+  }
+
+  /** ReSTIR and denoiser settings; they take effect on the next frame without a rebuild. */
+  setRealtimeOptions(options: RealtimeOptions): void {
+    this.realtimeOptions = { ...options };
+    if (this.tracer instanceof RealtimeTracer) this.tracer.realtime = { ...options };
+  }
+
   get currentEngine(): WebGpuEngine {
     return this.engine;
   }
@@ -220,12 +241,12 @@ export class WebGpuRenderer {
     const options: TracerOptions = {
       width,
       height,
-      maxDepth: native ? NATIVE_MAX_DEPTH : (this.scene as SceneDescription).maxBounces ?? 6,
+      maxDepth: this.maxDepthOverride ?? (native ? NATIVE_MAX_DEPTH : (this.scene as SceneDescription).maxBounces ?? 6),
       sortMaterials: true,
       mode: WAVEFRONT_MODE[this.engine] ?? 2,
     };
     const tracer = this.engine === "realtime"
-      ? new RealtimeTracer(this.device, this.sceneData, options, { ...defaultRealtime })
+      ? new RealtimeTracer(this.device, this.sceneData, options, { ...this.realtimeOptions })
       : new WavefrontTracer(this.device, this.sceneData, options);
     this.tracer = tracer;
     this.home = tracer.initialPose();
@@ -307,8 +328,8 @@ export class WebGpuRenderer {
     const view = new ArrayBuffer(32);
     const realtime = tracer instanceof RealtimeTracer;
     new Uint32Array(view, 0, 4).set([tracer.options.width, tracer.options.height, realtime ? 1 : tracer.samples, 0]);
-    new Float32Array(view, 16, 1)[0] = 1;
-    new Uint32Array(view, 20, 1)[0] = 1; // Reinhard, matching the WebGL2 display pass
+    new Float32Array(view, 16, 1)[0] = 2 ** this.displaySettings.exposure;
+    new Uint32Array(view, 20, 1)[0] = TONE_MAP_CODE[this.displaySettings.toneMap];
     this.device.queue.writeBuffer(this.viewBuffer, 0, view);
     const encoder = this.device.createCommandEncoder();
     const pass = encoder.beginRenderPass({
