@@ -4,6 +4,7 @@
 
 import { isNative, type NativeScene, type SceneDescription } from "../scene";
 import { defaultDisplay, TONE_MAP_CODE, type DisplaySettings } from "../display";
+import { meanRatio, relativeMse, type Comparison } from "./compare";
 import { convertScene } from "./sceneConvert";
 import { defaultRealtime, RealtimeTracer, type RealtimeOptions } from "./realtime";
 import { packedMaterial, RendererB, withMedia, type SceneData } from "./wasm";
@@ -173,6 +174,72 @@ export class WebGpuRenderer {
   setRealtimeOptions(options: RealtimeOptions): void {
     this.realtimeOptions = { ...options };
     if (this.tracer instanceof RealtimeTracer) this.tracer.realtime = { ...options };
+  }
+
+  /**
+   * Renders the current scene with rtadvanced's own CPU path tracer (one thread, in WebAssembly, blocking) and with
+   * this GPU tracer at the same small size, and compares them. Two GPU renders with different seeds give the noise
+   * floor to judge the difference against. Scattering media are left out of the GPU render, since the CPU bridge
+   * never sees them.
+   */
+  async compareWithCpu(cpuSpp: number, width = 128): Promise<Comparison> {
+    // A scene or mode change only marks the renderer dirty; the render loop rebuilds on its next frame. Comparing before
+    // that would pair the previous scene's data with the new selection, so finish the rebuild first.
+    if (this.dirty) {
+      this.rebuild();
+      this.loadError = undefined;
+    }
+    const scene = this.sceneData;
+    const current = this.tracer;
+    if (!scene || !current) throw new Error("Nothing is loaded to compare.");
+    if (scene.sphereLightsPatched) {
+      throw new Error(
+        "This scene has sphere lights, which rtadvanced's WebAssembly bridge can't load, so its CPU renderer has nothing to compare against.",
+      );
+    }
+    const height = Math.round(width * 0.75);
+    const maxDepth = current.options.maxDepth;
+    const notes: string[] = [];
+    if (scene.mediaBase !== undefined) notes.push("scattering media left out of the GPU render: the CPU bridge doesn't see them");
+
+    const cpuStart = performance.now();
+    const cpu = this.rendererB.renderCpu(width, height, cpuSpp, maxDepth, false);
+    const cpuSeconds = (performance.now() - cpuStart) / 1000;
+
+    // The same scene data, minus media, so both renders see the same world.
+    const comparable: SceneData = { ...scene, mediaBase: undefined };
+    const gpuSpp = Math.max(256, 4 * cpuSpp);
+    const render = async (seed: number) => {
+      const tracer = new WavefrontTracer(this.device, comparable, { width, height, maxDepth, sortMaterials: true, mode: 2, seed });
+      try {
+        for (let done = 0; done < gpuSpp; done += 32) {
+          for (let i = 0; i < Math.min(32, gpuSpp - done); ++i) tracer.renderSample();
+          await this.device.queue.onSubmittedWorkDone();
+        }
+        return await tracer.readImage();
+      } finally {
+        tracer.destroy();
+      }
+    };
+    const gpuStart = performance.now();
+    const gpu = await render(0);
+    const gpuSeconds = (performance.now() - gpuStart) / 1000;
+    const noise = await render(7919);
+
+    return {
+      width,
+      height,
+      cpu,
+      gpu,
+      cpuSpp,
+      gpuSpp,
+      cpuSeconds,
+      gpuSeconds,
+      mse: relativeMse(cpu, gpu),
+      noiseMse: relativeMse(noise, gpu),
+      ratio: meanRatio(cpu, gpu),
+      notes,
+    };
   }
 
   setPaused(paused: boolean): void {
