@@ -41,7 +41,16 @@ export interface BoxObject {
   rotationDeg?: number;
 }
 
-export type SceneObject = PlaneObject | BoxObject;
+export interface SphereObject {
+  type: "sphere";
+  material: string;
+  /** Sphere center. */
+  position: [number, number, number];
+  radius: number;
+}
+
+/** Spheres can't be emissive: only boxes are sampled as area lights. */
+export type SceneObject = PlaneObject | BoxObject | SphereObject;
 
 export interface CameraDescription {
   position: [number, number, number];
@@ -94,3 +103,57 @@ export const cornellBoxScene: SceneDescription = {
   ],
   maxBounces: 6,
 };
+
+/** Same room, but the glass cube is filled with a forward-scattering medium (a murky, glowing block of glass). */
+export const cornellFogScene: SceneDescription = {
+  ...cornellBoxScene,
+  materials: {
+    ...cornellBoxScene.materials,
+    fogGlass: {
+      diffuse: [0, 0, 0],
+      reflectivity: [0.05, 0.05, 0.05],
+      transparency: [0.95, 0.95, 0.95],
+      ior: 1.5,
+      roughness: 0,
+      scatteringDistance: [90, 110, 140],
+      scatteringAnisotropy: 0.4,
+    },
+  },
+  objects: cornellBoxScene.objects.map((o) => (o.type === "box" && o.material === "glass" ? { ...o, material: "fogGlass" } : o)),
+};
+
+/** The same room with a glass sphere and a mirror sphere instead of the boxes. */
+export const cornellSphereScene: SceneDescription = {
+  ...cornellBoxScene,
+  objects: [
+    ...cornellBoxScene.objects.filter((o) => o.type === "plane" || o.material === "light"),
+    { type: "sphere", material: "glass", position: [180, 100, 200], radius: 100 },
+    { type: "sphere", material: "mirror", position: [380, 130, 340], radius: 130 },
+  ],
+};
+
+/** A scene the WebGPU backend loads from rtadvanced's embedded scene files (meshes, textures, other cameras). */
+export interface NativeScene {
+  native: string;
+}
+
+export interface SceneEntry {
+  id: string;
+  label: string;
+  scene: SceneDescription | NativeScene;
+}
+
+export const isNative = (scene: SceneDescription | NativeScene): scene is NativeScene => "native" in scene;
+
+export const SCENES: SceneEntry[] = [
+  { id: "cornell", label: "Cornell box", scene: cornellBoxScene },
+  { id: "cornell-spheres", label: "Cornell box, spheres", scene: cornellSphereScene },
+  { id: "cornell-fog", label: "Cornell box, scattering glass", scene: cornellFogScene },
+  { id: "rt-cornell", label: "rtoptimized: Cornell box", scene: { native: "/scenes/cornell-box.json" } },
+  { id: "rt-many-lights", label: "rtoptimized: 64 lights", scene: { native: "/scenes/many-lights.json" } },
+  { id: "rt-gallery", label: "rtoptimized: material gallery", scene: { native: "/scenes/material-gallery.json" } },
+  { id: "rt-sphere-lights", label: "rtoptimized: sphere lights", scene: { native: "/scenes/sphere-lights.json" } },
+  { id: "rt-courtyard", label: "rtoptimized: courtyard", scene: { native: "/scenes/courtyard.json" } },
+  { id: "rt-bokeh", label: "rtoptimized: bokeh", scene: { native: "/scenes/bokeh.json" } },
+  { id: "rt-textures", label: "rtoptimized: texture study", scene: { native: "/scenes/texture-study.json" } },
+];

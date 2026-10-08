@@ -19,6 +19,7 @@ precision highp int;
 #define MAX_BOUNCES __MAX_BOUNCES__
 #define OBJ_PLANE 0
 #define OBJ_BOX 1
+#define OBJ_SPHERE 2
 #define color_type vec3
 
 // Which integrator's render() gets compiled in below — see renderer.ts, which
@@ -66,13 +67,24 @@ vec4 box_intersection(vec3 pos, vec3 ray, bool inside, vec3 box_size) {
     return vec4(normal, dist);
 }
 
+// Returns the outward normal and the hit distance, like box_intersection; `inside` selects the far root.
+vec4 sphere_intersection(vec3 pos, vec3 ray, bool inside, float radius) {
+    float b = dot(pos, ray);
+    float disc = b * b - (dot(pos, pos) - radius * radius);
+    if (disc < 0.0) return vec4(0.0, 0.0, 0.0, -1.0);
+    float root = sqrt(disc);
+    float dist = inside ? -b + root : -b - root;
+    if (dist <= 0.0) return vec4(0.0, 0.0, 0.0, -1.0);
+    return vec4(normalize(pos + ray * dist), dist);
+}
+
 // ─── scene objects ───────────────────────────────────────────────────────────
 
 uniform int u_objectCount;
 uniform int u_objectType[MAX_OBJECTS];
 uniform vec3 u_objectPosition[MAX_OBJECTS];
 uniform mat3 u_objectRotation[MAX_OBJECTS];
-uniform vec3 u_objectParams[MAX_OBJECTS]; // plane normal, or box half-size
+uniform vec3 u_objectParams[MAX_OBJECTS]; // plane normal, box half-size, or (sphere radius, 0, 0)
 uniform int u_objectMaterial[MAX_OBJECTS];
 
 // which_object is 1-based; 0 means "no hit".
@@ -88,6 +100,8 @@ int find_intersection(vec3 ray_pos, vec3 ray, int prev_object, int inside_object
         vec4 cur_isec;
         if (u_objectType[i] == OBJ_PLANE) {
             cur_isec = plane_intersection(rel_pos, ray, u_objectParams[i]);
+        } else if (u_objectType[i] == OBJ_SPHERE) {
+            cur_isec = sphere_intersection(rel_pos, ray, inside, u_objectParams[i].x);
         } else {
             mat3 rotation = u_objectRotation[i];
             vec3 local_pos = rel_pos * rotation;
