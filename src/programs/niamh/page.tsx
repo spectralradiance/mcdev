@@ -144,6 +144,9 @@ const NiamhPage: React.FC = () => {
           statsRef.current.textContent = backend === "webgpu" ? (webgpuRef.current?.statsText() ?? "") : "";
         }
         if (webgpuRef.current && backend === "webgpu") {
+          // A scene that fails to load reports here and leaves the previous render running.
+          const loadError = webgpuRef.current.loadError ?? null;
+          setError((prev) => (prev === loadError ? prev : loadError));
           const next = webgpuRef.current.unsupported;
           setNotes((prev) => (prev.join("|") === next.join("|") ? prev : next));
         }
@@ -322,7 +325,7 @@ const NiamhPage: React.FC = () => {
         {notes.length > 0 && (
           <ul style={{ color: "#a80", fontSize: "0.72rem", margin: "0.5rem 0 0", paddingLeft: "1.2rem" }}>
             {notes.map((n) => (
-              <li key={n}>Not on the WebGPU backend yet: {n}</li>
+              <li key={n}>WebGPU limitation: {n}</li>
             ))}
           </ul>
         )}

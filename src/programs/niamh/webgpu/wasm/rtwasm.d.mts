@@ -4,7 +4,7 @@ export interface RendererBModule {
   UTF8ToString(pointer: number): string;
   HEAPU32: Uint32Array;
   HEAPF32: Float32Array;
-  FS: { writeFile(path: string, data: string): void };
+  FS: { writeFile(path: string, data: string): void; readFile(path: string, options: { encoding: 'utf8' }): string };
 }
 
 declare function createModule(options?: object): Promise<RendererBModule>;

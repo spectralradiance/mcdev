@@ -183,7 +183,7 @@ export class WavefrontTracer {
       seed, this.scene.lightCount, this.pathCount, sortMaterials ? 1 : 0,
       b.nodes, b.primitives, b.spheres, b.quads,
       b.triangles, b.materials, b.lights, b.view,
-      this.restir ? 1 : 0, mode, this.scene.mediaBase ?? 0, 0,
+      this.restir ? 1 : 0, mode, this.scene.mediaBase ?? 0, this.scene.sphereBase ?? 0,
     ]));
   }
 
