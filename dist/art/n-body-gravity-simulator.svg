@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Small body orbiting a larger one">
+<ellipse cx="32" cy="32" rx="25" ry="15" transform="rotate(-25 32 32)" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 3"/>
+<circle cx="30" cy="33" r="6" fill="#e5e7eb"/>
+<circle cx="52" cy="20" r="3.5" fill="#38bdf8"/>
+<path d="M52 20 L45 12 M45 12 L46 17 M45 12 L50 12.5" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
