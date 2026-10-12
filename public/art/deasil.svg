@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Schematic of a website with photography, writing and programs sections, fed by a Sanity content store that is synced from SmugMug photos and Notion posts">
+<defs>
+<pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#fff" stroke-opacity=".04"/></pattern>
+<marker id="b" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker>
+<rect id="p" width="32" height="32" rx="2"/>
+</defs>
+<rect width="480" height="300" fill="#0a0a0a"/>
+<rect width="480" height="300" fill="url(#g)"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+<rect x="200" y="34" width="248" height="232" rx="6" stroke="#e5e7eb" stroke-width="1.5"/>
+<path d="M200 52h248" stroke="#6b7280"/>
+<circle cx="210" cy="43" r="2" fill="#6b7280" stroke="none"/>
+<circle cx="217" cy="43" r="2" fill="#6b7280" stroke="none"/>
+<circle cx="224" cy="43" r="2" fill="#6b7280" stroke="none"/>
+<rect x="260" y="39" width="140" height="8" rx="4" stroke="#6b7280"/>
+<path d="M212 66h30M292 66h30M378 66h30" stroke="#e5e7eb" stroke-width="2"/>
+<g stroke="#6b7280">
+<use href="#p" x="212" y="78"/><use href="#p" x="248" y="78"/>
+<use href="#p" x="212" y="114"/><use href="#p" x="248" y="114"/>
+<use href="#p" x="212" y="150"/><use href="#p" x="248" y="150"/>
+<use href="#p" x="212" y="186"/><use href="#p" x="248" y="186"/>
+<use href="#p" x="212" y="222"/><use href="#p" x="248" y="222"/>
+</g>
+<path d="M216 106l9-10 7 6 6-8 8 12M252 140l10-12 14 12" stroke="#9ca3af"/>
+<circle cx="268" cy="86" r="3" stroke="#9ca3af"/>
+<path d="M292 84h56" stroke="#e5e7eb" stroke-width="2"/>
+<path d="M292 96h66M292 105h60M292 114h66M292 123h40" stroke="#6b7280"/>
+<path d="M292 144h48" stroke="#e5e7eb" stroke-width="2"/>
+<path d="M292 156h66M292 165h56M292 174h62M292 183h30" stroke="#6b7280"/>
+<path d="M292 204h52" stroke="#e5e7eb" stroke-width="2"/>
+<path d="M292 216h66M292 225h50M292 234h60" stroke="#6b7280"/>
+<path d="M370 60v198" stroke="#6b7280" stroke-opacity=".5"/>
+<circle cx="408" cy="114" r="26" stroke="#e5e7eb" stroke-width="1.5"/>
+<path d="M408 90v4M408 134v4M384 114h4M428 114h4M391 97l3 3M425 97l-3 3M391 131l3-3M425 131l-3-3" stroke="#6b7280"/>
+<path d="M408 114l14-18" stroke="#e5e7eb" stroke-width="1.5"/>
+<path d="M408 114l-12 15" stroke="#9ca3af" stroke-dasharray="2 2"/>
+<circle cx="408" cy="114" r="2" fill="#e5e7eb" stroke="none"/>
+<circle cx="408" cy="184" r="15" stroke="#6b7280"/>
+<path d="M408 169a15 15 0 0 1 0 30a8 15 0 0 0 0-30z" fill="#9ca3af" fill-opacity=".35" stroke="#9ca3af"/>
+<rect x="388" y="216" width="40" height="10" rx="5" stroke="#6b7280"/>
+<circle cx="415" cy="221" r="3" fill="#9ca3af" stroke="none"/>
+<rect x="38" y="70" width="48" height="34" rx="4" stroke="#e5e7eb" stroke-width="1.5"/>
+<path d="M50 70l4-6h16l4 6" stroke="#e5e7eb" stroke-width="1.5"/>
+<circle cx="62" cy="87" r="9" stroke="#9ca3af"/>
+<circle cx="62" cy="87" r="4" stroke="#6b7280"/>
+<path d="M46 184h24l8 8v34H46z" stroke="#e5e7eb" stroke-width="1.5"/>
+<path d="M70 184v8h8M52 198h18M52 206h20M52 214h14" stroke="#6b7280"/>
+<path d="M122 136v26a20 6 0 0 0 40 0v-26" stroke="#e5e7eb" stroke-width="1.5"/>
+<ellipse cx="142" cy="136" rx="20" ry="6" stroke="#e5e7eb" stroke-width="1.5"/>
+<path d="M122 149a20 6 0 0 0 40 0" stroke="#6b7280"/>
+<path d="M90 87C108 87 112 118 120 132" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#b)"/>
+<path d="M82 205C108 205 112 178 120 168" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#b)"/>
+<path d="M166 150H196" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#b)"/>
+</g>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#9ca3af" letter-spacing="1" text-anchor="middle">
+<text x="62" y="122">SMUGMUG</text>
+<text x="62" y="244">NOTION</text>
+<text x="142" y="186">SANITY</text>
+</g>
+</svg>
