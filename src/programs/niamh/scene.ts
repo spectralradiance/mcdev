@@ -146,13 +146,23 @@ export interface NativeScene {
   native: string;
 }
 
+/** A scene served over HTTP with image files beside it (see webgpu/assets.ts). WebGPU only, like the native ones. */
+export interface AssetScene {
+  asset: string;
+}
+
+export type AnyScene = SceneDescription | NativeScene | AssetScene;
+
 export interface SceneEntry {
   id: string;
   label: string;
-  scene: SceneDescription | NativeScene;
+  scene: AnyScene;
 }
 
-export const isNative = (scene: SceneDescription | NativeScene): scene is NativeScene => "native" in scene;
+export const isNative = (scene: AnyScene): scene is NativeScene => "native" in scene;
+export const isAsset = (scene: AnyScene): scene is AssetScene => "asset" in scene;
+/** Scenes only the WebGPU backend can load: rtadvanced's own, and ones with files of their own. */
+export const isWebGpuOnly = (scene: AnyScene): scene is NativeScene | AssetScene => isNative(scene) || isAsset(scene);
 
 export const SCENES: SceneEntry[] = [
   { id: "cornell", label: "Cornell box", scene: cornellBoxScene },
@@ -166,4 +176,5 @@ export const SCENES: SceneEntry[] = [
   { id: "rt-courtyard", label: "rtoptimized: courtyard", scene: { native: "/scenes/courtyard.json" } },
   { id: "rt-bokeh", label: "rtoptimized: bokeh", scene: { native: "/scenes/bokeh.json" } },
   { id: "rt-textures", label: "rtoptimized: texture study", scene: { native: "/scenes/texture-study.json" } },
+  { id: "brick-wall", label: "Brick wall (image textures, normal maps)", scene: { asset: "/niamh/brick-wall.json" } },
 ];

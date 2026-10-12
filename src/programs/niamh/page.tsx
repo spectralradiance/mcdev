@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { isNative, SCENES } from "./scene";
+import { isWebGpuOnly, SCENES } from "./scene";
 import {
   BACKENDS,
   RENDER_ENGINES,
@@ -99,7 +99,7 @@ const NiamhPage: React.FC = () => {
     const currentScene = () => {
       const entry = SCENES.find((x) => x.id === sceneIdRef.current) ?? SCENES[0];
       // Native rtadvanced scenes only exist on the WebGPU backend.
-      return backend === "webgl2" && isNative(entry.scene) ? SCENES[0].scene : entry.scene;
+      return backend === "webgl2" && isWebGpuOnly(entry.scene) ? SCENES[0].scene : entry.scene;
     };
     let cancelled = false;
     let renderer: ActiveRenderer | null = null;
@@ -216,7 +216,7 @@ const NiamhPage: React.FC = () => {
     setSceneId(id);
     const scene = (SCENES.find((x) => x.id === id) ?? SCENES[0]).scene;
     webgpuRef.current?.setScene(scene);
-    if (!isNative(scene)) webglRef.current?.setScene(scene);
+    if (!isWebGpuOnly(scene)) webglRef.current?.setScene(scene);
   };
   const selectGlEngine = (next: RenderEngine) => {
     setGlEngine(next);
@@ -235,12 +235,21 @@ const NiamhPage: React.FC = () => {
   return (
     <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
       <div style={{ width: "100%", maxWidth: "1200px" }}>
-        <h1>Niamh</h1>
+        <h1 className="text-4xl font-bold sm:text-5xl mb-3">Niamh</h1>
         <p style={{ color: "#888", fontSize: "0.85rem" }}>
           GPU ray tracer with a WebGL2 fragment-shader backend and a WebGPU wavefront backend. Drag to orbit, scroll to
           zoom.{" "}
           <a href="https://github.com/spectralradiance/niamh" target="_blank" rel="noopener noreferrer" style={{ color: "#aaa" }}>
             Source on GitHub
+          </a>
+          {" · "}
+          <a
+            href="https://github.com/spectralradiance/niamh/blob/main/Curriculum.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#aaa" }}
+          >
+            Curriculum
           </a>
         </p>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", flexWrap: "wrap" }}>
@@ -250,7 +259,7 @@ const NiamhPage: React.FC = () => {
               const next = e.target.value as Backend;
               // The WebGL2 backend can't load rtadvanced's scene files.
               const current = SCENES.find((x) => x.id === sceneId);
-              if (next === "webgl2" && current && isNative(current.scene)) setSceneId(SCENES[0].id);
+              if (next === "webgl2" && current && isWebGpuOnly(current.scene)) setSceneId(SCENES[0].id);
               setBackend(next);
             }}
             style={selectStyle}
@@ -280,7 +289,7 @@ const NiamhPage: React.FC = () => {
             </select>
           )}
           <select value={sceneId} onChange={(e) => selectScene(e.target.value)} style={selectStyle}>
-            {SCENES.filter((x) => backend === "webgpu" || !isNative(x.scene)).map((x) => (
+            {SCENES.filter((x) => backend === "webgpu" || !isWebGpuOnly(x.scene)).map((x) => (
               <option key={x.id} value={x.id}>
                 {x.label}
               </option>

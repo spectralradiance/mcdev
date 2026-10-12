@@ -2,6 +2,7 @@
 // reimplemented here; this file only copies rtadvanced's packed arrays into one buffer the GPU can read.
 
 import { restoreSphereLights, sphereCentresAndRadii, type SphereLights } from './lights';
+import { buildPyramid, packImages, type DecodedImage, type Pyramid } from './images';
 import { buildSkyTable, type SkyJson } from './sky';
 import { buildTextureTables, type SceneJson } from './textures';
 import createModule, { type RendererBModule } from './wasm/rtwasm.mjs';
@@ -37,6 +38,8 @@ export interface SceneData {
   materialTexBase?: number;
   // Where the per-material extensions (sheen colour, mix definition) start, in vec4 units.
   materialExtBase?: number;
+  // Where the packed image pyramids start, in vec4 units; undefined when no texture reads an image.
+  imageBase?: number;
   // Where the sky table starts, in vec4 units; undefined when the scene has no sky (the background is constant).
   skyBase?: number;
   // True when the scene was loaded with its sphere lights switched off and put back afterwards. What rtadvanced holds
@@ -63,17 +66,19 @@ export class RendererB {
   }
 
   // Scenes are embedded in the module's file system under /scenes.
-  load(path: string): SceneData {
+  // `images` are the decoded pixels of the image files the scene names, keyed by the path the scene gives. rtadvanced
+  // decodes its own copy from the file system (see writeFile), for the CPU renderer; these are for the GPU.
+  load(path: string, images: ReadonlyMap<string, DecodedImage> = new Map()): SceneData {
     if (!this.call('rt_load', path)) {
       const message = this.module.UTF8ToString(this.call('rt_error'));
       if (!message.includes(SPHERE_LIGHT_ERROR)) throw new Error(message);
-      return this.withSceneTextures(path, this.loadWithSphereLights(path));
+      return this.withSceneTextures(path, this.loadWithSphereLights(path), images);
     }
-    return this.withSceneTextures(path, this.collect());
+    return this.withSceneTextures(path, this.collect(), images);
   }
 
   // rtadvanced packs a textured material with its base colour only, so the textures come from the scene file.
-  private withSceneTextures(path: string, scene: SceneData): SceneData {
+  private withSceneTextures(path: string, scene: SceneData, images: ReadonlyMap<string, DecodedImage>): SceneData {
     let json: SceneJson & SkyJson;
     try {
       json = JSON.parse(this.module.FS.readFile(path, { encoding: 'utf8' }));
@@ -83,22 +88,48 @@ export class RendererB {
     const names = Object.keys(json.materials ?? {}).sort();
     // The loader indexes materials in sorted-name order; if the counts disagree that assumption is already wrong.
     if (names.length !== scene.materialCount) return scene;
-    const tables = buildTextureTables(json, names);
+
+    // One pyramid per distinct (file, sRGB-or-linear) pair, and which one each image texture reads.
+    const pyramids: Pyramid[] = [];
+    const pyramidOf = new Map<string, number>();
+    const imageIndex = new Map<string, number>();
+    for (const [name, texture] of Object.entries(json.textures ?? {})) {
+      const decoded = texture.type === 'image' && texture.file !== undefined ? images.get(texture.file) : undefined;
+      if (!decoded) continue;
+      const srgb = texture.srgb ?? true;
+      const key = `${texture.file}|${srgb}`;
+      if (!pyramidOf.has(key)) {
+        pyramidOf.set(key, pyramids.length);
+        pyramids.push(buildPyramid(decoded, srgb));
+      }
+      imageIndex.set(name, pyramidOf.get(key)!);
+    }
+
+    const tables = buildTextureTables(json, names, imageIndex);
     const sky = buildSkyTable(json);
     const unsupported = scene.unsupported.filter((text) => !text.startsWith('textures ('));
     // What the flag lumped together as "textures" is now either handled or named precisely.
     if (!tables.used && tables.unsupported.length === 0 && !sky) return { ...scene, unsupported };
-    const appended = [...(tables.used ? [tables.data] : []), ...(sky ? [sky] : [])];
-    const words = new Uint32Array(scene.words.length + appended.reduce((n, a) => n + a.length, 0));
+
+    // Appended after everything else: the texture tables, the image data they read, then the sky.
+    const imageData = tables.used && pyramids.length > 0 ? packImages(pyramids) : undefined;
+    const appended = [
+      { name: 'textures', data: tables.used ? tables.data : undefined },
+      { name: 'images', data: imageData },
+      { name: 'sky', data: sky },
+    ];
+    const total = appended.reduce((n, a) => n + (a.data?.length ?? 0), 0);
+    const words = new Uint32Array(scene.words.length + total);
     words.set(scene.words);
     let offset = scene.words.length;
-    const bases: number[] = [];
-    for (const array of appended) {
-      bases.push(offset / 4);
-      words.set(new Uint32Array(array.buffer), offset);
-      offset += array.length;
+    const bases: Record<string, number | undefined> = {};
+    for (const { name, data } of appended) {
+      if (!data) continue;
+      bases[name] = offset / 4;
+      words.set(new Uint32Array(data.buffer), offset);
+      offset += data.length;
     }
-    const textureBase = tables.used ? bases[0] : undefined;
+    const textureBase = bases.textures;
     return {
       ...scene,
       words,
@@ -106,8 +137,14 @@ export class RendererB {
       textureBase,
       materialTexBase: textureBase === undefined ? undefined : textureBase + tables.bindingsOffset,
       materialExtBase: textureBase === undefined ? undefined : textureBase + tables.extensionsOffset,
-      skyBase: sky ? bases[bases.length - 1] : undefined,
+      imageBase: bases.images,
+      skyBase: bases.sky,
     };
+  }
+
+  // Puts a file (an image a scene refers to) into the module's file system, where rtadvanced's loader looks for it.
+  writeFile(path: string, data: Uint8Array): void {
+    this.module.FS.writeFile(path, data);
   }
 
   private loadWithSphereLights(path: string): SceneData {
@@ -167,10 +204,10 @@ export class RendererB {
   }
 
   // A scene given as text, written into the module's file system beside the embedded ones and loaded from there.
-  loadText(name: string, json: string): SceneData {
+  loadText(name: string, json: string, images?: ReadonlyMap<string, DecodedImage>): SceneData {
     const path = `/scenes/${name}`;
     this.module.FS.writeFile(path, json);
-    return this.load(path);
+    return this.load(path, images);
   }
 
   // rtadvanced's own path tracer (MIS integrator) on the CPU, one thread. Returns linear RGB, three floats per pixel.

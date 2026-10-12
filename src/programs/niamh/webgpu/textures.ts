@@ -12,13 +12,25 @@ export const EXTENSION_MIX = 7;
 /** Brushed metal: the first extension vec4 is (roughness along v, 0, 0, kind). */
 export const EXTENSION_ANISOTROPIC = 8;
 
-/** vec4s per texture: (kind, scale, 0, 0), first colour, second colour. */
+export const TEXTURE_IMAGE = 2;
+
+/** Filters, as rtadvanced's TextureFilter and the shader number them. */
+export const FILTER_POINT = 0;
+export const FILTER_BILINEAR = 1;
+export const FILTER_TRILINEAR = 2;
+const FILTER_CODE: Record<string, number> = { point: FILTER_POINT, bilinear: FILTER_BILINEAR, trilinear: FILTER_TRILINEAR };
+
+/** vec4s per texture: (kind, scale, filter, image index), first colour, second colour. */
 export const TEXTURE_VEC4S = 3;
 
-interface SceneTextureJson {
+export interface SceneTextureJson {
   type: string;
   colors?: [number[], number[]];
   scale?: number;
+  filter?: string;
+  /** Image textures: a path relative to the scene file, and whether the pixels are sRGB (the default) or linear. */
+  file?: string;
+  srgb?: boolean;
 }
 
 interface SceneMaterialJson {
@@ -39,7 +51,7 @@ export interface SceneJson {
 }
 
 export interface TextureTables {
-  /** Texture entries, then one (albedo texture + 1, bump texture + 1, bump scale, 0) vec4 per material. */
+  /** Texture entries, then one (albedo texture + 1, bump texture + 1, bump scale, normal map texture + 1) vec4 per material. */
   data: Float32Array;
   /** Offset of the per-material bindings in vec4s, relative to the start of `data`. */
   bindingsOffset: number;
@@ -48,7 +60,7 @@ export interface TextureTables {
    * amount texture + 1), in vec4s relative to the start of `data`.
    */
   extensionsOffset: number;
-  /** What the GPU still can't do for this scene (image textures, normal maps). */
+  /** What the GPU still can't do for this scene (images that weren't loaded). */
   unsupported: string[];
   /** True when at least one material uses a texture, sheen or mix the GPU can evaluate. */
   used: boolean;
@@ -58,25 +70,42 @@ export interface TextureTables {
  * Builds the tables for a scene. `materialNames` must be in rtadvanced's material order (sorted by name), since the
  * packed material index is what the shader looks bindings up by.
  */
-export function buildTextureTables(scene: SceneJson, materialNames: string[]): TextureTables {
+export function buildTextureTables(
+  scene: SceneJson,
+  materialNames: string[],
+  // For each image texture the caller managed to load, which packed image (see images.ts) it reads.
+  imageIndex: ReadonlyMap<string, number> = new Map(),
+): TextureTables {
   const textures = scene.textures ?? {};
   const names = Object.keys(textures).sort();
   const index = new Map(names.map((name, i) => [name, i]));
   const unsupported = new Set<string>();
 
+  // A texture the shader can evaluate: procedural, or an image that was loaded.
+  const evaluable = (name: string) => {
+    const t = textures[name];
+    return t !== undefined && (t.type === "checker" || t.type === "noise" || (t.type === "image" && imageIndex.has(name)));
+  };
+
   const data = new Float32Array(4 * (TEXTURE_VEC4S * names.length + 3 * materialNames.length));
   names.forEach((name, i) => {
     const t = textures[name];
     const base = 4 * TEXTURE_VEC4S * i;
+    // The CPU's default filter when a texture doesn't say.
+    const filter = FILTER_CODE[t.filter ?? "trilinear"] ?? FILTER_TRILINEAR;
     if (t.type === "checker" || t.type === "noise") {
       const [a, b] = t.colors ?? [[1, 1, 1], [0, 0, 0]];
-      data.set([t.type === "checker" ? TEXTURE_CHECKER : TEXTURE_NOISE, t.scale ?? 1, 0, 0], base);
+      data.set([t.type === "checker" ? TEXTURE_CHECKER : TEXTURE_NOISE, t.scale ?? 1, filter, 0], base);
       data.set([...a, 0], base + 4);
       data.set([...b, 0], base + 8);
+    } else if (t.type === "image" && imageIndex.has(name)) {
+      data.set([TEXTURE_IMAGE, t.scale ?? 1, filter, imageIndex.get(name)!], base);
     } else {
       // Left as a flat grey so a binding to it is harmless; the warning says what was dropped.
-      data.set([TEXTURE_CHECKER, 1, 0, 0, 0.5, 0.5, 0.5, 0, 0.5, 0.5, 0.5, 0], base);
-      unsupported.add(`${t.type} textures (drawn with their base colour)`);
+      data.set([TEXTURE_CHECKER, 1, FILTER_POINT, 0, 0.5, 0.5, 0.5, 0, 0.5, 0.5, 0.5, 0], base);
+      unsupported.add(
+        t.type === "image" ? `image texture '${t.file}' wasn't loaded (drawn flat grey)` : `${t.type} textures (drawn with their base colour)`,
+      );
     }
   });
 
@@ -86,25 +115,32 @@ export function buildTextureTables(scene: SceneJson, materialNames: string[]): T
     const material = scene.materials[name];
     let albedo = 0;
     let bump = 0;
+    let normal = 0;
     if (typeof material.albedo === "string") {
       const found = index.get(material.albedo);
-      if (found !== undefined && ["checker", "noise"].includes(textures[material.albedo].type)) {
+      if (found !== undefined && evaluable(material.albedo)) {
         albedo = found + 1;
         used = true;
       }
     }
+    // Bump and normal maps work from any texture the shader can evaluate. The CPU rejects a material with both.
     if (material.bumpMap !== undefined) {
-      const found = index.get(material.bumpMap);
-      // Bumps are taken from the noise's gradient in world space, which a uv-based checker doesn't have.
-      if (found !== undefined && textures[material.bumpMap].type === "noise") {
-        bump = found + 1;
+      if (evaluable(material.bumpMap)) {
+        bump = index.get(material.bumpMap)! + 1;
         used = true;
       } else {
-        unsupported.add("bump maps other than noise (ignored)");
+        unsupported.add(`bump map '${material.bumpMap}' isn't available (ignored)`);
       }
     }
-    if (material.normalMap !== undefined) unsupported.add("normal maps (ignored)");
-    data.set([albedo, bump, material.bumpScale ?? 1, 0], 4 * (bindingsOffset + m));
+    if (material.normalMap !== undefined) {
+      if (evaluable(material.normalMap)) {
+        normal = index.get(material.normalMap)! + 1;
+        used = true;
+      } else {
+        unsupported.add(`normal map '${material.normalMap}' isn't available (ignored)`);
+      }
+    }
+    data.set([albedo, bump, material.bumpScale ?? 1, normal], 4 * (bindingsOffset + m));
   });
 
   // Extensions follow the bindings: two vec4s per material.
