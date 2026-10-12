@@ -15,8 +15,8 @@
       "CUDA",
       "Vulkan"
     ],
-    "page": "/programs/niamh",
     "about": "Code for a multi-part article on physically based rendering. rtsimple is an interactive Whitted tracer in browser JavaScript. rtadvanced is a C++20 path tracer covering MIS, spectral rendering, bidirectional path tracing, Metropolis light transport, photon mapping, participating media, subsurface scattering and a feature-guided denoiser. rtoptimized is a wavefront path tracer in WebGPU, fed by rtadvanced's scene loader and BVH compiled to WebAssembly, with a real-time ReSTIR mode and native CUDA and Vulkan ports.",
+    "page": "/programs/niamh",
     "gallery": [
       "https://raw.githubusercontent.com/spectralradiance/niamh/main/figures/material-gallery.jpg",
       "https://raw.githubusercontent.com/spectralradiance/niamh/main/figures/bokeh-hexagonal.jpg",
@@ -146,8 +146,8 @@
       "three.js",
       "WebGL"
     ],
-    "page": "/programs/kybos",
     "about": "Rotate a hypercube, 24-cell, 600-cell or hypersphere in any of its planes and watch its projection into 3D change. Hyperspheres are drawn through stereographic projection, and the view state lives in the URL so any orientation can be shared.",
+    "page": "/programs/kybos",
     "gallery": [
       "/screencaps/Kybos_1.png"
     ]
@@ -199,10 +199,20 @@
     "title": "Seed of Life",
     "category": "Art",
     "art": "/art/seed-of-life.svg",
-    "description": "Circles spaced evenly around a ring, the Seed of Life at six, exportable as SVG, PNG or JPG.",
+    "description": "Sacred-geometry circle patterns, from the Vesica Piscis and Seed of Life out to the Flower of Life, exportable as SVG, PNG or JPG.",
     "tech": [
       "React",
-      "SVG"
+      "SVG",
+      "Canvas 2D"
+    ],
+    "about": "Every pattern is made of circles of one radius. In ring layout the circles sit evenly spaced around a ring (the original pen). In lattice layout they sit on a hexagonal lattice that grows outward one generation at a time: generation 1 is the Seed of Life and generation 2 is the Flower of Life. 'Complete petals' draws one more generation and clips it to the boundary circle with an SVG clipPath, which gives the traditional Flower of Life. The SVG on screen is the file you download; PNG and JPG are drawn onto a canvas at twice the size.",
+    "features": [
+      "Presets: Vesica Piscis, Seed of Life, Egg of Life, Flower of Life",
+      "Ring layout or hex-lattice layout grown by generations, with adjustable spacing",
+      "Boundary circle and clipped 'complete petals' for the classic Flower of Life",
+      "Translucent fills with blend modes (multiply, screen, difference)",
+      "Slow spin animation at an adjustable speed and direction",
+      "Download as SVG, or as PNG/JPG at 2x"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/vEgzvdb"
   },
@@ -212,11 +222,20 @@
     "title": "Aria",
     "category": "Music",
     "art": "/art/aria.svg",
-    "description": "A browser-based melody maker: write melodies as scale degrees and play them in any key and scale.",
+    "description": "Write melodies as scale degrees and hear them in any key, scale or mode, with a live piano roll and shareable links.",
     "tech": [
       "React",
       "Tone.js",
-      "Web Audio"
+      "Web Audio",
+      "SVG"
+    ],
+    "about": "Melodies are written as scale degrees (0 is the root, 1 the next note up, -1 the next note down), so the same numbers work in any key and in any of 18 scales and modes. Each scale is a list of semitone steps; a degree's pitch is the root plus the sum of steps, and its frequency is 16.352 Hz × 2^(n/12). Playback runs on the Tone.js Transport (the Web Audio clock), and Tone.Draw lights each note in the piano roll at the moment it sounds.",
+    "features": [
+      "Piano roll with in-scale rows shaded and the playing note highlighted in sync",
+      "Tempo (BPM) and note-length controls that change live while playing",
+      "Sine, triangle, square or sawtooth waveform",
+      "Random melody generator with a clickable history of past melodies",
+      "Settings saved in the URL hash, with a copy-link button"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/zRXJbP"
   },
@@ -226,11 +245,20 @@
     "title": "Simone",
     "category": "Music",
     "art": "/art/simone.svg",
-    "description": "A musical memory game: repeat a growing sequence of notes from a random scale.",
+    "description": "A musical memory game: repeat a growing, speeding-up sequence of notes on a 4, 9 or 16 button board.",
     "tech": [
       "React",
       "Tone.js",
       "Web Audio"
+    ],
+    "about": "Each button is one note of a randomly chosen scale and one hue of an evenly spaced rainbow, so a sequence can be remembered by sight or by ear. Simone plays a sequence, you repeat it, and each success adds a note and makes playback a little faster. The sequence, your position and the game phase live in refs so timer callbacks and key handlers always see current values.",
+    "features": [
+      "2×2, 3×3 or 4×4 boards",
+      "Keyboard play on the left of a QWERTY keyboard (QWE/ASD/ZXC and similar), with keys shown on the buttons",
+      "Playback speeds up with each level",
+      "Strict mode (a mistake ends the game) or forgiving mode (the sequence replays)",
+      "Best level saved per board size and mode",
+      "Game-over buzz that marks the wrong button and shows the right one"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/RQExWX"
   },
@@ -240,10 +268,18 @@
     "title": "N-Body Gravity Simulator",
     "category": "Simulation",
     "art": "/art/n-body-gravity-simulator.svg",
-    "description": "A ring of bodies pulling on each other under softened Newtonian gravity.",
+    "description": "Gravity sandbox: pick a preset, fling in new bodies and watch orbits form, with a live readout of how well energy is conserved.",
     "tech": [
       "React",
       "Canvas 2D"
+    ],
+    "about": "Every body pulls on every other with Newton's law, softened at short range so close passes don't blow up. Motion is stepped with a fixed-step leapfrog (kick-drift-kick) integrator, which keeps energy error bounded instead of drifting the way simple Euler stepping does. Presets range from the original spinning ring to a binary star with planets and the three-body figure-eight orbit.",
+    "features": [
+      "Presets: ring galaxy, binary star with circling planets, collapsing random cloud, figure-eight three-body orbit",
+      "Click to drop a body, drag to launch it",
+      "Sliders for G, softening, timescale and body count",
+      "Pause, single-step and fading trails",
+      "Live total energy and drift readout"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/rYpQrv"
   },
@@ -253,10 +289,18 @@
     "title": "Merging Balls",
     "category": "Simulation",
     "art": "/art/merging-balls.svg",
-    "description": "A thousand balls bounce under gravity and merge on contact, conserving area and momentum.",
+    "description": "Hundreds of balls bounce under gravity and merge on contact, conserving area and momentum, until only a few giants remain.",
     "tech": [
       "React",
       "Canvas 2D"
+    ],
+    "about": "Balls bounce around a box under gravity; when two touch they merge into one, keeping total area and momentum (the merged ball moves at the mass-weighted average velocity). A grid of cells finds touching pairs: each ball is compared only with balls in nearby cells, not with every other ball. Color shows how much mass each ball has absorbed.",
+    "features": [
+      "Press and hold to spray in new balls",
+      "Sliders for starting count, gravity and bounce",
+      "Color by size, on a log scale from cyan to red",
+      "Live stats: balls left, largest radius, merge count",
+      "Grid-based collision search instead of checking every pair"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/zPpyre"
   },
@@ -266,9 +310,17 @@
     "title": "Decoding Text",
     "category": "Art",
     "art": "/art/decoding-text.svg",
-    "description": "Scrambled text that resolves one random character at a time.",
+    "description": "Scrambled glyphs resolve into your text one random character at a time, with adjustable speed and a choice of glyph sets.",
     "tech": [
       "React"
+    ],
+    "about": "Each tick, every unresolved character either locks to its true value with a fixed probability or flips to a new random glyph. Each character's wait is random, so a few lock almost at once and a long tail holds out; anything left after twice the average is forced into place. In cycle mode, phrases separated by blank lines are decoded one after another.",
+    "features": [
+      "Glyph sets: letters, binary, hex, katakana, box-drawing symbols",
+      "Speed and settle-time sliders that adjust the running animation",
+      "Multi-line input with Ctrl+Enter to decode",
+      "Cycle mode that decodes a list of phrases in turn",
+      "Keep-spaces toggle; unresolved characters shown dimmed"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/YQzNXE"
   },
@@ -278,10 +330,20 @@
     "title": "Hacker Typer",
     "category": "Toys",
     "art": "/art/hacker-typer.svg",
-    "description": "Mash the keyboard to \"write\" the second pass of the Research Unix C compiler.",
+    "description": "Mash the keyboard to \"write\" famous source code: Research Unix, Apollo 11, Linux 0.01, DOOM or Quake III.",
     "tech": [
       "React",
-      "highlight.js"
+      "highlight.js",
+      "Fetch API"
+    ],
+    "about": "Every keypress reveals the next few characters of a real historic source file fetched from GitHub. The only state that changes while you type is the length of the visible prefix; the highlighted HTML is derived from it with useMemo. Alt three times flashes ACCESS GRANTED and Caps Lock three times flashes ACCESS DENIED, as in the classic hacker typer.",
+    "features": [
+      "Five historic files: Research Unix C compiler, Apollo 11 ignition routine, Linux 0.01 boot sector, DOOM renderer, Quake III math library",
+      "Syntax highlighting for C and x86 assembly, plus a small custom grammar for Apollo Guidance Computer assembly",
+      "Characters-per-key slider",
+      "Progress bar with a line counter",
+      "ACCESS GRANTED / DENIED overlay on key combos, with on-screen buttons too",
+      "Tap to type on touch screens"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/paXPRE"
   },
@@ -291,9 +353,19 @@
     "title": "Numeric Base Converter",
     "category": "Math",
     "art": "/art/numeric-base-converter.svg",
-    "description": "Type a number in any base from 1 to 16 and see it in all the others.",
+    "description": "Type a number of any length in any base from 1 to 36 and watch every other base update, with a place-value breakdown.",
     "tech": [
-      "React"
+      "React",
+      "BigInt"
+    ],
+    "about": "All the math uses BigInt, so numbers of any length convert exactly. Parsing uses Horner's rule (value = value x B + digit) so a bad digit can be named precisely. Printing uses BigInt's toString(radix), and base 1 is tally notation. State is one value plus the row you are editing, which keeps exactly what you typed. Below the rows, the edited number is written out as a sum of digit x base^power.",
+    "features": [
+      "Numbers of any length, exact (BigInt)",
+      "Bases 1 (tally) to 36; choose which to show, with the choice remembered",
+      "Negative numbers; spaces and underscores ignored when pasting",
+      "Place-value breakdown for the base you are editing, e.g. 255 = 2·10² + 5·10¹ + 5·10⁰",
+      "Invalid digits named inline while the other rows keep the last good value",
+      "Copy button and digit count on each row"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/zweVZg"
   },
@@ -303,23 +375,47 @@
     "title": "Color Picker - Sliders",
     "category": "Color",
     "art": "/art/color-picker-sliders.svg",
-    "description": "RGB and HSV sliders that each show the colors they would reach.",
+    "description": "RGB, HSV, HSL and OKLCH sliders that paint the colors they would reach, with contrast checks, copyable CSS and saved swatches.",
     "tech": [
       "React",
-      "Canvas 2D"
+      "Canvas 2D",
+      "OKLab",
+      "Clipboard API",
+      "localStorage"
+    ],
+    "about": "Three canvas sliders pick a color in RGB, HSV, HSL or OKLCH. Each track is repainted with the colors that moving only that slider would reach, so the tracks always show the neighborhood of the current color. OKLCH is converted through Björn Ottosson's OKLab matrices; out-of-gamut stretches of a track are drawn as a thin line and the readout flags clipped colors. Contrast against white and black uses the WCAG 2 relative-luminance formula.",
+    "features": [
+      "Four color models (RGB, HSV, HSL, OKLCH), converting between them without losing hue on grays",
+      "Out-of-gamut regions shown on OKLCH tracks",
+      "Type a hex, rgb() or hsl() color to set the sliders",
+      "One-click copy as hex, rgb(), hsl() or oklch()",
+      "WCAG contrast ratio and AA/AAA grade against white and black text",
+      "Saved swatches kept in localStorage",
+      "Keyboard-operable sliders (arrows, Shift for bigger steps, Home/End)"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/owgNMo"
   },
   {
     "slug": "hsv-color-picker",
     "size": "small",
-    "title": "HSV Color Picker",
+    "title": "Named Color Picker",
     "category": "Color",
     "art": "/art/hsv-color-picker.svg",
-    "description": "Thousands of named colors arranged by hue and lightness at a chosen saturation.",
+    "description": "Nearly 5,000 named colors laid out as a slice through color space, with pick-your-own axes, name search and nearest-name lookup.",
     "tech": [
       "React",
-      "color.pizza API"
+      "color.pizza API",
+      "OKLab",
+      "Clipboard API"
+    ],
+    "about": "Named colors from the color.pizza API are laid out as a slice through color space. You choose which component (hue, saturation, lightness, value, red, green or blue) goes on the rows, which one sorts each row, and which one the slider filters on, with an adjustable window that wraps around for hue. Type any hex and it finds the nearest named color by distance in OKLab, a space where straight-line distance roughly matches how different two colors look.",
+    "features": [
+      "Choose the component for the rows, the row sort and the slider (picking one already in use swaps them)",
+      "Adjustable slider window that wraps around for hue",
+      "Search by name, highlighting matches in the grid",
+      "Nearest named color for any hex, measured in OKLab, with the distance shown",
+      "Copy the selected color's hex",
+      "Count of colors currently shown"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/qBaVgby"
   },
@@ -329,10 +425,18 @@
     "title": "Division Remainder Pattern",
     "category": "Math",
     "art": "/art/draw-division-remainder-pattern.svg",
-    "description": "Shades each pixel by how many digits it takes to write a division in decimal.",
+    "description": "A zoomable, pannable map of fractions n/d, each pixel shaded by its decimal length, repeating period or remainder.",
     "tech": [
       "React",
       "Canvas 2D"
+    ],
+    "about": "Each pixel is a fraction: the row gives the numerator and the column the denominator. The pixel is shaded by one of three rules: how many characters JavaScript prints for the result (the original pen's rule), the exact length of the repeating decimal, or the remainder n mod d. The period is the multiplicative order of 10 modulo the reduced denominator once its factors of 2 and 5 are removed, cached per denominator. Click a cell to pin it; long division then shows its exact decimal with the repeating block in parentheses.",
+    "features": [
+      "Three shading rules: decimal length, repeating period, remainder",
+      "Greyscale or color palette",
+      "Zoom from 1/3x to 4x with the wheel or buttons, centered on the cursor",
+      "Drag to pan; arrow keys, +/- and 0 also work",
+      "Click to pin a cell and see its exact repeating decimal, e.g. 1/7 = 0.(142857)"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/OOPqEd"
   },
@@ -342,12 +446,46 @@
     "title": "Media List",
     "category": "Web",
     "art": "/art/media-list.svg",
-    "description": "A tag-filtered list of favorite films, games, books and albums, with Wikipedia summaries and Bandcamp players.",
+    "description": "A tag-filtered list of favorite films, games, books and albums with search, sorting, a random pick and shareable filter links.",
     "tech": [
       "React",
       "Wikipedia API",
-      "Bandcamp"
+      "Bandcamp embeds",
+      "ResizeObserver"
+    ],
+    "about": "A collection of films, shows, games, books and albums, filtered by tags that narrow each other: each remaining tag shows how many of the visible items carry it, and related tags are joined into segmented groups. Albums open a Bandcamp player and everything else shows the intro of its Wikipedia article, fetched live. Selected tags are mirrored into the URL hash, so a filtered view can be bookmarked or shared.",
+    "features": [
+      "Tags that narrow each other, with live counts and grouped segments",
+      "Text search across titles, artists and tags",
+      "Sort by artist, year (grouped by decade) or title (grouped by letter)",
+      "\"Surprise me\" opens and scrolls to a random item from the current view",
+      "Selected tags kept in the URL hash (#tags=game,ps2) so filtered views can be shared",
+      "Inline Bandcamp players and Wikipedia summaries"
     ],
     "codepen": "https://codepen.io/spectralradiance/pen/yygjemw"
+  },
+  {
+    "slug": "qr-code-generator",
+    "size": "small",
+    "title": "QR Code Generator",
+    "category": "Tools",
+    "art": "/art/qr-code-generator.svg",
+    "description": "A QR code generator written from scratch: Reed–Solomon error correction, masking and all, with SVG and PNG export.",
+    "tech": [
+      "React",
+      "SVG",
+      "Canvas",
+      "Reed–Solomon",
+      "Vitest"
+    ],
+    "about": "Type text or a URL and a QR code redraws as you type. The encoder is written from scratch following ISO/IEC 18004. It picks the densest mode, adds Reed–Solomon check bytes over GF(256) and interleaves the blocks, then places the bits in a zigzag around the finder, timing and alignment patterns and keeps the mask with the lowest penalty score. A highlight mode colors the function patterns so you can see which modules carry data.",
+    "features": [
+      "All 40 versions and all four error correction levels (L/M/Q/H)",
+      "Automatic numeric, alphanumeric or UTF-8 byte mode",
+      "Best of 8 masks chosen by the standard's penalty rules, or force one",
+      "Highlight finders, timing, alignment, format and version information",
+      "Custom colors, optional quiet zone, SVG and PNG download",
+      "Every version tested by decoding the output with jsQR"
+    ]
   }
 ]

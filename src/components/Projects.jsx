@@ -2,6 +2,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import projects from '../data/projects.json';
 import smallProjects from '../small';
+import SourceCode from './SourceCode';
 
 const projectHref = (project) => project.page ?? `/projects/${project.slug}`;
 
@@ -123,8 +124,20 @@ const TechList = ({ tech }) => (
   </ul>
 );
 
+const About = ({ about, features }) => (
+  <>
+    {about && <p className="text-gray-300 leading-relaxed whitespace-pre-line mb-4">{about}</p>}
+    {features?.length > 0 && (
+      <ul className="mb-8 list-disc space-y-1 pl-5 text-sm text-gray-400 marker:text-gray-600">
+        {features.map((feature) => <li key={feature}>{feature}</li>)}
+      </ul>
+    )}
+  </>
+);
+
 const SmallProjectDetail = ({ project }) => {
-  const Demo = smallProjects[project.slug];
+  const entry = smallProjects[project.slug];
+  const Demo = entry?.component;
 
   return (
     <div>
@@ -138,6 +151,7 @@ const SmallProjectDetail = ({ project }) => {
       </div>
       {project.description && <p className="text-gray-300 leading-relaxed mb-4">{project.description}</p>}
       <TechList tech={project.tech} />
+      <About about={project.about} features={project.features} />
 
       {Demo ? (
         <div className="mb-6">
@@ -159,6 +173,8 @@ const SmallProjectDetail = ({ project }) => {
           Original on CodePen <ExternalIcon />
         </a>
       )}
+
+      {entry && <SourceCode key={project.slug} files={entry.files} />}
     </div>
   );
 };

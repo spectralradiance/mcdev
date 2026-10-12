@@ -15,3 +15,14 @@ body {
 ::-webkit-scrollbar-button:vertical:decrement { background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'><path d='M3 0L6 6H0Z' fill='%23fff'/></svg>"); }
 ::-webkit-scrollbar-button:vertical:increment { background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'><path d='M0 0H6L3 6Z' fill='%23fff'/></svg>"); }
 * { scrollbar-width: thin; scrollbar-color: #fff #000; }
+
+/* Syntax colors for the project source viewer (SourceCode.jsx uses the src- class prefix). */
+.source-code { color: #d1d5db; tab-size: 2; }
+.source-code .src-comment { color: #6b7280; font-style: italic; }
+.source-code .src-keyword, .source-code .src-built_in { color: #f472b6; }
+.source-code .src-string, .source-code .src-regexp { color: #a3e635; }
+.source-code .src-number, .source-code .src-literal { color: #c4b5fd; }
+.source-code .src-title, .source-code .src-title.function_ { color: #7dd3fc; }
+.source-code .src-attr, .source-code .src-property { color: #fcd34d; }
+.source-code .src-tag, .source-code .src-name { color: #f9a8d4; }
+.source-code .src-variable.language_, .source-code .src-params { color: #fdba74; }
