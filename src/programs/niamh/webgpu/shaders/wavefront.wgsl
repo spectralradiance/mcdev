@@ -22,6 +22,8 @@ struct Params {
   materialExtBase: u32,
   // The sky table (zenith, horizon, ground, sun direction, sun radiance), in vec4s; 0 for a constant background.
   skyBase: u32,
+  // The packed image pyramids (see images.ts), in vec4s; 0 when no texture reads an image.
+  imageBase: u32, pad2: u32, pad3: u32, pad4: u32,
 }
 
 @group(0) @binding(0) var<uniform> params: Params;
@@ -186,6 +188,9 @@ fn mixDefinition(material: u32) -> vec4f { return scene[params.materialExtBase +
 // averages the jittered samples over each pixel, which is the box filter the CPU applies analytically.
 
 const TEXTURE_CHECKER = 0u;
+const TEXTURE_IMAGE = 2u;
+const FILTER_POINT = 0u;
+const FILTER_TRILINEAR = 2u;
 const BUMP_WIDTH = 0.002;  // world-space footprint for a bump where the ray cone isn't tracked
 
 // (albedo texture + 1, bump texture + 1, bump scale, 0); all zero when the scene has no textures.
@@ -263,39 +268,130 @@ fn checkerWeight(st: vec2f, radius: f32) -> f32 {
   return s + t - 2.0 * s * t;
 }
 
+// ---- Image textures, as rtadvanced/src/textures/mipmap.cpp: a pyramid of linear-RGB levels packed into the scene buffer
+// (header per image, record per level, then the texels), wrapping at the edges. v runs up the image, rows are stored
+// top to bottom.
+
+fn imageLevelRecord(image: u32, level: u32) -> vec4f {
+  let header = scene[params.imageBase + image];
+  return scene[params.imageBase + u32(header.y) + level];
+}
+
+fn imageTexel(image: u32, level: u32, x: i32, y: i32) -> vec3f {
+  let record = imageLevelRecord(image, level);
+  let w = i32(record.x);
+  let h = i32(record.y);
+  let wx = ((x % w) + w) % w;
+  let wy = ((y % h) + h) % h;
+  return scene[params.imageBase + u32(record.z) + u32(wy * w + wx)].xyz;
+}
+
+// Texel centres sit at half-integer coordinates, so blend the four whose centres surround the lookup.
+fn imageBilinear(image: u32, level: u32, uv: vec2f) -> vec3f {
+  let record = imageLevelRecord(image, level);
+  let s = uv.x * record.x - 0.5;
+  let t = (1.0 - uv.y) * record.y - 0.5;
+  let s0 = floor(s);
+  let t0 = floor(t);
+  let fs = s - s0;
+  let ft = t - t0;
+  let x = i32(s0);
+  let y = i32(t0);
+  return (imageTexel(image, level, x, y) * (1.0 - fs) + imageTexel(image, level, x + 1, y) * fs) * (1.0 - ft) +
+         (imageTexel(image, level, x, y + 1) * (1.0 - fs) + imageTexel(image, level, x + 1, y + 1) * fs) * ft;
+}
+
+// A footprint that spans 2^k texels at level 0 spans about one at level k.
+fn imageLevelFor(image: u32, uvWidth: f32) -> f32 {
+  let header = scene[params.imageBase + image];
+  let base = imageLevelRecord(image, 0u);
+  let texels = uvWidth * max(base.x, base.y);
+  if (!(texels > 1.0)) { return 0.0; }
+  return min(log2(texels), header.x - 1.0);
+}
+
+fn imageLookup(image: u32, uv: vec2f, uvWidth: f32, filterMode: u32) -> vec3f {
+  if (filterMode == FILTER_POINT) {
+    let base = imageLevelRecord(image, 0u);
+    return imageTexel(image, 0u, i32(floor(uv.x * base.x)), i32(floor((1.0 - uv.y) * base.y)));
+  }
+  if (filterMode != FILTER_TRILINEAR) { return imageBilinear(image, 0u, uv); }
+  // Blend the two levels that bracket the footprint, so the level changes smoothly with distance.
+  let level = imageLevelFor(image, uvWidth);
+  let lower = u32(level);
+  let levels = u32(scene[params.imageBase + image].x);
+  if (lower >= levels - 1u) { return imageBilinear(image, lower, uv); }
+  let f = level - f32(lower);
+  return imageBilinear(image, lower, uv) * (1.0 - f) + imageBilinear(image, lower + 1u, uv) * f;
+}
+
 // width is the ray cone's world-space footprint at the hit and uvWidth the same in uv units; both are zero where the
-// footprint isn't tracked (every bounce after the camera ray), which gives the unfiltered texture.
+// footprint isn't tracked (every bounce after the camera ray), which gives the unfiltered texture. The texture's
+// filter mode ("point" skips all filtering) comes from its table entry, as on the CPU.
 fn evalTexture(texture: u32, uv: vec2f, point: vec3f, width: f32, uvWidth: f32) -> vec3f {
   let base = params.textureBase + 3u * texture;
   let header = scene[base];
   let color1 = scene[base + 1u].xyz;
   let color2 = scene[base + 2u].xyz;
   let scale = header.y;
-  if (u32(header.x) == TEXTURE_CHECKER) {
-    return mix(color1, color2, checkerWeight(uv * scale, 0.5 * uvWidth * scale));
+  let filterMode = u32(header.z);
+  let filtered = filterMode != FILTER_POINT;
+  let kind = u32(header.x);
+  if (kind == TEXTURE_IMAGE) {
+    return imageLookup(u32(header.w), uv * scale, uvWidth * scale, filterMode);
   }
-  let n = fractalNoise(point * scale, width * scale);
+  if (kind == TEXTURE_CHECKER) {
+    return mix(color1, color2, checkerWeight(uv * scale, select(0.0, 0.5 * uvWidth * scale, filtered)));
+  }
+  let n = fractalNoise(point * scale, select(0.0, width * scale, filtered));
   return mix(color1, color2, clamp(0.5 + 0.5 * n, 0.0, 1.0));
 }
 
 fn luminance(c: vec3f) -> f32 { return dot(c, vec3f(0.2126, 0.7152, 0.0722)); }
 
-// Bump mapping from the noise's gradient in world space: a displaced surface's normal is the outward normal minus the
-// height's gradient across the tangent plane (what applyBump computes from uv derivatives on the CPU).
-fn bumpedNormal(material: u32, point: vec3f, outward: vec3f, frontFace: bool, footprint: f32) -> vec3f {
+// A tangent-space normal map stores a direction in the frame (dpdu, dpdv, n), remapped from [-1, 1] to [0, 1].
+// Returns the bent normal, or n when the stored direction points into the surface.
+fn applyNormalMap(n: vec3f, dpdu: vec3f, dpdv: vec3f, encoded: vec3f) -> vec3f {
+  // Gram-Schmidt: dpdu with its normal component removed. At uv singularities any tangent will do.
+  var tangent = dpdu - n * dot(n, dpdu);
+  tangent = select(frameFromNormal(n).s, normalize(tangent), dot(tangent, tangent) > 1e-12);
+  var bitangent = cross(n, tangent);
+  // Mirrored uvs flip the bitangent; dpdv knows which way v actually runs.
+  if (dot(bitangent, dpdv) < 0.0) { bitangent = -bitangent; }
+  let m = encoded * 2.0 - vec3f(1.0);
+  let bent = tangent * m.x + bitangent * m.y + n * m.z;
+  return select(n, normalize(bent), dot(bent, n) > 0.0);
+}
+
+// Bump mapping displaces the surface along n by a height h(u, v) and returns the displaced surface's normal.
+// dhdu and dhdv are the height's uv derivatives.
+fn applyBump(n: vec3f, dpdu: vec3f, dpdv: vec3f, dhdu: f32, dhdv: f32) -> vec3f {
+  let bent = cross(dpdu + n * dhdu, dpdv + n * dhdv);
+  if (dot(bent, bent) == 0.0) { return n; }
+  return select(normalize(bent), -normalize(bent), dot(bent, n) < 0.0);
+}
+
+// The shading normal after a normal map or bump map, as Scene::texturedMaterial does: the outward normal is bent, so a
+// bump stays a bump when seen from inside, and the result is flipped back to the side the ray is on.
+fn perturbedNormal(material: u32, point: vec3f, uv: vec2f, outward: vec3f, frontFace: bool, width: f32, uvWidth: f32,
+                   dpdu: vec3f, dpdv: vec3f) -> vec3f {
   let binding = textureBinding(material);
-  if (binding.y == 0.0) { return select(-outward, outward, frontFace); }
-  let texture = u32(binding.y) - 1u;
-  let t1 = frameFromNormal(outward).s;
-  let t2 = cross(outward, t1);
-  // Finite differences across half the footprint, so bumps smaller than a pixel smooth out, as the CPU does. Where the
-  // footprint isn't tracked, a fixed small one stands in.
-  let width = select(BUMP_WIDTH, footprint, footprint > 0.0);
-  let delta = max(0.5 * width, 1e-4);
-  let h0 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point, width, 0.0));
-  let h1 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point + t1 * delta, width, 0.0));
-  let h2 = binding.z * luminance(evalTexture(texture, vec2f(0.0), point + t2 * delta, width, 0.0));
-  let bent = normalize(outward - t1 * ((h1 - h0) / delta) - t2 * ((h2 - h0) / delta));
+  var bent = outward;
+  if (binding.w != 0.0) {
+    bent = applyNormalMap(outward, dpdu, dpdv, evalTexture(u32(binding.w) - 1u, uv, point, width, uvWidth));
+  } else if (binding.y != 0.0) {
+    let texture = u32(binding.y) - 1u;
+    // Where the footprint isn't tracked, a fixed small one stands in, converted to uv units by the surface's scale.
+    let uvScale = sqrt(length(cross(dpdu, dpdv)));
+    let w = select(BUMP_WIDTH, width, width > 0.0);
+    let uvw = select(select(0.0, BUMP_WIDTH / uvScale, uvScale > 0.0), uvWidth, width > 0.0);
+    // Finite differences across half the footprint, so bumps smaller than a pixel smooth out.
+    let delta = max(0.5 * uvw, 1e-4);
+    let h0 = binding.z * luminance(evalTexture(texture, uv, point, w, uvw));
+    let hu = binding.z * luminance(evalTexture(texture, uv + vec2f(delta, 0.0), point + dpdu * delta, w, uvw));
+    let hv = binding.z * luminance(evalTexture(texture, uv + vec2f(0.0, delta), point + dpdv * delta, w, uvw));
+    bent = applyBump(outward, dpdu, dpdv, (hu - h0) / delta, (hv - h0) / delta);
+  }
   return select(-bent, bent, frontFace);
 }
 
@@ -551,7 +647,7 @@ fn surfaceAt(hit: Hit, o: vec3f, d: vec3f, coneWidth: f32) -> Surface {
     let r = f32(pcgHash(h) >> 8u) * (1.0 / 16777216.0);
     material = u32(select(mix.x, mix.y, r < amount));
   }
-  shading = bumpedNormal(material, point, select(-shading, shading, frontFace), frontFace, width);
+  shading = perturbedNormal(material, point, uv, select(-shading, shading, frontFace), frontFace, width, uvWidth, dpdu, dpdv);
   return Surface(point, normal, shading, frontFace, material, uv, dpdu, width, uvWidth);
 }
 

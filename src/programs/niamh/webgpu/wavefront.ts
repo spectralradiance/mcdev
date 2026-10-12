@@ -71,7 +71,7 @@ export class WavefrontTracer {
     const n = options.width * options.height;
     this.pathCount = n;
     const storage = GPUBufferUsage.STORAGE;
-    this.params = this.make(96, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST, 'params');
+    this.params = this.make(112, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST, 'params');
     this.sceneBuffer = this.make(scene.words.byteLength, storage | GPUBufferUsage.COPY_DST, 'scene');
     device.queue.writeBuffer(this.sceneBuffer, 0, scene.words);
     this.paths = this.make(4 * n * 16, storage, 'paths');
@@ -185,6 +185,7 @@ export class WavefrontTracer {
       b.triangles, b.materials, b.lights, b.view,
       this.restir ? 1 : 0, mode, this.scene.mediaBase ?? 0, this.scene.sphereBase ?? 0,
       this.scene.textureBase ?? 0, this.scene.materialTexBase ?? 0, this.scene.materialExtBase ?? 0, this.scene.skyBase ?? 0,
+      this.scene.imageBase ?? 0, 0, 0, 0,
     ]));
   }
 

@@ -2,7 +2,8 @@
 // WebGL2 PathTracerRenderer exposes (setScene, setSize, renderFrame, sampleCount, dispose), so page.tsx can drive
 // either. rtadvanced, compiled to WebAssembly, loads the scene and builds the BVH; see ./wasm.ts.
 
-import { isNative, type NativeScene, type SceneDescription } from "../scene";
+import { isAsset, isNative, type AnyScene, type NativeScene, type SceneDescription } from "../scene";
+import { loadAssetScene, type AssetScene } from "./assets";
 import { defaultDisplay, TONE_MAP_CODE, type DisplaySettings } from "../display";
 import { meanRatio, relativeMse, type Comparison } from "./compare";
 import { convertScene } from "./sceneConvert";
@@ -38,7 +39,11 @@ export class WebGpuRenderer {
   loadError?: string;
 
   private tracer: WavefrontTracer | RealtimeTracer | null = null;
-  private scene: SceneDescription | NativeScene | null = null;
+  private scene: AnyScene | null = null;
+  // The files of an asset scene once fetched, and what went wrong if they couldn't be; see setScene.
+  private asset: AssetScene | null = null;
+  private assetError: string | null = null;
+  private assetToken = 0;
   private sceneData: SceneData | null = null;
   private engine: WebGpuEngine = "nee-mis";
   private width = 0;
@@ -186,7 +191,7 @@ export class WebGpuRenderer {
     // A scene or mode change only marks the renderer dirty; the render loop rebuilds on its next frame. Comparing before
     // that would pair the previous scene's data with the new selection, so finish the rebuild first.
     if (this.dirty) {
-      this.rebuild();
+      if (!this.rebuild()) throw new Error("The scene is still loading; try again in a moment.");
       this.loadError = undefined;
     }
     const scene = this.sceneData;
@@ -279,8 +284,22 @@ export class WebGpuRenderer {
     }
   }
 
-  setScene(scene: SceneDescription | NativeScene): void {
+  setScene(scene: AnyScene): void {
     this.scene = scene;
+    const token = ++this.assetToken;
+    this.asset = null;
+    this.assetError = null;
+    if (isAsset(scene)) {
+      // The previous scene stays on screen while the files arrive; rebuild() waits for them.
+      loadAssetScene(scene.asset).then(
+        (asset) => {
+          if (token === this.assetToken) this.asset = asset;
+        },
+        (e) => {
+          if (token === this.assetToken) this.assetError = e instanceof Error ? e.message : String(e);
+        },
+      );
+    }
     this.dirty = true;
   }
 
@@ -294,8 +313,13 @@ export class WebGpuRenderer {
   }
 
   // Tracers are built for a fixed image size, scene, and mode, so any of those changing rebuilds them.
-  private rebuild(): void {
-    if (!this.scene || this.width === 0) return;
+  // Returns whether it built; false means it's waiting on something (an asset scene's files) and should be retried.
+  private rebuild(): boolean {
+    if (!this.scene || this.width === 0) return false;
+    if (isAsset(this.scene)) {
+      if (this.assetError) throw new Error(this.assetError);
+      if (!this.asset) return false;
+    }
     // Keep the largest per-pixel buffer inside the device's binding limit by rendering below display resolution.
     const bytesPerPixel = this.engine === "realtime" ? REALTIME_BYTES_PER_PIXEL : WAVEFRONT_BYTES_PER_PIXEL;
     const maxPixels = Math.floor(this.device.limits.maxStorageBufferBindingSize / bytesPerPixel);
@@ -303,12 +327,21 @@ export class WebGpuRenderer {
     const width = Math.max(1, Math.floor(this.width * shrink));
     const height = Math.max(1, Math.floor(this.height * shrink));
     const native = isNative(this.scene);
-    const converted = native
+    const asset = isAsset(this.scene) ? this.asset : null;
+    const prebuilt = native || asset !== null;
+    const converted = prebuilt
       ? { json: "", materialOrder: [], media: {}, unsupported: [] as string[] }
       : convertScene(this.scene as SceneDescription, width, height);
-    let sceneData = native
-      ? this.rendererB.load((this.scene as NativeScene).native)
-      : this.rendererB.loadText("niamh.json", converted.json);
+    let sceneData: SceneData;
+    if (asset) {
+      // The image files go where the scene's relative paths will find them, for rtadvanced's own decoder.
+      for (const [file, bytes] of asset.files) this.rendererB.writeFile(`/scenes/${file}`, bytes);
+      sceneData = this.rendererB.loadText("niamh-asset.json", asset.json, asset.images);
+    } else if (native) {
+      sceneData = this.rendererB.load((this.scene as NativeScene).native);
+    } else {
+      sceneData = this.rendererB.loadText("niamh.json", converted.json);
+    }
     const warnings = [...converted.unsupported, ...sceneData.unsupported];
     // rtadvanced ignores participating media (its loader never sees them), so they ride along in a table indexed by
     // material. That relies on materials being indexed in sorted-name order; verify rather than assume.
@@ -331,7 +364,7 @@ export class WebGpuRenderer {
     const options: TracerOptions = {
       width,
       height,
-      maxDepth: this.maxDepthOverride ?? (native ? NATIVE_MAX_DEPTH : (this.scene as SceneDescription).maxBounces ?? 6),
+      maxDepth: this.maxDepthOverride ?? (prebuilt ? NATIVE_MAX_DEPTH : (this.scene as SceneDescription).maxBounces ?? 6),
       sortMaterials: this.sortMaterials,
       mode: WAVEFRONT_MODE[this.engine] ?? 2,
     };
@@ -361,6 +394,7 @@ export class WebGpuRenderer {
     this.canvas.width = width;
     this.canvas.height = height;
     this.dirty = false;
+    return true;
   }
 
   private pose(): CameraPose {
@@ -398,8 +432,8 @@ export class WebGpuRenderer {
     if (this.deviceError) throw new Error(`WebGPU error: ${this.deviceError}`);
     if (this.dirty) {
       try {
-        this.rebuild();
-        this.loadError = undefined;
+        // False means it's waiting (an asset scene's files); it stays dirty and tries again next frame.
+        if (this.rebuild()) this.loadError = undefined;
       } catch (e) {
         // Don't retry every frame; the next scene or mode change sets dirty again.
         this.loadError = e instanceof Error ? e.message : String(e);

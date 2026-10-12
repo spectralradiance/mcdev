@@ -1,5 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { buildTextureTables, EXTENSION_ANISOTROPIC, EXTENSION_MIX, EXTENSION_SHEEN, TEXTURE_CHECKER, TEXTURE_NOISE, TEXTURE_VEC4S, type SceneJson } from "./textures";
+import {
+  buildTextureTables,
+  EXTENSION_ANISOTROPIC,
+  EXTENSION_MIX,
+  EXTENSION_SHEEN,
+  FILTER_BILINEAR,
+  FILTER_POINT,
+  FILTER_TRILINEAR,
+  TEXTURE_CHECKER,
+  TEXTURE_IMAGE,
+  TEXTURE_NOISE,
+  TEXTURE_VEC4S,
+  type SceneJson,
+} from "./textures";
 
 // Mirrors texture-study.json: a checker floor albedo, a noise albedo, and a glossy material bump-mapped by noise.
 const scene: SceneJson = {
@@ -26,9 +39,19 @@ describe("buildTextureTables", () => {
 
   it("lays out textures in sorted-name order with kind, scale and both colours", () => {
     // sorted: floorTiles, marble, stucco
-    expect(entry(tables, 0)).toEqual([TEXTURE_CHECKER, 100, 0, 0, ...[0.8, 0.8, 0.8].map(Math.fround), 0, ...[0.08, 0.08, 0.08].map(Math.fround), 0]);
+    // Header: (kind, scale, filter, image index). A texture that names no filter gets the CPU's default, trilinear.
+    expect(entry(tables, 0)).toEqual([TEXTURE_CHECKER, 100, FILTER_TRILINEAR, 0, ...[0.8, 0.8, 0.8].map(Math.fround), 0, ...[0.08, 0.08, 0.08].map(Math.fround), 0]);
     expect(entry(tables, 1).slice(0, 2)).toEqual([TEXTURE_NOISE, 3]);
     expect(entry(tables, 2).slice(0, 2)).toEqual([TEXTURE_NOISE, 12]);
+  });
+
+  it("records each texture's filter, so point sampling can skip the footprint", () => {
+    const t = buildTextureTables(
+      { textures: { a: { type: "checker", filter: "point" }, b: { type: "noise", filter: "bilinear" } }, materials: { m: {} } },
+      ["m"],
+    );
+    expect(entry(t, 0)[2]).toBe(FILTER_POINT);
+    expect(entry(t, 1)[2]).toBe(FILTER_BILINEAR);
   });
 
   it("binds each material to its albedo and bump texture, one-based so zero means none", () => {
@@ -42,24 +65,45 @@ describe("buildTextureTables", () => {
     expect(tables.unsupported).toEqual([]);
   });
 
-  it("flags image textures and normal maps as unsupported, and leaves the material untextured", () => {
+  it("reads an image texture through the packed image it was given, and binds it as albedo and as a normal map", () => {
     const t = buildTextureTables(
-      { textures: { photo: { type: "image" } }, materials: { wall: { albedo: "photo", normalMap: "photo" } } },
+      {
+        textures: {
+          photo: { type: "image", file: "photo.png", scale: 4, filter: "bilinear" },
+          normals: { type: "image", file: "n.png", srgb: false },
+        },
+        materials: { wall: { albedo: "photo", normalMap: "normals" } },
+      },
+      ["wall"],
+      new Map([["photo", 0], ["normals", 1]]),
+    );
+    // sorted: normals, photo
+    expect(entry(t, 0)).toEqual([TEXTURE_IMAGE, 1, FILTER_TRILINEAR, 1, 0, 0, 0, 0, 0, 0, 0, 0]);
+    expect(entry(t, 1).slice(0, 4)).toEqual([TEXTURE_IMAGE, 4, FILTER_BILINEAR, 0]);
+    expect(binding(t, 0)).toEqual([2, 0, 1, 1]); // albedo = photo (second), no bump, normal map = normals (first)
+    expect(t.used).toBe(true);
+    expect(t.unsupported).toEqual([]);
+  });
+
+  it("names an image that wasn't loaded, and leaves its materials untextured", () => {
+    const t = buildTextureTables(
+      { textures: { photo: { type: "image", file: "gone.png" } }, materials: { wall: { albedo: "photo", normalMap: "photo" } } },
       ["wall"],
     );
     expect(t.used).toBe(false);
-    expect(t.unsupported.join()).toMatch(/image textures/);
-    expect(t.unsupported.join()).toMatch(/normal maps/);
+    expect(t.unsupported.join()).toMatch(/image texture 'gone.png' wasn't loaded/);
+    expect(t.unsupported.join()).toMatch(/normal map 'photo' isn't available/);
     expect(binding(t, 0)).toEqual([0, 0, 1, 0]);
   });
 
-  it("ignores a bump map that isn't noise, since it needs uv derivatives", () => {
+  it("takes a bump map from any texture, since heights are differenced in uv", () => {
     const t = buildTextureTables(
-      { textures: { grid: { type: "checker", colors: [[0, 0, 0], [1, 1, 1]] } }, materials: { m: { bumpMap: "grid" } } },
+      { textures: { grid: { type: "checker", colors: [[0, 0, 0], [1, 1, 1]] } }, materials: { m: { bumpMap: "grid", bumpScale: 0.5 } } },
       ["m"],
     );
-    expect(t.used).toBe(false);
-    expect(t.unsupported.join()).toMatch(/bump maps other than noise/);
+    expect(t.used).toBe(true);
+    expect(t.unsupported).toEqual([]);
+    expect(binding(t, 0)).toEqual([0, 1, 0.5, 0]);
   });
 
   it("handles a scene with no textures", () => {
