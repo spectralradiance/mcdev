@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="A media list filtered by the game tag, grouped by artist, with the selected title opening a Wikipedia summary panel">
+<defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#fff" stroke-opacity="0.04"/></pattern></defs>
+<rect width="480" height="300" fill="#0a0a0a"/><rect width="480" height="300" fill="url(#g)"/>
+<g stroke-linecap="round" stroke-linejoin="round">
+<rect x="40" y="29" width="34" height="22" rx="11" fill="none" stroke="#6b7280"/><path d="M50 41H58" stroke="#9ca3af" stroke-width="3" fill="none"/><circle cx="65" cy="36" r="1.6" fill="#9ca3af" stroke="none"/>
+<rect x="84" y="29" width="48" height="22" rx="11" fill="none" stroke="#6b7280"/><path d="M94 41H116" stroke="#9ca3af" stroke-width="3" fill="none"/><circle cx="123" cy="36" r="1.6" fill="#9ca3af" stroke="none"/>
+<rect x="142" y="29" width="58" height="22" rx="11" fill="#db2d6c" stroke="#db2d6c" stroke-width="1.5"/><text x="152" y="44" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#fff" letter-spacing="1">GAME</text><text x="188" y="39" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="7" fill="#fff">22</text>
+<rect x="210" y="29" width="54" height="22" rx="11" fill="none" stroke="#6b7280"/><path d="M220 41H248" stroke="#9ca3af" stroke-width="3" fill="none"/><circle cx="255" cy="36" r="1.6" fill="#9ca3af" stroke="none"/>
+<rect x="274" y="29" width="36" height="22" rx="11" fill="none" stroke="#6b7280"/><path d="M284 41H294" stroke="#9ca3af" stroke-width="3" fill="none"/><circle cx="301" cy="36" r="1.6" fill="#9ca3af" stroke="none"/>
+<rect x="320" y="29" width="44" height="22" rx="11" fill="none" stroke="#6b7280"/><path d="M330 41H348" stroke="#9ca3af" stroke-width="3" fill="none"/><circle cx="355" cy="36" r="1.6" fill="#9ca3af" stroke="none"/>
+<path d="M38 64H442" stroke="#6b7280" stroke-opacity="0.4" fill="none"/>
+<path d="M40 92H104" stroke="#e5e7eb" stroke-width="5" fill="none"/>
+<path d="M40 110H62" stroke="#6b7280" stroke-width="3" fill="none"/><path d="M76 110H150" stroke="#db2d6c" stroke-width="3" stroke-opacity="0.75" fill="none"/>
+<path d="M40 126H62" stroke="#6b7280" stroke-width="3" fill="none"/><path d="M76 126H168" stroke="#db2d6c" stroke-width="3" stroke-opacity="0.75" fill="none"/>
+<path d="M40 148H92" stroke="#e5e7eb" stroke-width="5" fill="none"/>
+<path d="M40 166H62" stroke="#6b7280" stroke-width="3" fill="none"/><path d="M76 166H142" stroke="#db2d6c" stroke-width="3" stroke-opacity="0.75" fill="none"/>
+<rect x="32" y="176" width="164" height="24" rx="3" fill="#db2d6c" fill-opacity="0.14" stroke="none"/><path d="M40 188H62" stroke="#9ca3af" stroke-width="3" fill="none"/><path d="M76 188H188" stroke="#db2d6c" stroke-width="6" fill="none"/>
+<path d="M40 212H62" stroke="#6b7280" stroke-width="3" fill="none"/><path d="M76 212H156" stroke="#db2d6c" stroke-width="3" stroke-opacity="0.75" fill="none"/>
+<path d="M40 234H112" stroke="#e5e7eb" stroke-width="5" fill="none"/>
+<path d="M40 252H62" stroke="#6b7280" stroke-width="3" fill="none"/><path d="M76 252H134" stroke="#db2d6c" stroke-width="3" stroke-opacity="0.75" fill="none"/>
+<path d="M200 188H264" stroke="#db2d6c" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/><path d="M270 184l6 4l-6 4" stroke="#db2d6c" stroke-width="1.5" fill="none"/>
+<rect x="278" y="92" width="164" height="168" rx="2" fill="none" stroke="#e5e7eb" stroke-width="1.5"/>
+<path d="M292 114H382" stroke="#db2d6c" stroke-width="5" fill="none"/>
+<path d="M292 136H426" stroke="#6b7280" stroke-width="2" fill="none"/><path d="M292 147H420" stroke="#6b7280" stroke-width="2" fill="none"/><path d="M292 158H428" stroke="#6b7280" stroke-width="2" fill="none"/><path d="M292 169H412" stroke="#6b7280" stroke-width="2" fill="none"/><path d="M292 180H422" stroke="#6b7280" stroke-width="2" fill="none"/><path d="M292 191H388" stroke="#6b7280" stroke-width="2" fill="none"/><path d="M292 213H424" stroke="#6b7280" stroke-width="2" fill="none"/><path d="M292 224H418" stroke="#6b7280" stroke-width="2" fill="none"/><path d="M292 235H376" stroke="#6b7280" stroke-width="2" fill="none"/>
+<text x="442" y="278" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#9ca3af" letter-spacing="1" text-anchor="end">WIKIPEDIA</text>
+</g>
+</svg>

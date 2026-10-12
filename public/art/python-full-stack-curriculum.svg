@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Schematic of a fifteen-week curriculum timeline with Python, Django, JavaScript and Vue, and capstone modules building up a browser, server and database stack">
+<defs>
+<pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#fff" stroke-opacity=".04"/></pattern>
+<path id="s" d="M0 0L80 -18L160 0L80 18Z"/>
+<path id="e" d="M0 0v6L80 24L160 6V0"/>
+</defs>
+<rect width="480" height="300" fill="#0a0a0a"/>
+<rect width="480" height="300" fill="url(#g)"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+<g stroke="#e5e7eb" stroke-width="1.2" fill="#38bdf8" fill-opacity=".12">
+<rect x="40" y="70" width="92" height="16" rx="3"/>
+<rect x="152" y="70" width="92" height="16" rx="3"/>
+<rect x="264" y="70" width="64" height="16" rx="3"/>
+<rect x="348" y="70" width="36" height="16" rx="3"/>
+</g>
+<rect x="404" y="70" width="36" height="16" rx="3" fill="#38bdf8" fill-opacity=".55" stroke="#38bdf8" stroke-width="1.5"/>
+<path d="M44 112H436" stroke="#e5e7eb" stroke-width="1.5"/>
+<path d="M44 106v12M72 108v8M100 108v8M128 108v8M156 108v8M184 106v12M212 108v8M240 108v8M268 108v8M296 108v8M324 106v12M352 108v8M380 108v8M408 108v8M436 106v12" stroke="#9ca3af"/>
+<path d="M44 112H436" stroke="#38bdf8" stroke-width="2" stroke-dasharray="1 27" stroke-opacity=".9"/>
+<path d="M86 86v8M198 86v8M296 86v8M366 86v8M422 86v8" stroke="#6b7280"/>
+<path d="M86 124C86 196 116 240 160 248" stroke="#6b7280" stroke-dasharray="4 4"/>
+<path d="M198 124C198 168 132 200 160 222" stroke="#6b7280" stroke-dasharray="4 4"/>
+<path d="M296 124C296 160 338 176 320 196" stroke="#6b7280" stroke-dasharray="4 4"/>
+<path d="M422 124C422 190 380 222 320 222" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="4 4"/>
+<g transform="translate(160 248)" stroke="#9ca3af"><use href="#e"/><use href="#s" fill="#0a0a0a"/></g>
+<path d="M216 248a24 6 0 0 0 48 0M216 242a24 6 0 0 0 48 0" stroke="#6b7280"/>
+<g transform="translate(160 222)" stroke="#9ca3af"><use href="#e"/><use href="#s" fill="#0a0a0a"/></g>
+<path d="M214 222l26 6 26-6M214 216l26 6 26-6" stroke="#6b7280"/>
+<g transform="translate(160 196)" stroke="#38bdf8" stroke-width="1.5"><use href="#e"/><use href="#s" fill="#0a0a0a"/><use href="#s" fill="#38bdf8" fill-opacity=".18"/></g>
+<g fill="#e5e7eb" stroke="none"><circle cx="160" cy="248" r="2.2"/><circle cx="160" cy="222" r="2.2"/><circle cx="320" cy="196" r="2.2"/></g><circle cx="320" cy="222" r="2.4" fill="#38bdf8" stroke="none"/>
+<path d="M212 196l28-6 28 6-28 6zM222 196l18-4" stroke="#38bdf8"/>
+</g>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#9ca3af" letter-spacing="1" text-anchor="middle">
+<text x="86" y="60">PYTHON</text>
+<text x="198" y="60">DJANGO</text>
+<text x="296" y="60">JS / VUE</text>
+<text x="420" y="60">CAPSTONE</text>
+</g>
+</svg>

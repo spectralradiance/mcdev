@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Three RGB gradient sliders, each spanning its channel with the others fixed, marking the color #D87233">
+<defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#fff" stroke-opacity="0.04"/></pattern><linearGradient id="s0"><stop offset="0" stop-color="rgb(0,114,51)"/><stop offset="1" stop-color="rgb(255,114,51)"/></linearGradient><linearGradient id="s1"><stop offset="0" stop-color="rgb(216,0,51)"/><stop offset="1" stop-color="rgb(216,255,51)"/></linearGradient><linearGradient id="s2"><stop offset="0" stop-color="rgb(216,114,0)"/><stop offset="1" stop-color="rgb(216,114,255)"/></linearGradient></defs>
+<rect width="480" height="300" fill="#0a0a0a"/><rect width="480" height="300" fill="url(#g)"/>
+<g stroke-linecap="round" stroke-linejoin="round">
+<rect x="96" y="68" width="308" height="118" fill="none" stroke="rgb(216,114,51)" stroke-width="1.5"/>
+<rect x="100" y="72" width="300" height="30" fill="url(#s0)"/>
+<path d="M355 69V105" stroke="#0a0a0a" stroke-width="4" fill="none"/><path d="M355 69V105" stroke="#e5e7eb" stroke-width="1.5" fill="none"/>
+<text x="84" y="91" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#9ca3af" letter-spacing="1" text-anchor="end">R</text>
+<rect x="100" y="112" width="300" height="30" fill="url(#s1)"/>
+<path d="M235 109V145" stroke="#0a0a0a" stroke-width="4" fill="none"/><path d="M235 109V145" stroke="#e5e7eb" stroke-width="1.5" fill="none"/>
+<text x="84" y="131" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#9ca3af" letter-spacing="1" text-anchor="end">G</text>
+<rect x="100" y="152" width="300" height="30" fill="url(#s2)"/>
+<path d="M160 149V185" stroke="#0a0a0a" stroke-width="4" fill="none"/><path d="M160 149V185" stroke="#e5e7eb" stroke-width="1.5" fill="none"/>
+<text x="84" y="171" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#9ca3af" letter-spacing="1" text-anchor="end">B</text>
+<text x="100" y="232" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" fill="#e5e7eb">[rgb]</text><text x="156" y="232" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" fill="#6b7280">[hsv]</text>
+<rect x="224" y="216" width="20" height="20" fill="rgb(216,114,51)" stroke="#e5e7eb" stroke-width="1"/>
+<text x="254" y="232" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" fill="#e5e7eb">#D87233</text>
+</g>
+</svg>

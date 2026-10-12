@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Schematic map of Portland between the Columbia and Willamette rivers, speckled with tree points, beside a bar chart and a Python to GeoJSON to map pipeline">
+<defs>
+<pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#fff" stroke-opacity=".04"/></pattern>
+<marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+<rect width="480" height="300" fill="#0a0a0a"/>
+<rect width="480" height="300" fill="url(#g)"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M48 96L96 80L130 74L170 78L230 72L282 82L286 140L276 196L250 232L206 244L150 240L104 222L70 188L56 140Z" stroke="#e5e7eb" stroke-width="1.2" stroke-dasharray="4 4" stroke-opacity=".7"/>
+<g id="r">
+<path d="M30 62C90 48 150 70 210 58S280 46 300 52"/>
+<path d="M196 266C200 236 214 214 204 190C194 166 170 150 166 126C162 104 146 86 130 62"/>
+</g>
+<use href="#r" stroke="#6b7280" stroke-width="7"/>
+<use href="#r" stroke="#0a0a0a" stroke-width="4"/>
+<path d="M157 112h14M162 132h14M170 150h14M184 165h14" stroke="#6b7280"/>
+<path d="M126 101h0M202 88h0M64 160h0M59 148h0M66 91h0M149 213h0M79 113h0M185 142h0M278 84h0M251 124h0M84 96h0M122 211h0M92 173h0M200 138h0M178 86h0M64 110h0M209 147h0M124 173h0M156 126h0M236 192h0M107 171h0M173 221h0M221 124h0M279 96h0M148 202h0M86 157h0M229 171h0M213 175h0M247 233h0M161 186h0M242 123h0M140 187h0M141 221h0M69 151h0M242 219h0M115 145h0M134 223h0M274 101h0M91 115h0M105 157h0M188 120h0M136 170h0M273 191h0M171 179h0M260 205h0M142 142h0M74 181h0M99 103h0M130 85h0M50 101h0M74 136h0M194 101h0M109 134h0M135 96h0M159 156h0M130 120h0M244 103h0M174 100h0M174 238h0M252 192h0M89 204h0M175 205h0M127 113h0M250 210h0M241 199h0M57 122h0M111 191h0M274 150h0M273 137h0M102 114h0M196 225h0M247 156h0M226 155h0M144 233h0M220 104h0M277 184h0M152 221h0M243 111h0M109 125h0M133 152h0M187 226h0M167 164h0M173 79h0M220 168h0M126 162h0M75 169h0M181 202h0M264 150h0M170 191h0M156 165h0M162 232h0M270 119h0M181 233h0M78 149h0M233 225h0M86 195h0M205 100h0M143 157h0M88 148h0M96 129h0M219 79h0M196 161h0M75 120h0M113 98h0M184 192h0M198 209h0M173 116h0M76 103h0M123 127h0M109 79h0M94 155h0M269 94h0M242 148h0M166 215h0M211 239h0M130 214h0M145 134h0M116 116h0M119 152h0M278 167h0M122 135h0M226 185h0M218 222h0M259 180h0M222 211h0M181 180h0M223 238h0M84 118h0M183 78h0M64 121h0M208 124h0M259 109h0M164 80h0M83 133h0M261 124h0M114 84h0M170 108h0M120 199h0M278 119h0M89 103h0M95 91h0M225 145h0M252 112h0M254 80h0M76 88h0M141 113h0M191 78h0M257 155h0M122 80h0M148 119h0" stroke="#4ade80" stroke-width="3.4"/>
+<path d="M326 168H452" stroke="#6b7280" stroke-dasharray="4 4"/>
+<path d="M326 64V168" stroke="#6b7280"/>
+<g fill="#4ade80" fill-opacity=".18" stroke="#e5e7eb" stroke-width="1.2">
+<rect x="334" y="78" width="12" height="90"/>
+<rect x="354" y="98" width="12" height="70"/>
+<rect x="374" y="112" width="12" height="56"/>
+<rect x="394" y="126" width="12" height="42"/>
+<rect x="414" y="138" width="12" height="30"/>
+<rect x="434" y="148" width="12" height="20"/>
+</g>
+<g stroke="#e5e7eb" stroke-width="1.2">
+<rect x="322" y="208" width="24" height="20" rx="3"/>
+<rect x="358" y="208" width="56" height="20" rx="3"/>
+<rect x="426" y="208" width="30" height="20" rx="3"/>
+</g>
+<path d="M348 218h8M416 218h8" stroke="#6b7280" marker-end="url(#a)"/>
+</g>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#9ca3af" letter-spacing="1" text-anchor="middle">
+<text x="334.5" y="221.5">PY</text>
+<text x="386.5" y="221.5">GEOJSON</text>
+<text x="441.5" y="221.5">MAP</text>
+</g>
+</svg>
