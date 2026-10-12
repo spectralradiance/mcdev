@@ -1,36 +1,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import projects from '../data/projects.json';
 import smallProjects from '../small';
-
-let projectsRequest = null;
-
-// Fetched once and shared between the list and detail pages.
-const loadProjects = () => {
-  projectsRequest ??= fetch('/projects.json').then((response) => {
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return response.json();
-  });
-  return projectsRequest;
-};
-
-const useProjects = () => {
-  const [state, setState] = useState({ projects: null, error: null });
-
-  useEffect(() => {
-    let active = true;
-    loadProjects()
-      .then((projects) => active && setState({ projects, error: null }))
-      .catch((requestError) => {
-        projectsRequest = null;
-        if (active) setState({ projects: null, error: requestError.message });
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  return state;
-};
 
 const projectHref = (project) => project.page ?? `/projects/${project.slug}`;
 
@@ -42,48 +13,51 @@ const ExternalIcon = () => (
   </svg>
 );
 
+const Art = ({ project, className = '' }) => (
+  <img
+    src={project.art}
+    alt=""
+    loading="lazy"
+    className={'block w-full aspect-[16/10] bg-[#0a0a0a] ' + className}
+  />
+);
+
+const Category = ({ children }) => (
+  <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">{children}</p>
+);
+
 const LargeCard = ({ project }) => {
-  const { title, image, description, tech } = project;
+  const { title, category, description, tech } = project;
 
   return (
     <Link
       to={projectHref(project)}
       className="flex flex-col bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
     >
-      {image ? (
-        <img src={image} alt="" loading="lazy" className="w-full h-48 object-cover bg-gray-800" />
-      ) : (
-        <div className="w-full h-48 bg-gray-800 flex items-center justify-center">
-          <span className="text-gray-500 text-2xl font-semibold tracking-wide">{title}</span>
-        </div>
-      )}
+      <Art project={project} className="border-b border-gray-800" />
       <div className="p-4">
-        <h3 className="text-white font-semibold text-lg leading-tight">{title}</h3>
-        {description && <p className="text-gray-400 text-sm mt-2 line-clamp-3">{description}</p>}
-        {tech?.length > 0 && (
-          <p className="text-gray-500 text-xs mt-3">{tech.slice(0, 4).join(' · ')}</p>
-        )}
+        <Category>{category}</Category>
+        <h3 className="mt-1 text-white font-semibold text-lg leading-tight">{title}</h3>
+        {description && <p className="text-gray-400 text-sm mt-2">{description}</p>}
+        <p className="text-gray-500 text-xs mt-3">{tech.join(' · ')}</p>
       </div>
     </Link>
   );
 };
 
 const SmallCard = ({ project }) => {
-  const { title, image, description } = project;
+  const { title, category, description } = project;
 
   return (
     <Link
       to={projectHref(project)}
-      className="flex gap-3 items-start p-3 bg-gray-900 border border-gray-800 rounded-lg hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+      className="flex flex-col bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
     >
-      {image ? (
-        <img src={image} alt="" loading="lazy" className="w-14 h-14 shrink-0 rounded object-cover bg-gray-800" />
-      ) : (
-        <div className="w-14 h-14 shrink-0 rounded bg-gray-800" />
-      )}
-      <div className="min-w-0">
-        <h3 className="text-white font-semibold text-sm leading-tight">{title}</h3>
-        {description && <p className="text-gray-400 text-xs mt-1 line-clamp-2">{description}</p>}
+      <Art project={project} className="border-b border-gray-800" />
+      <div className="p-3">
+        <Category>{category}</Category>
+        <h3 className="mt-1 text-white font-semibold text-sm leading-tight">{title}</h3>
+        {description && <p className="text-gray-400 text-xs mt-1">{description}</p>}
       </div>
     </Link>
   );
@@ -131,7 +105,7 @@ const Gallery = ({ images, title }) => {
           onClick={() => setOpen(src)}
           className="rounded-lg overflow-hidden border border-gray-800 hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
-          <img src={src} alt={title} loading="lazy" className="w-48 h-48 object-cover bg-gray-900" />
+          <img src={src} alt={title} loading="lazy" className="h-48 w-auto max-w-full bg-gray-900" />
         </button>
       ))}
       {open && <ImageModal src={open} alt={title} onClose={() => setOpen(null)} />}
@@ -145,14 +119,24 @@ const BackLink = () => (
   </Link>
 );
 
+const TechList = ({ tech }) => (
+  <ul className="mb-8 flex flex-wrap gap-2">
+    {tech.map((name) => (
+      <li key={name} className="rounded border border-gray-700 px-2 py-0.5 text-xs text-gray-300">{name}</li>
+    ))}
+  </ul>
+);
+
 const SmallProjectDetail = ({ project }) => {
   const Demo = smallProjects[project.slug];
 
   return (
     <div>
       <BackLink />
-      <h2 className="text-4xl font-bold text-white mb-3">{project.title}</h2>
-      {project.description && <p className="text-gray-300 leading-relaxed mb-8">{project.description}</p>}
+      <Category>{project.category}</Category>
+      <h2 className="mt-1 text-4xl font-bold text-white mb-3">{project.title}</h2>
+      {project.description && <p className="text-gray-300 leading-relaxed mb-4">{project.description}</p>}
+      <TechList tech={project.tech} />
 
       {Demo ? (
         <div className="mb-6">
@@ -179,22 +163,16 @@ const SmallProjectDetail = ({ project }) => {
 };
 
 const LargeProjectDetail = ({ project }) => {
-  const { title, description, about, tech, repos, page } = project;
-  const gallery = project.gallery ?? (project.image ? [project.image] : []);
+  const { title, category, description, about, tech, repos, page, gallery = [] } = project;
 
   return (
     <div>
       <BackLink />
-      <h2 className="text-4xl font-bold text-white mb-3">{title}</h2>
-      {description && <p className="text-gray-300 leading-relaxed mb-6">{description}</p>}
-
-      {tech?.length > 0 && (
-        <ul className="mb-8 flex flex-wrap gap-2">
-          {tech.map((name) => (
-            <li key={name} className="rounded border border-gray-700 px-2 py-0.5 text-xs text-gray-300">{name}</li>
-          ))}
-        </ul>
-      )}
+      <Art project={project} className="mb-8 rounded-lg border border-gray-800" />
+      <Category>{category}</Category>
+      <h2 className="mt-1 text-4xl font-bold text-white mb-3">{title}</h2>
+      {description && <p className="text-gray-300 leading-relaxed mb-4">{description}</p>}
+      <TechList tech={tech} />
 
       {about && (
         <div className="mb-8">
@@ -230,11 +208,6 @@ const LargeProjectDetail = ({ project }) => {
 
 export const ProjectDetail = () => {
   const { slug } = useParams();
-  const { projects, error } = useProjects();
-
-  if (error) return <p className="text-red-400">Failed to load projects: {error}</p>;
-  if (!projects) return <p className="text-gray-400">Loading project…</p>;
-
   const project = projects.find((p) => p.slug === slug);
   if (!project) {
     return (
@@ -250,11 +223,6 @@ export const ProjectDetail = () => {
 };
 
 const Projects = () => {
-  const { projects, error } = useProjects();
-
-  if (error) return <p className="text-red-400">Failed to load projects: {error}</p>;
-  if (!projects) return <p className="text-gray-400">Loading projects…</p>;
-
   const large = projects.filter((p) => p.size !== 'small');
   const small = projects.filter((p) => p.size === 'small');
 
