@@ -178,14 +178,20 @@
     "description": "A 15-week full-stack Python bootcamp curriculum, taught to 96 students across 14 cohorts.",
     "tech": [
       "Python",
-      "Django",
       "Flask",
+      "Django",
       "SQL",
+      "HTML / CSS",
       "JavaScript",
-      "Vue",
-      "Git"
+      "Vue"
     ],
-    "about": "Designed and taught through lectures, mob programming and one-on-one mentoring, covering Python, Django, Flask, SQL, JavaScript, Vue, APIs, Git, algorithms and deployment, along with career preparation."
+    "about": "Designed and taught through lectures, mob programming and one-on-one mentoring, covering Python, Django, Flask, SQL, JavaScript, Vue, APIs, Git, algorithms and deployment, along with career preparation.",
+    "repos": [
+      {
+        "label": "python-fullstack",
+        "url": "https://github.com/spectralradiance/python-fullstack"
+      }
+    ]
   },
   {
     "slug": "seed-of-life",
