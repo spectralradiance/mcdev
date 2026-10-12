@@ -1,23 +1,302 @@
 [
-  { "title": "Niamh", "image": "/screencaps/Niamh_1.png", "description": "A physically based ray tracer written in TypeScript.", "embed": "/programs/niamh" },
-  { "title": "Apax", "image": "/screencaps/Apax_1.png", "description": "A pixel drawing app built around rotational and reflectional symmetries.", "embed": "/programs/apax" },
-  { "title": "Kybos", "image": "/screencaps/Kybos_1.png", "description": "An interactive n-dimensional hypercube visualizer.", "embed": "/programs/kybos" },
-  { "title": "Seed of Life", "image": "/screencaps/Seed of Life_1.png", "description": "", "embed": "https://codepen.io/spectralradiance/pen/vEgzvdb" },
-  { "title": "Decoding Text", "image": null, "description": "", "embed": "https://codepen.io/spectralradiance/pen/YQzNXE" },
-  { "title": "Merging Balls", "image": null, "description": "", "embed": "https://codepen.io/spectralradiance/pen/zPpyre" },
-  { "title": "Numeric Base Converter", "image": null, "description": "", "embed": "https://codepen.io/spectralradiance/pen/zweVZg" },
-  { "title": "Hacker Typer", "image": null, "description": "", "embed": "https://codepen.io/spectralradiance/pen/paXPRE" },
-  { "title": "N-Body Gravity Simulator", "image": null, "description": "A browser-based gravity simulator.", "embed": "https://codepen.io/spectralradiance/pen/rYpQrv" },
-  { "title": "Color Picker - Sliders", "image": "/screencaps/Color Picker - Sliders_1.png", "description": "", "embed": "https://codepen.io/spectralradiance/pen/owgNMo" },
-  { "title": "Python Full-Stack Curriculum", "image": null, "description": "", "embed": null },
-  { "title": "Data Mining", "image": "/screencaps/Data mining_1.png", "description": "", "embed": null },
-  { "title": "Boniface", "image": null, "description": "A JavaFX and SQLite application.", "embed": null },
-  { "title": "Aisling", "image": null, "description": "Vocabulary management software.", "embed": "https://github.com/spectralradiance/Aisling" },
-  { "title": "Himinn", "image": "/screencaps/Himinn_1.jpg", "description": "Ray tracing Rayleigh and Mie scattering.", "embed": "https://github.com/spectralradiance/miscellaneous/tree/master/python/himinn" },
-  { "title": "Black Hole Classifier", "image": null, "description": "", "embed": "https://github.com/spectralradiance/miscellaneous/tree/master/data%20science/black_holes" },
-  { "title": "HSV Color Picker", "image": "/screencaps/HSV Color Picker_1.png", "description": "", "embed": "https://codepen.io/spectralradiance/pen/qBaVgby" },
-  { "title": "Aria", "image": "/screencaps/Aria_1.png", "description": "A browser-based melody maker.", "embed": "https://codepen.io/spectralradiance/pen/zRXJbP" },
-  { "title": "Simone", "image": null, "description": "A musical memory game.", "embed": "https://codepen.io/spectralradiance/pen/RQExWX" },
-  { "title": "Draw Division Remainder Pattern", "image": "/screencaps/Draw Division Remainder Pattern_1.jpg", "description": "", "embed": "https://codepen.io/spectralradiance/pen/OOPqEd" },
-  { "title": "Media List in Vue", "image": "/screencaps/Media List in Vue_1.png", "description": "", "embed": "https://codepen.io/spectralradiance/pen/yygjemw" }
+  {
+    "size": "large",
+    "slug": "niamh",
+    "title": "Niamh",
+    "page": "/programs/niamh",
+    "image": "/screencaps/Niamh_1.png",
+    "description": "A ray tracing curriculum with three renderers that draw the same Cornell box, each one better than the last.",
+    "about": "Code for a multi-part article on physically based rendering. rtsimple is an interactive Whitted tracer in browser JavaScript. rtadvanced is a C++20 path tracer covering MIS, spectral rendering, bidirectional path tracing, Metropolis light transport, photon mapping, participating media, subsurface scattering and a feature-guided denoiser. rtoptimized is a wavefront path tracer in WebGPU, fed by rtadvanced's scene loader and BVH compiled to WebAssembly, with a real-time ReSTIR mode and native CUDA and Vulkan ports.",
+    "tech": [
+      "C++20",
+      "WebGPU",
+      "WGSL",
+      "TypeScript",
+      "WebAssembly",
+      "CUDA",
+      "Vulkan"
+    ],
+    "gallery": [
+      "https://raw.githubusercontent.com/spectralradiance/niamh/main/figures/material-gallery.jpg",
+      "https://raw.githubusercontent.com/spectralradiance/niamh/main/figures/bokeh-hexagonal.jpg",
+      "https://raw.githubusercontent.com/spectralradiance/niamh/main/figures/courtyard.jpg"
+    ],
+    "repos": [
+      {
+        "label": "niamh",
+        "url": "https://github.com/spectralradiance/niamh"
+      }
+    ]
+  },
+  {
+    "size": "large",
+    "slug": "nemeton",
+    "title": "Nemeton",
+    "image": null,
+    "description": "An offline-first festival schedule that installs on phones as a PWA and receives live schedule changes from organizers.",
+    "about": "A prototype built with Cascadian Midsummer 2026 data, for festivals where the venue network fails. It's an npm workspaces monorepo: a Vite + React web app that keeps the lineup and itineraries in IndexedDB through Dexie, with a custom Workbox service worker; a Hono server on Node's built-in SQLite that pushes change batches over Server-Sent Events; and an organizer CLI. The CLI previews every delay, move or cancellation before publishing, CSV imports publish only the differences, and the server refuses a change if someone else published first.",
+    "tech": [
+      "TypeScript",
+      "React",
+      "PWA / Workbox",
+      "IndexedDB",
+      "Hono",
+      "SQLite",
+      "Server-Sent Events"
+    ],
+    "repos": [
+      {
+        "label": "nemeton",
+        "url": "https://github.com/spectralradiance/nemeton"
+      }
+    ]
+  },
+  {
+    "size": "large",
+    "slug": "ogma",
+    "title": "Ogma",
+    "image": null,
+    "description": "A desktop Markdown editor for writing, vocabulary and linguistic research, with per-section notes and AI drafting.",
+    "about": "An Electron + React + TypeScript app built on CodeMirror. It shows a document as output, notes, or both, using notes blocks under each heading. A Python FastAPI sidecar, launched by the app with a per-launch token, routes AI tasks across Claude, OpenAI, Gemini, OpenAI-compatible hosts and a local 4-bit Qwen model on CUDA. AI drafts and agent edits arrive as accept/reject suggestions rather than being written straight to the file. It also has an offline Wiktionary dictionary, full-text search, version history, and atomic saves that keep the file's encoding.",
+    "tech": [
+      "Electron",
+      "React",
+      "TypeScript",
+      "CodeMirror",
+      "Python",
+      "FastAPI",
+      "PyTorch"
+    ],
+    "repos": [
+      {
+        "label": "ogma",
+        "url": "https://github.com/spectralradiance/ogma"
+      }
+    ]
+  },
+  {
+    "size": "large",
+    "slug": "portland-tree-data",
+    "title": "Portland Tree Data",
+    "image": "https://raw.githubusercontent.com/spectralradiance/portland-tree-data/main/docs/screenshots/app-overview.png",
+    "description": "A map and charts of Portland, Oregon's street trees, built from a Python data-prep pipeline.",
+    "about": "A Python script fetches Portland's public tree GeoJSON, normalizes it and computes summary metrics, writing the GeoJSON and a summary for the frontend. The frontend is a Vite + React app with an interactive Leaflet map, filters and Recharts charts.",
+    "tech": [
+      "Python",
+      "GeoJSON",
+      "React",
+      "Vite",
+      "Leaflet",
+      "Recharts"
+    ],
+    "gallery": [
+      "https://raw.githubusercontent.com/spectralradiance/portland-tree-data/main/docs/screenshots/app-overview.png",
+      "https://raw.githubusercontent.com/spectralradiance/portland-tree-data/main/docs/screenshots/app-fullpage.png"
+    ],
+    "repos": [
+      {
+        "label": "portland-tree-data",
+        "url": "https://github.com/spectralradiance/portland-tree-data"
+      }
+    ]
+  },
+  {
+    "size": "large",
+    "slug": "deasil",
+    "title": "Deasil",
+    "image": null,
+    "description": "The site behind deasil.org: writing, photography and small browser programs, on a Sanity CMS synced from SmugMug and Notion.",
+    "about": "The front end is a Next.js 15 / React 19 site with MUI that reads articles and photographs from Sanity. Its programs section has Sundial (sun, moon and wheel-of-the-year clocks on Leaflet maps), Aria (a generative music tracker with instruments built as node graphs, whose Web Audio engine can render a song to WAV faster than real time), Altar (tarot spreads), Glyph (runes and ancient scripts) and Voluspa (comparing translations stanza by stanza).\n\nThe backend is a Sanity studio with schemas for photographs with EXIF metadata, albums, nested folders, posts, authors and categories. Custom studio plugins mirror the SmugMug gallery tree over OAuth 1.0a and import posts from a Notion database.",
+    "tech": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "MUI",
+      "Sanity",
+      "Web Audio",
+      "Leaflet"
+    ],
+    "repos": [
+      {
+        "label": "deasil (front end)",
+        "url": "https://github.com/spectralradiance/deasil"
+      },
+      {
+        "label": "deasil-backend (Sanity)",
+        "url": "https://github.com/spectralradiance/deasil-backend"
+      }
+    ]
+  },
+  {
+    "size": "large",
+    "slug": "kybos",
+    "title": "Kybos",
+    "image": "/screencaps/Kybos_1.png",
+    "description": "An interactive n-dimensional hypercube visualizer.",
+    "page": "/programs/kybos"
+  },
+  {
+    "size": "large",
+    "slug": "apax",
+    "title": "Apax",
+    "image": "/screencaps/Apax_1.png",
+    "description": "A pixel drawing app built around rotational and reflectional symmetries.",
+    "page": "/programs/apax"
+  },
+  {
+    "size": "large",
+    "slug": "himinn",
+    "title": "Himinn",
+    "image": "/screencaps/Himinn_1.jpg",
+    "description": "Ray tracing Rayleigh and Mie scattering.",
+    "repos": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/spectralradiance/miscellaneous/tree/master/python/himinn"
+      }
+    ]
+  },
+  {
+    "size": "large",
+    "slug": "aisling",
+    "title": "Aisling",
+    "image": null,
+    "description": "Vocabulary management software.",
+    "repos": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/spectralradiance/Aisling"
+      }
+    ]
+  },
+  {
+    "size": "large",
+    "slug": "black-hole-classifier",
+    "title": "Black Hole Classifier",
+    "image": null,
+    "description": "",
+    "repos": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/spectralradiance/miscellaneous/tree/master/data%20science/black_holes"
+      }
+    ]
+  },
+  {
+    "size": "large",
+    "slug": "boniface",
+    "title": "Boniface",
+    "image": null,
+    "description": "A JavaFX and SQLite application."
+  },
+  {
+    "size": "large",
+    "slug": "data-mining",
+    "title": "Data Mining",
+    "image": "/screencaps/Data mining_1.png",
+    "description": ""
+  },
+  {
+    "size": "large",
+    "slug": "python-full-stack-curriculum",
+    "title": "Python Full-Stack Curriculum",
+    "image": null,
+    "description": ""
+  },
+  {
+    "slug": "seed-of-life",
+    "size": "small",
+    "title": "Seed of Life",
+    "image": "/screencaps/Seed of Life_1.png",
+    "description": "Circles spaced evenly around a ring, the Seed of Life at six, exportable as SVG, PNG or JPG.",
+    "codepen": "https://codepen.io/spectralradiance/pen/vEgzvdb"
+  },
+  {
+    "slug": "aria",
+    "size": "small",
+    "title": "Aria",
+    "image": "/screencaps/Aria_1.png",
+    "description": "A browser-based melody maker: write melodies as scale degrees and play them in any key and scale.",
+    "codepen": "https://codepen.io/spectralradiance/pen/zRXJbP"
+  },
+  {
+    "slug": "simone",
+    "size": "small",
+    "title": "Simone",
+    "image": null,
+    "description": "A musical memory game: repeat a growing sequence of notes from a random scale.",
+    "codepen": "https://codepen.io/spectralradiance/pen/RQExWX"
+  },
+  {
+    "slug": "n-body-gravity-simulator",
+    "size": "small",
+    "title": "N-Body Gravity Simulator",
+    "image": null,
+    "description": "A ring of bodies pulling on each other under softened Newtonian gravity.",
+    "codepen": "https://codepen.io/spectralradiance/pen/rYpQrv"
+  },
+  {
+    "slug": "merging-balls",
+    "size": "small",
+    "title": "Merging Balls",
+    "image": null,
+    "description": "A thousand balls bounce under gravity and merge on contact, conserving area and momentum.",
+    "codepen": "https://codepen.io/spectralradiance/pen/zPpyre"
+  },
+  {
+    "slug": "decoding-text",
+    "size": "small",
+    "title": "Decoding Text",
+    "image": null,
+    "description": "Scrambled text that resolves one random character at a time.",
+    "codepen": "https://codepen.io/spectralradiance/pen/YQzNXE"
+  },
+  {
+    "slug": "hacker-typer",
+    "size": "small",
+    "title": "Hacker Typer",
+    "image": null,
+    "description": "Mash the keyboard to \"write\" the second pass of the Research Unix C compiler.",
+    "codepen": "https://codepen.io/spectralradiance/pen/paXPRE"
+  },
+  {
+    "slug": "numeric-base-converter",
+    "size": "small",
+    "title": "Numeric Base Converter",
+    "image": null,
+    "description": "Type a number in any base from 1 to 16 and see it in all the others.",
+    "codepen": "https://codepen.io/spectralradiance/pen/zweVZg"
+  },
+  {
+    "slug": "color-picker-sliders",
+    "size": "small",
+    "title": "Color Picker - Sliders",
+    "image": "/screencaps/Color Picker - Sliders_1.png",
+    "description": "RGB and HSV sliders that each show the colors they would reach.",
+    "codepen": "https://codepen.io/spectralradiance/pen/owgNMo"
+  },
+  {
+    "slug": "hsv-color-picker",
+    "size": "small",
+    "title": "HSV Color Picker",
+    "image": "/screencaps/HSV Color Picker_1.png",
+    "description": "Thousands of named colors arranged by hue and lightness at a chosen saturation.",
+    "codepen": "https://codepen.io/spectralradiance/pen/qBaVgby"
+  },
+  {
+    "slug": "draw-division-remainder-pattern",
+    "size": "small",
+    "title": "Division Remainder Pattern",
+    "image": "/screencaps/Draw Division Remainder Pattern_1.jpg",
+    "description": "Shades each pixel by how many digits it takes to write a division in decimal.",
+    "codepen": "https://codepen.io/spectralradiance/pen/OOPqEd"
+  },
+  {
+    "slug": "media-list",
+    "size": "small",
+    "title": "Media List",
+    "image": "/screencaps/Media List in Vue_1.png",
+    "description": "A tag-filtered list of favorite films, games, books and albums, with Wikipedia summaries and Bandcamp players.",
+    "codepen": "https://codepen.io/spectralradiance/pen/yygjemw"
+  }
 ]

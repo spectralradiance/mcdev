@@ -1,7 +1,7 @@
 import { BrowserRouter, Link, Navigate, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Profile from './components/Profile';
-import Projects from './components/Projects';
+import Projects, { ProjectDetail } from './components/Projects';
 import Glossary from './components/Glossary';
 import Learn from './components/Learn';
 import WoodlandFortressPage from './programs/woodlandfortress/page';
@@ -92,6 +92,7 @@ function App() {
           <Route path="/programs/niamh" element={<Contained><NiamhPage /></Contained>} />
           <Route path="/" element={<Contained><HomePage /></Contained>} />
           <Route path="/projects" element={<Contained><Projects /></Contained>} />
+          <Route path="/projects/:slug" element={<Contained><ProjectDetail /></Contained>} />
           <Route path="/glossary" element={<Contained><Glossary /></Contained>} />
           <Route path="/learn" element={<Contained><Learn /></Contained>} />
           <Route path="/resume" element={<Contained><Profile /></Contained>} />
