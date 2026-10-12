@@ -1,10 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-// A tag-filtered list of films, shows, games, books and albums, grouped by
-// artist. Albums open a Bandcamp player; everything else shows the intro of
-// its Wikipedia article. Ported from the CodePen "Media List in Vue".
+/*
+ * Media List
+ *
+ * A list of films, shows, games, books and albums that inspired me, ported
+ * from the CodePen "Media List in Vue". Albums open a Bandcamp player;
+ * everything else shows the intro of its Wikipedia article, fetched live.
+ *
+ * Filtering is by tags, and the tags narrow each other: picking "game" leaves
+ * only the tags that appear on games, each with a count of how many of the
+ * remaining items carry it, most common first. Related tags (music, metal,
+ * electronica...) are joined into one segmented group so the structure of
+ * the collection shows in the buttons themselves.
+ *
+ * On top of that: a text search over titles, artists and tags; sorting by
+ * artist, year or title, each with its own headings (artist names, decades,
+ * first letters); a "surprise me" button that opens a random item from the
+ * current view; and the selected tags are mirrored into the URL hash
+ * (#tags=game,ps2), so a filtered view can be bookmarked or shared.
+ */
 
 // [name, artist, release, embed type, url, tags, bandcamp album id?]
+// An empty embed type means the title just links out.
 const RAW = [
   ["The Fountain", "Darren Aronofsky", "2006", "wikipedia", "https://en.wikipedia.org/wiki/The_Fountain", ["film"]],
   ["Princess Mononoke", "Hayao Miyazaki", "1997", "wikipedia", "https://en.wikipedia.org/wiki/Princess_Mononoke", ["film", "anime"]],
@@ -83,8 +100,8 @@ const RAW = [
   ["Kentucky", "Panopticon", "2012", "bandcamp", "https://thetruepanopticon.bandcamp.com/album/kentucky", ["music", "metal"], "2235870668"],
 ];
 
-const INSPIRATIONS = RAW.map(([name, artist, release, embedType, url, tags, bandcampId]) => ({
-  name, artist, release, embedType, url, tags, bandcampId,
+const ITEMS = RAW.map(([name, artist, release, embedType, url, tags, bandcampId]) => ({
+  name, artist, year: Number(release), embedType, url, tags, bandcampId,
 }));
 
 const TAG_GROUPS = [
@@ -95,24 +112,116 @@ const TAG_GROUPS = [
 ];
 
 // Every tag, in order of first appearance.
-const ALL_TAG_NAMES = [...new Set(INSPIRATIONS.flatMap((i) => i.tags))];
+const ALL_TAGS = [...new Set(ITEMS.flatMap((i) => i.tags))];
 
 // Side-by-side list and panel once the component is at least this wide.
 const WIDE = 672;
-
 const ACCENT = '#DB2D6C';
 
-function byCountThenName(a, b) {
-  if (a.count !== b.count) return b.count - a.count;
-  return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+// ---------------------------------------------------------------------------
+// Sorting: each order has a comparator and a heading for each run of items.
+
+const compareText = (a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' });
+
+const SORTS = {
+  artist: {
+    label: 'Artist',
+    compare: (a, b) => compareText(a.artist, b.artist) || a.year - b.year,
+    heading: (item) => item.artist,
+  },
+  year: {
+    label: 'Year',
+    compare: (a, b) => a.year - b.year || compareText(a.name, b.name),
+    // Decades are useful for modern work; for medieval texts they'd be noise.
+    heading: (item) => (item.year < 1900 ? 'Before 1900' : `${Math.floor(item.year / 10) * 10}s`),
+  },
+  title: {
+    label: 'Title',
+    compare: (a, b) => compareText(a.name, b.name),
+    heading: (item) => item.name[0].toUpperCase(),
+  },
+};
+
+// Sorted items with a heading row before each run that shares a heading.
+function withHeadings(items, sort) {
+  const { compare, heading } = SORTS[sort];
+  const rows = [];
+  let previous = null;
+  for (const item of [...items].sort(compare)) {
+    const h = heading(item);
+    if (h !== previous) rows.push({ heading: h, key: `heading:${h}` });
+    rows.push({ item, key: item.name });
+    previous = h;
+  }
+  return rows;
 }
 
-function byArtistThenRelease(a, b) {
-  const x = a.artist.toLowerCase();
-  const y = b.artist.toLowerCase();
-  if (x !== y) return x < y ? -1 : 1;
-  return a.release < b.release ? -1 : a.release > b.release ? 1 : 0;
+// ---------------------------------------------------------------------------
+// Filtering
+
+const hasAll = (item, tags) => tags.every((t) => item.tags.includes(t));
+
+function matchesSearch(item, query) {
+  if (!query) return true;
+  const q = query.toLowerCase();
+  return [item.name, item.artist, ...item.tags].some((s) => s.toLowerCase().includes(q));
 }
+
+// The picked tags, each with the count it showed when it was picked: how many
+// items carried it after the tags before it had already narrowed the list.
+function pickedWithCounts(picked) {
+  return picked.map((name, i) => ({
+    name,
+    count: ITEMS.filter((item) => hasAll(item, picked.slice(0, i + 1))).length,
+  }));
+}
+
+// The tags still worth offering, counted over the visible items, most common
+// first; then each tag group is pulled to the front as one joined segment.
+function availableTags(visible, picked) {
+  let tags = ALL_TAGS.filter((name) => !picked.includes(name))
+    .map((name) => ({ name, count: visible.filter((i) => i.tags.includes(name)).length }))
+    .filter((t) => t.count > 0)
+    .sort((a, b) => b.count - a.count || compareText(a.name, b.name));
+
+  const grouped = [];
+  for (const group of TAG_GROUPS) {
+    const members = group.map((name) => tags.find((t) => t.name === name)).filter(Boolean);
+    tags = tags.filter((t) => !group.includes(t.name));
+    members.forEach((t, j) => {
+      const position =
+        members.length < 2 ? '' : j === 0 ? 'left' : j === members.length - 1 ? 'right' : 'center';
+      grouped.push({ ...t, position });
+    });
+  }
+  return grouped.concat(tags.map((t) => ({ ...t, position: '' })));
+}
+
+// ---------------------------------------------------------------------------
+// URL hash: "#tags=game,ps2". Only a hash in that form is read or replaced, so
+// the component never fights anything else that uses the hash.
+
+function readHashTags() {
+  const m = /^#tags=([^&]*)$/.exec(window.location.hash);
+  if (!m) return [];
+  const names = decodeURIComponent(m[1]).split(',');
+  return [...new Set(names)].filter((n) => ALL_TAGS.includes(n));
+}
+
+function writeHashTags(tags) {
+  const hash = window.location.hash;
+  if (hash && !hash.startsWith('#tags=')) return;
+  const next = tags.length ? `#tags=${tags.map(encodeURIComponent).join(',')}` : '';
+  if (next === hash) return;
+  // replaceState rather than assigning location.hash: no history entry per
+  // click, no scroll jump. Passing the current state along keeps the router's
+  // own bookkeeping in it intact.
+  const { pathname, search } = window.location;
+  window.history.replaceState(window.history.state, '', pathname + search + next);
+}
+
+// ---------------------------------------------------------------------------
+// Wikipedia
 
 // Items whose name alone would land on the wrong Wikipedia article.
 const WIKI_TITLE_OVERRIDES = {
@@ -124,37 +233,23 @@ const WIKI_TITLE_OVERRIDES = {
 function wikipediaTitle(item) {
   if (WIKI_TITLE_OVERRIDES[item.name]) return WIKI_TITLE_OVERRIDES[item.name];
   const m = /^https?:\/\/en\.wikipedia\.org\/wiki\/([^#?]+)/.exec(item.url);
-  if (m) {
-    try {
-      return decodeURIComponent(m[1]).replace(/_/g, ' ');
-    } catch {
-      return m[1].replace(/_/g, ' ');
-    }
+  if (!m) return item.name;
+  try {
+    return decodeURIComponent(m[1]).replace(/_/g, ' ');
+  } catch {
+    return m[1].replace(/_/g, ' ');
   }
-  return item.name;
-}
-
-function useWidth(ref) {
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return undefined;
-    setWidth(el.clientWidth);
-    if (typeof ResizeObserver === 'undefined') return undefined;
-    const ro = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [ref]);
-  return width;
 }
 
 function useWikipediaSummary(item) {
   const [state, setState] = useState({ status: 'idle', text: '' });
   useEffect(() => {
-    if (!item || item.embedType !== 'wikipedia') {
+    if (item?.embedType !== 'wikipedia') {
       setState({ status: 'idle', text: '' });
       return undefined;
     }
+    // Aborting on change means a slow earlier response can't overwrite the
+    // summary of the item picked after it.
     const controller = new AbortController();
     setState({ status: 'loading', text: '' });
     const url =
@@ -169,27 +264,38 @@ function useWikipediaSummary(item) {
       .then((data) => {
         const pages = data?.query?.pages ?? {};
         const page = pages[Object.keys(pages)[0]];
-        if (!page || page.missing !== undefined || !page.extract) {
-          setState({ status: 'error', text: 'No Wikipedia summary found for this one.' });
-        } else {
-          setState({ status: 'ok', text: page.extract });
-        }
+        if (!page?.extract) setState({ status: 'error', text: 'No Wikipedia summary found for this one.' });
+        else setState({ status: 'ok', text: page.extract });
       })
       .catch((e) => {
-        if (e.name === 'AbortError') return;
-        setState({ status: 'error', text: 'Could not load the Wikipedia summary.' });
+        if (e.name !== 'AbortError') setState({ status: 'error', text: 'Could not load the Wikipedia summary.' });
       });
     return () => controller.abort();
   }, [item]);
   return state;
 }
 
-const tagBase =
-  'inline-flex h-9 items-center px-4 text-sm font-medium uppercase tracking-wider ' +
-  'transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2';
+// ---------------------------------------------------------------------------
+// Components
+
+// The list and panel sit side by side only when the component itself is wide
+// enough, which a media query can't tell (the page around it varies).
+function useWidth(ref) {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    setWidth(el.clientWidth);
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const ro = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ref]);
+  return width;
+}
 
 function TagButton({ tag, selected, position, onClick }) {
-  // position: '' | 'left' | 'center' | 'right' — joined buttons of one tag group
+  // position: '' | 'left' | 'center' | 'right' within a joined tag group
   const joined = {
     '': 'mr-2.5 border',
     left: 'border border-r-0',
@@ -201,14 +307,15 @@ function TagButton({ tag, selected, position, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`${tagBase} ${joined} ${
-        selected ? 'text-white' : 'hover:bg-[#DB2D6C]/15'
+      aria-pressed={selected}
+      className={`inline-flex h-9 cursor-pointer items-center px-4 text-sm font-medium tracking-wider uppercase transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 ${joined} ${
+        selected ? '' : 'hover:bg-[#DB2D6C]/15'
       }`}
       style={{
         borderColor: ACCENT,
         background: selected ? ACCENT : undefined,
         color: selected ? '#fff' : ACCENT,
-        boxShadow: divider ? `inset 1px 0 0 rgba(219,45,108,0.3)` : undefined,
+        boxShadow: divider ? 'inset 1px 0 0 rgba(219,45,108,0.3)' : undefined,
         outlineColor: ACCENT,
       }}
     >
@@ -219,7 +326,6 @@ function TagButton({ tag, selected, position, onClick }) {
 }
 
 function Panel({ item, summary }) {
-  if (!item) return null;
   if (item.embedType === 'bandcamp') {
     return (
       <iframe
@@ -233,114 +339,124 @@ function Panel({ item, summary }) {
       </iframe>
     );
   }
-  if (item.embedType === 'wikipedia') {
+  return (
+    <div className="rounded border border-gray-800 bg-gray-900 p-4 text-sm leading-relaxed text-gray-300">
+      {summary.status === 'loading' && <p className="text-gray-500">Loading summary…</p>}
+      {summary.status === 'error' && <p className="text-gray-400">{summary.text}</p>}
+      {summary.status === 'ok' && <p className="whitespace-pre-line">{summary.text}</p>}
+      <a href={item.url} target="_blank" rel="noreferrer" className="mt-3 inline-block hover:opacity-80" style={{ color: ACCENT }}>
+        More ⤤
+      </a>
+    </div>
+  );
+}
+
+function ItemTitle({ item, isSelected, onToggle }) {
+  if (!item.embedType) {
     return (
-      <div className="rounded border border-gray-800 bg-gray-900 p-4 text-sm leading-relaxed text-gray-300">
-        {summary.status === 'loading' && <p className="text-gray-500">Loading summary…</p>}
-        {summary.status === 'error' && <p className="text-gray-400">{summary.text}</p>}
-        {summary.status === 'ok' && <p className="whitespace-pre-line">{summary.text}</p>}
-        <a
-          href={item.url}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-block hover:opacity-80"
-          style={{ color: ACCENT }}
-        >
-          More ⤤
-        </a>
-      </div>
+      <a href={item.url} target="_blank" rel="noreferrer" className="hover:opacity-80" style={{ color: ACCENT }}>
+        {item.name}
+        <span className="ml-2.5 opacity-20">⤤</span>
+      </a>
     );
   }
-  return null;
+  return (
+    <button
+      type="button"
+      aria-expanded={isSelected}
+      onClick={onToggle}
+      className={`cursor-pointer text-left transition-[font-size,opacity] duration-200 hover:opacity-80 ${isSelected ? 'text-2xl' : ''}`}
+      style={{ color: ACCENT }}
+    >
+      {item.name}
+    </button>
+  );
 }
+
+const fieldClass =
+  'rounded border border-gray-700 bg-gray-900 px-2 py-1 text-sm text-white outline-none focus:border-gray-400';
 
 export default function MediaList() {
   const rootRef = useRef(null);
-  const width = useWidth(rootRef);
-  const wide = width >= WIDE;
+  const wide = useWidth(rootRef) >= WIDE;
 
-  // Selected tags keep the count they showed when they were picked.
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [pickedTags, setPickedTags] = useState(readHashTags);
+  const [query, setQuery] = useState('');
+  const [sort, setSort] = useState('artist');
   const [selectedName, setSelectedName] = useState(null);
+  // Set by "surprise me" so the effect below scrolls only for that, not for
+  // ordinary clicks on an item that's already in view.
+  const scrollToSelection = useRef(false);
 
-  const selectedItem = useMemo(
-    () => INSPIRATIONS.find((i) => i.name === selectedName) ?? null,
-    [selectedName],
+  // Mirror tags into the hash, and follow the hash when it's edited by hand or
+  // a shared link is pasted into the same tab.
+  useEffect(() => writeHashTags(pickedTags), [pickedTags]);
+  useEffect(() => {
+    const onHashChange = () => setPickedTags(readHashTags());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  const visible = useMemo(
+    () => ITEMS.filter((item) => hasAll(item, pickedTags) && matchesSearch(item, query.trim())),
+    [pickedTags, query],
   );
+  const rows = useMemo(() => withHeadings(visible, sort), [visible, sort]);
+  const picked = useMemo(() => pickedWithCounts(pickedTags), [pickedTags]);
+  const offered = useMemo(() => availableTags(visible, pickedTags), [visible, pickedTags]);
+
+  // Only show a selection that's still in the filtered list.
+  const selectedItem = visible.find((i) => i.name === selectedName) ?? null;
   const summary = useWikipediaSummary(selectedItem);
 
-  const filtered = useMemo(() => {
-    let r = INSPIRATIONS;
-    for (const t of selectedTags) r = r.filter((i) => i.tags.includes(t.name));
-    return [...r].sort(byArtistThenRelease);
-  }, [selectedTags]);
+  useEffect(() => {
+    if (!scrollToSelection.current || !selectedName) return;
+    scrollToSelection.current = false;
+    const el = rootRef.current?.querySelector(`[data-item="${CSS.escape(selectedName)}"]`);
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [selectedName]);
 
-  // Items with an artist heading row before each run of the same artist.
-  const rows = useMemo(() => {
-    const out = [];
-    let prev = null;
-    for (const item of filtered) {
-      if (item.artist !== prev) {
-        out.push({ isArtist: true, key: `artist:${item.artist}`, artist: item.artist });
-        prev = item.artist;
-      }
-      out.push({ isArtist: false, key: item.name, item });
-    }
-    return out;
-  }, [filtered]);
+  const surpriseMe = () => {
+    const candidates = visible.filter((i) => i.embedType && i.name !== selectedName);
+    if (candidates.length === 0) return;
+    scrollToSelection.current = true;
+    setSelectedName(candidates[Math.floor(Math.random() * candidates.length)].name);
+  };
 
-  // Remaining tags on the filtered items, counted over them, most common first;
-  // tags from each tag group are then pulled to the front and joined together.
-  const tagButtons = useMemo(() => {
-    const picked = new Set(selectedTags.map((t) => t.name));
-    let tags = ALL_TAG_NAMES.filter((n) => !picked.has(n))
-      .map((name) => ({ name, count: filtered.filter((i) => i.tags.includes(name)).length }))
-      .filter((t) => t.count > 0)
-      .sort(byCountThenName);
-
-    const grouped = [];
-    for (const group of TAG_GROUPS) {
-      const members = group
-        .map((name) => tags.find((t) => t.name === name))
-        .filter(Boolean);
-      tags = tags.filter((t) => !group.includes(t.name));
-      members.forEach((t, j) => {
-        let position = '';
-        if (members.length > 1) {
-          position = j === 0 ? 'left' : j === members.length - 1 ? 'right' : 'center';
-        }
-        grouped.push({ ...t, position });
-      });
-    }
-    return grouped.concat(tags.map((t) => ({ ...t, position: '' })));
-  }, [filtered, selectedTags]);
-
-  const pickTag = (tag) => setSelectedTags((s) => [...s, { name: tag.name, count: tag.count }]);
-  const unpickTag = (tag) => setSelectedTags((s) => s.filter((t) => t.name !== tag.name));
   const toggleItem = (item) => setSelectedName((n) => (n === item.name ? null : item.name));
-
-  const panel = <Panel item={selectedItem} summary={summary} />;
+  const panel = selectedItem && <Panel item={selectedItem} summary={summary} />;
 
   return (
     <div ref={rootRef} className="w-full text-white">
-      <div className="mt-2 flex flex-wrap items-center justify-center gap-y-2.5">
-        {selectedTags.map((tag) => (
-          <TagButton key={`sel:${tag.name}`} tag={tag} selected position="" onClick={() => unpickTag(tag)} />
+      <div className="flex flex-wrap items-center justify-center gap-y-2.5">
+        {picked.map((tag) => (
+          <TagButton
+            key={`picked:${tag.name}`}
+            tag={tag}
+            selected
+            position=""
+            onClick={() => setPickedTags((tags) => tags.filter((t) => t !== tag.name))}
+          />
         ))}
-        {tagButtons.map((tag) => (
-          <TagButton key={tag.name} tag={tag} position={tag.position} onClick={() => pickTag(tag)} />
+        {offered.map((tag) => (
+          <TagButton
+            key={tag.name}
+            tag={tag}
+            position={tag.position}
+            onClick={() => setPickedTags((tags) => [...tags, tag.name])}
+          />
         ))}
         <button
           type="button"
           aria-label="Clear selected tags"
           title="Clear selected tags"
-          onClick={() => setSelectedTags([])}
-          disabled={selectedTags.length === 0}
+          onClick={() => setPickedTags([])}
+          disabled={pickedTags.length === 0}
           className="inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors duration-200 enabled:cursor-pointer disabled:opacity-60"
           style={{
             borderColor: ACCENT,
-            background: selectedTags.length ? ACCENT : 'transparent',
-            color: selectedTags.length ? '#fff' : ACCENT,
+            background: pickedTags.length ? ACCENT : 'transparent',
+            color: pickedTags.length ? '#fff' : ACCENT,
           }}
         >
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -352,58 +468,67 @@ export default function MediaList() {
         </button>
       </div>
 
-      <div className={`mt-8 flex gap-8 ${wide ? 'flex-row items-start' : 'flex-col'}`}>
+      <div className="mt-6 flex flex-wrap items-end gap-3">
+        <label className="flex min-w-40 flex-1 flex-col text-xs text-gray-400">
+          Search
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Title, artist or tag"
+            className={`mt-1 ${fieldClass}`}
+          />
+        </label>
+        <label className="flex flex-col text-xs text-gray-400">
+          Sort by
+          <select value={sort} onChange={(event) => setSort(event.target.value)} className={`mt-1 ${fieldClass}`}>
+            {Object.entries(SORTS).map(([key, s]) => (
+              <option key={key} value={key}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          type="button"
+          onClick={surpriseMe}
+          className="h-[30px] cursor-pointer rounded border px-3 text-sm transition-colors hover:bg-[#DB2D6C]/15"
+          style={{ borderColor: ACCENT, color: ACCENT }}
+        >
+          Surprise me
+        </button>
+      </div>
+      <p className="mt-2 text-xs text-gray-500" aria-live="polite">
+        {visible.length} of {ITEMS.length} items
+      </p>
+
+      <div className={`mt-6 flex gap-8 ${wide ? 'flex-row items-start' : 'flex-col'}`}>
         <ul className="min-w-0 flex-1">
-          {rows.map((row) => {
-            if (row.isArtist) {
+          {visible.length === 0 && <li className="text-gray-500">Nothing matches.</li>}
+          {rows.map(({ key, heading, item }) => {
+            if (heading) {
               return (
-                <li key={row.key} className="mt-5 text-xl text-white/80 first:mt-0">
-                  {row.artist}
+                <li key={key} className="mt-5 text-xl text-white/80 first:mt-0">
+                  {heading}
                 </li>
               );
             }
-            const { item } = row;
             const isSelected = item === selectedItem;
             return (
-              <li
-                key={row.key}
-                className={`transition-[margin] duration-300 ${isSelected ? 'my-5' : ''}`}
-              >
+              <li key={key} data-item={item.name} className={`transition-[margin] duration-300 ${isSelected ? 'my-5' : ''}`}>
                 <div className="flex items-baseline">
-                  <span className="w-[46px] shrink-0 text-white/80">{item.release}</span>
-                  {item.embedType ? (
-                    <button
-                      type="button"
-                      aria-expanded={isSelected}
-                      onClick={() => toggleItem(item)}
-                      className={`cursor-pointer text-left transition-[font-size,opacity] duration-200 hover:opacity-80 ${
-                        isSelected ? 'text-2xl' : ''
-                      }`}
-                      style={{ color: ACCENT }}
-                    >
-                      {item.name}
-                    </button>
-                  ) : (
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="hover:opacity-80"
-                      style={{ color: ACCENT }}
-                    >
-                      {item.name}
-                      <span className="ml-2.5 opacity-20">⤤</span>
-                    </a>
-                  )}
+                  <span className="w-[46px] shrink-0 text-white/80">{item.year}</span>
+                  <span className="min-w-0">
+                    <ItemTitle item={item} isSelected={isSelected} onToggle={() => toggleItem(item)} />
+                    {sort !== 'artist' && <span className="ml-2 text-sm text-gray-500">{item.artist}</span>}
+                  </span>
                 </div>
                 {!wide && isSelected && <div className="mt-3">{panel}</div>}
               </li>
             );
           })}
         </ul>
-        {wide && selectedItem && (
-          <div className="sticky top-4 w-[350px] shrink-0">{panel}</div>
-        )}
+        {wide && panel && <div className="sticky top-4 w-[350px] shrink-0">{panel}</div>}
       </div>
     </div>
   );
