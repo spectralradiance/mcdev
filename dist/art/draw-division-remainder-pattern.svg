@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Lines of equal ratio fanning from a point">
+<path d="M32 8 L6 56 M32 8 L18 56 M32 8 L46 56 M32 8 L58 56" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M32 8 V56" fill="none" stroke="#e5e7eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M32 8 L24 56 M32 8 L40 56" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="32" cy="8" r="2.5" fill="#e5e7eb"/>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Red, green and blue sliders">
+<defs>
+<linearGradient id="r"><stop offset="0" stop-color="#004a8c"/><stop offset="1" stop-color="#ff4a8c"/></linearGradient>
+<linearGradient id="g"><stop offset="0" stop-color="#d8008c"/><stop offset="1" stop-color="#d8ff8c"/></linearGradient>
+<linearGradient id="b"><stop offset="0" stop-color="#d84a00"/><stop offset="1" stop-color="#d84aff"/></linearGradient>
+</defs>
+<rect x="8" y="14" width="48" height="7" rx="2" fill="url(#r)"/>
+<rect x="8" y="29" width="48" height="7" rx="2" fill="url(#g)"/>
+<rect x="8" y="44" width="48" height="7" rx="2" fill="url(#b)"/>
+<path d="M49 11 V24 M22 26 V39 M34 41 V54" fill="none" stroke="#e5e7eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Phone with a festival schedule">
+<rect x="18" y="6" width="28" height="52" rx="5" fill="none" stroke="#e5e7eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M28 52 H36" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="23" y="14" width="8" height="10" rx="1.5" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="33" y="14" width="8" height="16" rx="1.5" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="23" y="27" width="8" height="16" rx="1.5" fill="#34d399" fill-opacity="0.25" stroke="#34d399" stroke-width="1.5"/>
+<rect x="33" y="33" width="8" height="10" rx="1.5" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
