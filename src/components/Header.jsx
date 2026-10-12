@@ -6,7 +6,7 @@ const linkClass = ({ isActive }) =>
 const Header = () => {
   return (
     <header className="w-full border-b border-gray-700 mb-8">
-      <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-4xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
         <NavLink to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-white hover:text-gray-300 transition-colors">
           <img src="/logo_snowflake.svg" alt="" className="h-6 w-6 invert" />
           matthewcooper.dev

@@ -13,12 +13,11 @@ const ExternalIcon = () => (
   </svg>
 );
 
-const Art = ({ project, className = '' }) => (
+const Icon = ({ project, className = '' }) => (
   <img
     src={project.art}
     alt=""
-    loading="lazy"
-    className={'block w-full aspect-[16/10] bg-[#0a0a0a] ' + className}
+    className={'shrink-0 rounded-lg border border-gray-800 bg-[#0a0a0a] p-2 ' + className}
   />
 );
 
@@ -26,16 +25,16 @@ const Category = ({ children }) => (
   <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">{children}</p>
 );
 
+const cardClass =
+  'flex items-start gap-4 bg-gray-900 border border-gray-800 rounded-lg hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500';
+
 const LargeCard = ({ project }) => {
   const { title, category, description, tech } = project;
 
   return (
-    <Link
-      to={projectHref(project)}
-      className="flex flex-col bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
-    >
-      <Art project={project} className="border-b border-gray-800" />
-      <div className="p-4">
+    <Link to={projectHref(project)} className={cardClass + ' p-4'}>
+      <Icon project={project} className="w-20 h-20" />
+      <div className="min-w-0">
         <Category>{category}</Category>
         <h3 className="mt-1 text-white font-semibold text-lg leading-tight">{title}</h3>
         {description && <p className="text-gray-400 text-sm mt-2">{description}</p>}
@@ -49,14 +48,11 @@ const SmallCard = ({ project }) => {
   const { title, category, description } = project;
 
   return (
-    <Link
-      to={projectHref(project)}
-      className="flex flex-col bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
-    >
-      <Art project={project} className="border-b border-gray-800" />
-      <div className="p-3">
+    <Link to={projectHref(project)} className={cardClass + ' p-3'}>
+      <Icon project={project} className="w-14 h-14" />
+      <div className="min-w-0">
         <Category>{category}</Category>
-        <h3 className="mt-1 text-white font-semibold text-sm leading-tight">{title}</h3>
+        <h3 className="mt-0.5 text-white font-semibold text-sm leading-tight">{title}</h3>
         {description && <p className="text-gray-400 text-xs mt-1">{description}</p>}
       </div>
     </Link>
@@ -133,8 +129,13 @@ const SmallProjectDetail = ({ project }) => {
   return (
     <div>
       <BackLink />
-      <Category>{project.category}</Category>
-      <h2 className="mt-1 text-4xl font-bold text-white mb-3">{project.title}</h2>
+      <div className="mb-3 flex items-center gap-4">
+        <Icon project={project} className="w-16 h-16" />
+        <div>
+          <Category>{project.category}</Category>
+          <h2 className="mt-1 text-4xl font-bold text-white">{project.title}</h2>
+        </div>
+      </div>
       {project.description && <p className="text-gray-300 leading-relaxed mb-4">{project.description}</p>}
       <TechList tech={project.tech} />
 
@@ -168,9 +169,13 @@ const LargeProjectDetail = ({ project }) => {
   return (
     <div>
       <BackLink />
-      <Art project={project} className="mb-8 rounded-lg border border-gray-800" />
-      <Category>{category}</Category>
-      <h2 className="mt-1 text-4xl font-bold text-white mb-3">{title}</h2>
+      <div className="mb-3 flex items-center gap-4">
+        <Icon project={project} className="w-20 h-20" />
+        <div>
+          <Category>{category}</Category>
+          <h2 className="mt-1 text-4xl font-bold text-white">{title}</h2>
+        </div>
+      </div>
       {description && <p className="text-gray-300 leading-relaxed mb-4">{description}</p>}
       <TechList tech={tech} />
 
@@ -238,7 +243,7 @@ const Projects = () => {
       <section>
         <h2 className="text-2xl font-bold mb-2 border-b border-gray-700 pb-2">Small projects</h2>
         <p className="text-gray-400 text-sm mb-6">Sketches and experiments, each runnable right on its page.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {small.map((project) => <SmallCard key={project.slug} project={project} />)}
         </div>
       </section>

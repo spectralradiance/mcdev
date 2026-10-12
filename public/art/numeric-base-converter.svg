@@ -1,33 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="The number 255 typed in base 10, with arrows updating its unary, binary, octal and hex rows">
-<defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#fff" stroke-opacity="0.04"/></pattern><linearGradient id="fz" x1="0" x2="1"><stop offset="0.55" stop-color="#e5e7eb"/><stop offset="1" stop-color="#e5e7eb" stop-opacity="0"/></linearGradient></defs>
-<rect width="480" height="300" fill="#0a0a0a"/><rect width="480" height="300" fill="url(#g)"/>
-<g stroke-linecap="round" stroke-linejoin="round">
-<text x="102" y="67" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" fill="#9ca3af" text-anchor="end">1</text>
-<path d="M116 50V74" stroke="#6b7280" fill="none"/><path d="M116 75H378" stroke="#6b7280" stroke-opacity="0.35" fill="none"/>
-<text x="124" y="68" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="url(#fz)">0000000000000000000000000</text>
-<text x="102" y="111" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" fill="#9ca3af" text-anchor="end">2</text>
-<path d="M116 94V118" stroke="#6b7280" fill="none"/><path d="M116 119H378" stroke="#6b7280" stroke-opacity="0.35" fill="none"/>
-<text x="124" y="112" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#e5e7eb">11111111</text>
-<text x="102" y="155" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" fill="#9ca3af" text-anchor="end">8</text>
-<path d="M116 138V162" stroke="#6b7280" fill="none"/><path d="M116 163H378" stroke="#6b7280" stroke-opacity="0.35" fill="none"/>
-<text x="124" y="156" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#e5e7eb">377</text>
-<text x="102" y="199" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" fill="#fb923c" text-anchor="end">10</text>
-<rect x="116" y="181" width="262" height="26" fill="#fb923c" fill-opacity="0.14" stroke="#fb923c" stroke-width="1.5"/>
-<text x="124" y="200" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#fb923c">255</text>
-<path d="M160 186V202" stroke="#fb923c" stroke-width="1.5" fill="none"/>
-<text x="102" y="243" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" fill="#9ca3af" text-anchor="end">16</text>
-<path d="M116 226V250" stroke="#6b7280" fill="none"/><path d="M116 251H378" stroke="#6b7280" stroke-opacity="0.35" fill="none"/>
-<text x="124" y="244" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#e5e7eb">FF</text>
-<path d="M378 194H408" stroke="#fb923c" stroke-width="1.5" fill="none"/><circle cx="408" cy="194" r="3" fill="#fb923c" stroke="none"/>
-<path d="M408 194C442 194 442 62 402 62H384" stroke="#fb923c" stroke-opacity="0.75" stroke-dasharray="4 4" fill="none"/>
-<path d="M390 58l-6 4l6 4" stroke="#fb923c" stroke-opacity="0.9" fill="none"/>
-<path d="M408 194C442 194 442 106 402 106H384" stroke="#fb923c" stroke-opacity="0.75" stroke-dasharray="4 4" fill="none"/>
-<path d="M390 102l-6 4l6 4" stroke="#fb923c" stroke-opacity="0.9" fill="none"/>
-<path d="M408 194C442 194 442 150 402 150H384" stroke="#fb923c" stroke-opacity="0.75" stroke-dasharray="4 4" fill="none"/>
-<path d="M390 146l-6 4l6 4" stroke="#fb923c" stroke-opacity="0.9" fill="none"/>
-<path d="M408 194C442 194 442 238 402 238H384" stroke="#fb923c" stroke-opacity="0.75" stroke-dasharray="4 4" fill="none"/>
-<path d="M390 234l-6 4l6 4" stroke="#fb923c" stroke-opacity="0.9" fill="none"/>
-<text x="102" y="36" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#9ca3af" letter-spacing="1" text-anchor="end">BASE</text>
-<text x="378" y="272" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#9ca3af" letter-spacing="1" text-anchor="end">VIA BASE 10</text>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="255 and FF, the same number in two bases">
+<text x="32" y="25" fill="#fb923c" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="600" text-anchor="middle">FF</text>
+<text x="32" y="50" fill="#e5e7eb" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="600" text-anchor="middle">255</text>
+<path d="M22 31 V40 M19 37 L22 40 L25 37 M42 40 V31 M39 34 L42 31 L45 34" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
