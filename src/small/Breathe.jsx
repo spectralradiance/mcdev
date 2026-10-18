@@ -82,12 +82,12 @@ export default function Breathe() {
   }
 
   const clock = remaining == null ? '' : `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')}`
-  const select = 'mt-1 block rounded border border-gray-700 bg-gray-900 px-2 py-1 text-sm text-gray-200 focus:border-gray-500 focus:outline-none disabled:opacity-50'
+  const select = 'mt-1 block rounded border border-line bg-panel px-2 py-1 text-sm text-soft focus:border-line-strong focus:outline-none disabled:opacity-50'
 
   return (
-    <div className="flex flex-col items-center gap-5 rounded-lg border border-gray-700 bg-gray-900 px-4 py-6 font-light text-gray-300">
+    <div className="flex flex-col items-center gap-5 rounded-lg border border-line bg-panel px-4 py-6 font-light text-soft">
       <div className="flex w-full flex-wrap items-end justify-center gap-4 text-sm">
-        <label className="text-xs text-gray-400">
+        <label className="text-xs text-muted">
           breaths per minute: {perMinute}
           <input
             type="range"
@@ -100,13 +100,13 @@ export default function Breathe() {
             className="mt-2 block w-40 accent-teal-400"
           />
         </label>
-        <label className="text-xs text-gray-400">
+        <label className="text-xs text-muted">
           rhythm
           <select value={ratio} disabled={running} onChange={(e) => setRatio(e.target.value)} className={select}>
             {Object.keys(RATIOS).map((name) => <option key={name}>{name}</option>)}
           </select>
         </label>
-        <label className="text-xs text-gray-400">
+        <label className="text-xs text-muted">
           session
           <select value={minutes} disabled={running} onChange={(e) => setMinutes(Number(e.target.value))} className={select}>
             {DURATIONS.map((n) => <option key={n} value={n}>{n} min</option>)}
@@ -127,16 +127,16 @@ export default function Breathe() {
       </div>
 
       <p aria-live="polite" className="min-h-7 text-xl text-white">{label}</p>
-      <p className="-mt-3 h-4 text-xs tabular-nums text-gray-500">{clock}</p>
+      <p className="-mt-3 h-4 text-xs tabular-nums text-subtle">{clock}</p>
 
       <button
         type="button"
         onClick={toggle}
-        className="rounded border border-gray-700 bg-gray-800 px-5 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
+        className="rounded border border-line bg-raised px-5 py-2 text-soft hover:bg-strong hover:text-white"
       >
         {running ? 'Pause' : 'Begin'}
       </button>
-      <p className="max-w-md text-center text-xs text-gray-500">
+      <p className="max-w-md text-center text-xs text-subtle">
         Breathe through your nose, low and easy; let the circle set the pace. Stop if you feel dizzy.
         This helps you relax a little; it is not a treatment for anxiety.
       </p>

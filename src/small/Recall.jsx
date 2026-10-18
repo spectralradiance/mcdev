@@ -92,18 +92,18 @@ export default function Recall() {
     setNow(Date.now())
   }
 
-  const button = 'rounded border border-gray-700 bg-gray-800 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white'
+  const button = 'rounded border border-line bg-raised px-4 py-2 text-soft hover:bg-strong hover:text-white'
 
   if (editing) {
     return (
-      <div className="flex flex-col gap-3 rounded-lg border border-gray-700 bg-gray-900 px-4 py-6 font-light text-gray-300">
-        <label className="text-xs text-gray-400" htmlFor="recall-deck">One card per line: front | back</label>
+      <div className="flex flex-col gap-3 rounded-lg border border-line bg-panel px-4 py-6 font-light text-soft">
+        <label className="text-xs text-muted" htmlFor="recall-deck">One card per line: front | back</label>
         <textarea
           id="recall-deck"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           rows={12}
-          className="rounded border border-gray-700 bg-gray-950 p-3 font-mono text-sm text-gray-200 focus:border-gray-500 focus:outline-none"
+          className="rounded border border-line bg-deep p-3 font-mono text-sm text-soft focus:border-line-strong focus:outline-none"
         />
         <div className="flex gap-3">
           <button type="button" onClick={saveEdit} className={button}>Save deck</button>
@@ -114,25 +114,25 @@ export default function Recall() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-700 bg-gray-900 px-4 py-6 font-light text-gray-300">
+    <div className="flex flex-col items-center gap-4 rounded-lg border border-line bg-panel px-4 py-6 font-light text-soft">
       <div className="flex gap-6 text-center">
         <div>
-          <div className="text-xs text-gray-500">due</div>
+          <div className="text-xs text-subtle">due</div>
           <div className="text-2xl text-white tabular-nums">{due.length}</div>
         </div>
         <div>
-          <div className="text-xs text-gray-500">cards</div>
+          <div className="text-xs text-subtle">cards</div>
           <div className="text-2xl text-white tabular-nums">{cards.length}</div>
         </div>
         <div>
-          <div className="text-xs text-gray-500">well known</div>
+          <div className="text-xs text-subtle">well known</div>
           <div className="text-2xl text-white tabular-nums">{mastered}</div>
         </div>
       </div>
 
       {card ? (
         <div className="flex w-full max-w-md flex-col items-center gap-4">
-          <div className="flex min-h-40 w-full flex-col items-center justify-center gap-3 rounded-lg border border-gray-700 bg-gray-950 p-6 text-center">
+          <div className="flex min-h-40 w-full flex-col items-center justify-center gap-3 rounded-lg border border-line bg-deep p-6 text-center">
             <p className="text-2xl text-white">{card.front}</p>
             {revealed && <p className="text-xl text-teal-300">{card.back}</p>}
           </div>
@@ -146,7 +146,7 @@ export default function Recall() {
                 placeholder="Recall it first (optional: type your answer)"
                 aria-label="Your answer"
                 autoComplete="off"
-                className="w-full rounded border border-gray-700 bg-gray-950 px-3 py-2 text-center text-sm text-gray-200 focus:border-gray-500 focus:outline-none"
+                className="w-full rounded border border-line bg-deep px-3 py-2 text-center text-sm text-soft focus:border-line-strong focus:outline-none"
               />
               <button type="button" onClick={() => setRevealed(true)} className={button}>Show answer</button>
             </>
@@ -160,7 +160,7 @@ export default function Recall() {
       ) : (
         <div className="flex flex-col items-center gap-3 py-6 text-center">
           <p className="text-lg text-white">All caught up.</p>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-muted">
             {upcoming ? `The next card is due ${describeWait(upcoming - now)}.` : 'Add some cards to begin.'}
             {' '}Coming back on schedule works better than cramming.
           </p>
@@ -168,11 +168,11 @@ export default function Recall() {
         </div>
       )}
 
-      <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-500">
-        <button type="button" onClick={openEditor} className="underline underline-offset-2 hover:text-gray-300">Edit deck</button>
-        <button type="button" onClick={resetProgress} className="underline underline-offset-2 hover:text-gray-300">Reset progress</button>
+      <div className="flex flex-wrap justify-center gap-4 text-xs text-subtle">
+        <button type="button" onClick={openEditor} className="underline underline-offset-2 hover:text-soft">Edit deck</button>
+        <button type="button" onClick={resetProgress} className="underline underline-offset-2 hover:text-soft">Reset progress</button>
       </div>
-      <p className="max-w-md text-center text-xs text-gray-500">
+      <p className="max-w-md text-center text-xs text-subtle">
         Intervals: 1, 2, 4, 8 and 16 days (a missed card goes back to 1 day). Spaced recall
         reliably helps you remember what you practise; it won&apos;t make you smarter in general.
       </p>

@@ -173,7 +173,7 @@ function PianoRoll({ root, notes, pattern, gate, current }) {
   }
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="block w-full rounded border border-gray-700"
+    <svg viewBox={`0 0 ${width} ${height}`} className="block w-full rounded border border-line"
       role="img" aria-label={`Piano roll: ${notes.map(noteName).join(' ')}`}>
       {rowsOut}
       {notes.map((n, i) => (
@@ -189,9 +189,9 @@ function PianoRoll({ root, notes, pattern, gate, current }) {
   );
 }
 
-const labelCls = 'block text-xs text-gray-400 mb-1';
+const labelCls = 'block text-xs text-muted mb-1';
 const inputCls =
-  'block bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200 focus:outline-none focus:border-gray-500';
+  'block bg-panel border border-line rounded px-2 py-1 text-sm text-soft focus:outline-none focus:border-line-strong';
 const smallInputCls = `${inputCls} w-20`;
 const buttonCls =
   'px-3 py-1 rounded bg-sky-600 hover:bg-sky-500 active:translate-y-px text-sm text-white shadow-[0_2px_0_rgb(55,65,81)]';
@@ -320,7 +320,7 @@ export default function Aria() {
   );
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 text-gray-300 font-light space-y-4">
+    <div className="bg-panel border border-line-soft rounded-lg p-4 text-soft font-light space-y-4">
       <div className="flex flex-wrap gap-3 items-end">
         {field('scale', 'scale',
           <select id={uid + 'scale'} className={inputCls} value={params.scale}
@@ -346,11 +346,11 @@ export default function Aria() {
       </div>
 
       <div className="flex flex-wrap gap-x-6 gap-y-3">
-        {field('tempo', <>tempo: <span className="font-mono text-gray-200">{params.tempo}</span> bpm</>,
+        {field('tempo', <>tempo: <span className="font-mono text-soft">{params.tempo}</span> bpm</>,
           <input id={uid + 'tempo'} type="range" min="40" max="400" step="5" value={params.tempo}
             onChange={(e) => update('tempo', Number(e.target.value))} className="w-40 accent-sky-500" />
         )}
-        {field('gate', <>note length: <span className="font-mono text-gray-200">{params.gate}%</span> of a beat</>,
+        {field('gate', <>note length: <span className="font-mono text-soft">{params.gate}%</span> of a beat</>,
           <input id={uid + 'gate'} type="range" min="5" max="100" value={params.gate}
             onChange={(e) => update('gate', Number(e.target.value))} className="w-40 accent-sky-500" />
         )}
@@ -368,7 +368,7 @@ export default function Aria() {
         <div>
           <PianoRoll root={built.root} notes={built.notes} pattern={SCALE_PATTERNS[params.scale]}
             gate={params.gate} current={current} />
-          <p className="mt-1 text-xs text-gray-500 font-mono break-words">
+          <p className="mt-1 text-xs text-subtle font-mono break-words">
             {built.notes.map((n, i) => (
               <span key={i} className={i === current ? 'text-sky-300' : undefined}>{noteName(n)} </span>
             ))}
@@ -384,7 +384,7 @@ export default function Aria() {
           )
         )}
         <button type="button" className={buttonCls} onClick={generate}>generate</button>
-        <button type="button" className="text-sm text-gray-400 underline hover:text-gray-200 py-1" onClick={copyLink}>
+        <button type="button" className="text-sm text-muted underline hover:text-soft py-1" onClick={copyLink}>
           {copied ? 'link copied' : 'copy link'}
         </button>
       </div>
@@ -397,8 +397,8 @@ export default function Aria() {
             {generated.map((entry, i) => (
               <li key={i}>
                 <button type="button" onClick={() => recall(entry)}
-                  className="w-full truncate text-left rounded px-2 py-1 text-xs font-mono text-gray-400 hover:bg-gray-800 hover:text-gray-200">
-                  <span className="text-gray-500">{entry.key} {entry.scale.replaceAll('_', ' ')}:</span> {entry.melody}
+                  className="w-full truncate text-left rounded px-2 py-1 text-xs font-mono text-muted hover:bg-raised hover:text-soft">
+                  <span className="text-subtle">{entry.key} {entry.scale.replaceAll('_', ' ')}:</span> {entry.melody}
                 </button>
               </li>
             ))}

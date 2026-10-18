@@ -186,12 +186,12 @@ export function useCanvas(aspect: number, maxHeight = 560) {
 
 // ─── controls ────────────────────────────────────────────────────────────────
 
-const inputClass = 'rounded border border-gray-700 bg-gray-900 px-2 py-1 text-sm text-gray-100 focus:border-gray-400 focus:outline-none';
+const inputClass = 'rounded border border-line bg-panel px-2 py-1 text-sm text-gray-100 focus:border-gray-400 focus:outline-none';
 
 export function Field({ label, children, className = '' }: { label: string; children: ReactNode; className?: string }) {
   return (
     <label className={'flex flex-col gap-1 ' + className}>
-      <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">{label}</span>
+      <span className="text-[11px] font-semibold uppercase tracking-widest text-subtle">{label}</span>
       {children}
     </label>
   );
@@ -228,7 +228,7 @@ export function Range({ value, min, max, step = 1, onChange, format }: {
   return (
     <div className="flex items-center gap-2">
       <input type="range" className="w-32 accent-white" value={value} min={min} max={max} step={step} onChange={(e) => onChange(Number(e.target.value))} />
-      <span className="w-12 text-right text-xs tabular-nums text-gray-400">{format ? format(value) : value}</span>
+      <span className="w-12 text-right text-xs tabular-nums text-muted">{format ? format(value) : value}</span>
     </div>
   );
 }
@@ -244,8 +244,8 @@ export function Button({ children, onClick, primary, title, disabled, active }: 
   const look = primary
     ? 'bg-white text-black hover:bg-gray-200'
     : active
-      ? 'border border-gray-300 bg-gray-700 text-white'
-      : 'border border-gray-700 bg-gray-900 text-gray-200 hover:border-gray-500 hover:text-white';
+      ? 'border border-gray-300 bg-strong text-white'
+      : 'border border-line bg-panel text-soft hover:border-line-strong hover:text-white';
   return <button type="button" title={title} aria-label={title} disabled={disabled} onClick={onClick} className={`${base} ${look}`}>{children}</button>;
 }
 
@@ -264,7 +264,7 @@ const ICONS = {
 export function Transport({ pb, extra, label }: { pb: Playback; extra?: ReactNode; label?: string }) {
   const done = pb.length > 0 && pb.pos >= pb.length;
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-gray-800 bg-gray-950 px-3 py-2">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-line-soft bg-deep px-3 py-2">
       <div className="flex items-center gap-1.5">
         <Button title="Restart (Home)" onClick={() => { pb.pause(); pb.seek(0); }} disabled={!pb.length}><Icon d={ICONS.start} /></Button>
         <Button title="Step back (←)" onClick={() => pb.step(-1)} disabled={!pb.length || pb.pos === 0}><Icon d={ICONS.back} /></Button>
@@ -284,10 +284,10 @@ export function Transport({ pb, extra, label }: { pb: Playback; extra?: ReactNod
           value={pb.pos}
           onChange={(e) => { pb.pause(); pb.seek(Number(e.target.value)); }}
         />
-        <span className="w-28 text-right text-xs tabular-nums text-gray-400">{pb.pos.toLocaleString()} / {pb.length.toLocaleString()}{label ? ` ${label}` : ''}</span>
+        <span className="w-28 text-right text-xs tabular-nums text-muted">{pb.pos.toLocaleString()} / {pb.length.toLocaleString()}{label ? ` ${label}` : ''}</span>
       </div>
       <div className="flex items-center gap-2" title="Speed ([ and ])">
-        <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">Speed</span>
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-subtle">Speed</span>
         <input
           type="range"
           aria-label="Speed"
@@ -297,7 +297,7 @@ export function Transport({ pb, extra, label }: { pb: Playback; extra?: ReactNod
           value={toSlider(pb.speed)}
           onChange={(e) => pb.setSpeed(fromSlider(Number(e.target.value)))}
         />
-        <span className="w-20 text-xs tabular-nums text-gray-400">{formatSpeed(pb.speed)}</span>
+        <span className="w-20 text-xs tabular-nums text-muted">{formatSpeed(pb.speed)}</span>
       </div>
       {extra}
     </div>
@@ -307,7 +307,7 @@ export function Transport({ pb, extra, label }: { pb: Playback; extra?: ReactNod
 export function Stat({ label, value, color }: { label: string; value: ReactNode; color?: string }) {
   return (
     <div className="min-w-[5.5rem]">
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">{label}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-subtle">{label}</p>
       <p className="mt-0.5 text-lg font-semibold tabular-nums" style={{ color }}>{value}</p>
     </div>
   );
@@ -315,7 +315,7 @@ export function Stat({ label, value, color }: { label: string; value: ReactNode;
 
 export function Legend({ items }: { items: { color: string; label: string; ring?: boolean }[] }) {
   return (
-    <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
+    <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
       {items.map((it) => (
         <li key={it.label} className="flex items-center gap-1.5">
           <span
@@ -331,16 +331,16 @@ export function Legend({ items }: { items: { color: string; label: string; ring?
 
 export function AlgorithmCard({ name, tag, about, facts }: { name: string; tag?: string; about: string; facts: [string, string][] }) {
   return (
-    <section className="rounded-lg border border-gray-800 bg-gray-950 p-4">
-      {tag && <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">{tag}</p>}
+    <section className="rounded-lg border border-line-soft bg-deep p-4">
+      {tag && <p className="text-[11px] font-semibold uppercase tracking-widest text-subtle">{tag}</p>}
       <h3 className="mt-0.5 text-lg font-semibold">{name}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-gray-300">{about}</p>
+      <p className="mt-2 text-sm leading-relaxed text-soft">{about}</p>
       {facts.length > 0 && (
         <dl className="mt-3 flex flex-wrap gap-2 text-xs">
           {facts.map(([k, v]) => (
-            <div key={k} className="rounded border border-gray-800 px-2 py-1">
-              <dt className="inline text-gray-500">{k} </dt>
-              <dd className="inline font-mono text-gray-200">{v}</dd>
+            <div key={k} className="rounded border border-line-soft px-2 py-1">
+              <dt className="inline text-subtle">{k} </dt>
+              <dd className="inline font-mono text-soft">{v}</dd>
             </div>
           ))}
         </dl>

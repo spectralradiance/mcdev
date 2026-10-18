@@ -27,8 +27,8 @@ const EDGE_SUBS = 8; // subdivisions per edge for curved perspective projection
 function Toggle({ label, on, onToggle }: { label: string; on: boolean; onToggle: () => void }) {
   return (
     <div className="flex items-center justify-between px-1 py-0.5 mt-1 cursor-pointer select-none" onClick={onToggle}>
-      <span className="text-xs text-gray-500">{label}</span>
-      <div className={`relative w-7 h-3.5 rounded-full transition-colors ${on ? "bg-white" : "bg-gray-700"}`}>
+      <span className="text-xs text-subtle">{label}</span>
+      <div className={`relative w-7 h-3.5 rounded-full transition-colors ${on ? "bg-white" : "bg-strong"}`}>
         <span className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-black transition-transform ${on ? "translate-x-3.5" : "translate-x-0"}`} />
       </div>
     </div>

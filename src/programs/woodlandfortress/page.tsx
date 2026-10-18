@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Chip, Typography } from "@mui/material";
+import { Chip, Heading, Page } from "../../ui";
 import bands from "./woodlandfortress.json";
 import bandcampData from "./bandcamp_data.json";
 
@@ -68,156 +68,117 @@ export default function WoodlandFortressPage() {
     : null;
 
   return (
-    <Box sx={{ maxWidth: 1400, mx: "auto", px: 3, py: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Woodland Fortress — Bands
-      </Typography>
+    <Page size="wide" className="py-4">
+      <Heading>Woodland Fortress — Bands</Heading>
 
       {/* Tag filters */}
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 3 }}>
+      <div className="flex flex-wrap gap-2 mb-6">
         {allTags.map((tag) => (
-          <Chip
-            key={tag}
-            label={tag}
-            onClick={() => toggleTag(tag)}
-            color={activeTags.has(tag) ? "primary" : "default"}
-            variant={activeTags.has(tag) ? "filled" : "outlined"}
-            size="small"
-            sx={
-              activeTags.has(tag)
-                ? {}
-                : { color: "white", borderColor: "rgba(255,255,255,0.4)" }
-            }
-          />
+          <Chip key={tag} active={activeTags.has(tag)} onClick={() => toggleTag(tag)}>
+            {tag}
+          </Chip>
         ))}
         {activeTags.size > 0 && (
-          <Chip
-            label="Clear"
-            onClick={() => setActiveTags(new Set())}
-            color="warning"
-            size="small"
-          />
+          <Chip className="!border-warn !text-warn" onClick={() => setActiveTags(new Set())}>
+            Clear
+          </Chip>
         )}
-      </Box>
+      </div>
 
       {/* Two-column layout */}
-      <Box sx={{ display: "flex", gap: 2, height: "calc(100vh - 180px)", overflow: "hidden" }}>
+      <div className="flex gap-4 h-[calc(100vh-220px)] min-h-[400px] overflow-hidden">
 
         {/* Left: band list with inline album expansion */}
-        <Box sx={{ width: 420, flexShrink: 0, overflowY: "auto" }}>
+        <div className="w-[420px] shrink-0 overflow-y-auto">
           {filteredBands.map((band) => {
             const artistData = dataMap[band.id];
             const photo = artistData?.artist_image;
             const isSelected = selectedBandId === band.id;
             return (
-              <Box key={band.id}>
-                <Box
+              <div key={band.id}>
+                <div
                   onClick={() => selectArtist(band.id)}
-                  sx={{
-                    display: "flex", gap: 1.5, p: 1.5, cursor: "pointer",
-                    bgcolor: isSelected ? "primary.dark" : "transparent",
-                    "&:hover": { bgcolor: isSelected ? "primary.dark" : "grey.900" },
-                  }}
+                  className={`flex gap-3 p-3 cursor-pointer ${isSelected ? "bg-strong" : "hover:bg-panel"}`}
                 >
                   {photo ? (
-                    <Box component="img" src={photo} alt={band.name}
-                      sx={{ width: 80, height: 80, objectFit: "cover", flexShrink: 0 }} />
+                    <img src={photo} alt={band.name} className="w-20 h-20 object-cover shrink-0" />
                   ) : (
-                    <Box sx={{ width: 80, height: 80, bgcolor: "grey.800", flexShrink: 0,
-                               display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Typography sx={{ fontSize: "2rem", color: "grey.500" }}>{band.name.charAt(0)}</Typography>
-                    </Box>
+                    <div className="w-20 h-20 shrink-0 bg-raised flex items-center justify-center text-3xl text-subtle">
+                      {band.name.charAt(0)}
+                    </div>
                   )}
-                  <Box sx={{ minWidth: 0 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{band.name}</Typography>
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold">{band.name}</div>
                     {artistData?.description && (
-                      <Typography variant="caption" sx={{
-                        color: "grey.400", display: "-webkit-box",
-                        WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
-                      }}>
-                        {artistData.description}
-                      </Typography>
+                      <p className="text-xs text-muted line-clamp-3">{artistData.description}</p>
                     )}
-                  </Box>
-                </Box>
+                  </div>
+                </div>
 
                 {isSelected && (artistData?.albums.length ?? 0) > 0 && (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, p: 1, pl: 2, bgcolor: "grey.900" }}>
+                  <div className="flex flex-wrap gap-2 p-2 pl-4 bg-panel">
                     {artistData!.albums.map((album) => {
                       const active = selectedAlbum?.album_id === album.album_id && selectedAlbum?.url === album.url;
                       return (
-                        <Box
+                        <div
                           key={album.url + (album.album_id ?? "")}
                           onClick={(e) => { e.stopPropagation(); setSelectedAlbum(active ? null : album); }}
-                          sx={{
-                            width: 80, cursor: "pointer",
-                            outline: active ? "2px solid" : "none",
-                            outlineColor: "secondary.main",
-                            "&:hover": { opacity: 0.85 },
-                          }}
+                          className={`w-20 cursor-pointer hover:opacity-85 ${active ? "outline-2 outline-accent" : ""}`}
                         >
                           {album.artwork ? (
-                            <Box component="img" src={album.artwork} alt={album.title}
-                              sx={{ width: 80, height: 80, objectFit: "cover", display: "block" }} />
+                            <img src={album.artwork} alt={album.title} className="w-20 h-20 object-cover block" />
                           ) : (
-                            <Box sx={{ width: 80, height: 80, bgcolor: "grey.800" }} />
+                            <div className="w-20 h-20 bg-raised" />
                           )}
-                          <Typography variant="caption" sx={{
-                            display: "block", fontSize: "0.63rem", lineHeight: 1.2,
-                            p: 0.5, textAlign: "center",
-                          }}>
+                          <span className="block p-1 text-center text-[0.63rem] leading-tight">
                             {album.title}
                             {album.release_date && (
-                              <Box component="span" sx={{ color: "grey.500" }}>
+                              <span className="text-subtle">
                                 {" "}· {new Date(album.release_date).getFullYear()}
-                              </Box>
+                              </span>
                             )}
-                          </Typography>
-                        </Box>
+                          </span>
+                        </div>
                       );
                     })}
-                  </Box>
+                  </div>
                 )}
-              </Box>
+              </div>
             );
           })}
-        </Box>
+        </div>
 
         {/* Right: embed */}
-        <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", p: 2 }}>
+        <div className="flex-1 min-w-0 overflow-y-auto p-4">
           {selectedAlbum ? (
             <>
               {selectedAlbum.album_id ? (
                 <iframe
                   key={selectedAlbum.album_id}
                   title={selectedAlbum.title}
-                  style={{ border: 0, width: "100%", height: 700 }}
+                  className="border-0 w-full h-[700px]"
                   src={`https://bandcamp.com/EmbeddedPlayer/album=${selectedAlbum.album_id}/size=large/bgcol=333333/linkcol=e99708/transparent=true/`}
                   seamless
                   allowFullScreen
                 />
               ) : (
-                <Box component="a" href={selectedAlbum.url} target="_blank" rel="noopener noreferrer"
-                     sx={{ color: "primary.main", textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>
+                <a href={selectedAlbum.url} target="_blank" rel="noopener noreferrer"
+                   className="text-accent hover:underline">
                   Listen on Bandcamp ↗
-                </Box>
+                </a>
               )}
               {selectedAlbum.description && (
-                <Typography variant="body2" sx={{ mt: 2, color: "grey.400", whiteSpace: "pre-line" }}>
-                  {selectedAlbum.description}
-                </Typography>
+                <p className="mt-4 text-sm text-muted whitespace-pre-line">{selectedAlbum.description}</p>
               )}
             </>
           ) : (
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center",
-                       height: "100%", color: "text.secondary" }}>
-              <Typography>Select an album to listen</Typography>
-            </Box>
+            <div className="flex items-center justify-center h-full text-muted">
+              Select an album to listen
+            </div>
           )}
-        </Box>
+        </div>
 
-      </Box>
-    </Box>
+      </div>
+    </Page>
   );
 }
-

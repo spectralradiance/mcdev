@@ -1,15 +1,17 @@
+import { Heading } from '../ui';
+
 const Profile = () => {
   return (
     <div className="mb-16">
       <div className="mb-10">
         <h1 className="text-5xl font-bold mb-3">Matthew Cooper</h1>
-        <p className="text-gray-400 mb-1">Portland, OR (open to remote)</p>
-        <p className="text-sm text-gray-400 flex flex-wrap gap-x-4 gap-y-1 mt-2">
+        <p className="text-muted mb-1">Portland, OR (open to remote)</p>
+        <p className="text-sm text-muted flex flex-wrap gap-x-4 gap-y-1 mt-2">
           <a href="mailto:matthewrcooper4@gmail.com" className="hover:text-white">matthewrcooper4@gmail.com</a>
           <a href="https://www.linkedin.com/in/matthewrussellcooper/" className="hover:text-white">LinkedIn</a>
           <a href="https://github.com/spectralradiance" className="hover:text-white">GitHub</a>
         </p>
-        <p className="text-gray-400 mt-6 max-w-2xl leading-relaxed">
+        <p className="text-muted mt-6 max-w-2xl leading-relaxed">
           Software engineer with 15+ years across web development, data pipelines, AI applications, and CRM
           integrations, plus four years teaching full-stack Python. I build and connect the systems organizations
           run on, from WordPress and React front ends to Django and FastAPI services, HubSpot and Airtable data,
@@ -18,7 +20,7 @@ const Profile = () => {
       </div>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 border-b border-gray-700 pb-2">Experience</h2>
+        <Heading>Experience</Heading>
         <div className="space-y-8">
           <Job title="Independent Technical Consultant" period="Feb 2026 – Present">
             Technical work for mission-driven nonprofits: leading WordPress rebrands and redesigns with custom PHP,
@@ -52,7 +54,7 @@ const Profile = () => {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 border-b border-gray-700 pb-2">Projects</h2>
+        <Heading>Projects</Heading>
         <div className="space-y-6">
           <Project
             name="Ogma"
@@ -79,28 +81,28 @@ const Profile = () => {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 border-b border-gray-700 pb-2">Technical Skills</h2>
+        <Heading>Technical Skills</Heading>
         <Skills />
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 border-b border-gray-700 pb-2">Education</h2>
+        <Heading>Education</Heading>
         <div className="space-y-4">
           <div>
             <p className="font-semibold text-lg">M.S. in Computer Science</p>
-            <p className="text-gray-400 text-sm">Graduate Certificate in Data Mining · New Jersey Institute of Technology · 2015</p>
-            <p className="text-gray-500 text-sm mt-1">Coursework: neural networks, genetic algorithms, classification, clustering, text mining</p>
+            <p className="text-muted text-sm">Graduate Certificate in Data Mining · New Jersey Institute of Technology · 2015</p>
+            <p className="text-subtle text-sm mt-1">Coursework: neural networks, genetic algorithms, classification, clustering, text mining</p>
           </div>
           <div>
             <p className="font-semibold text-lg">B.S. in Computer Science</p>
-            <p className="text-gray-400 text-sm">Minor in Literary &amp; Cultural Studies · Rochester Institute of Technology · 2010</p>
+            <p className="text-muted text-sm">Minor in Literary &amp; Cultural Studies · Rochester Institute of Technology · 2010</p>
           </div>
         </div>
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 border-b border-gray-700 pb-2">Volunteering</h2>
-        <p className="text-gray-300 leading-relaxed">
+        <Heading>Volunteering</Heading>
+        <p className="text-soft leading-relaxed">
           Habitat restoration and website maintenance for a local nature preserve (2023 – present); organizing
           monthly community events on processing emotions around the climate crisis (2023 – present); and
           coalition work with Portland City Council on legislation banning sales of new fur products, including
@@ -117,20 +119,20 @@ const Job = ({ title, period, children }) => (
   <div>
     <p className="flex flex-wrap items-baseline gap-x-2">
       <span className="font-semibold text-lg">{title}</span>
-      <span className="text-gray-500 text-sm">({period})</span>
+      <span className="text-subtle text-sm">({period})</span>
     </p>
-    <p className="text-gray-300 mt-2 leading-relaxed">{children}</p>
+    <p className="text-soft mt-2 leading-relaxed">{children}</p>
   </div>
 );
 
 const Project = ({ name, href, source, stack, children }) => (
   <div>
     <p className="flex flex-wrap items-baseline gap-x-2">
-      <a href={href} className="font-semibold text-lg underline underline-offset-4 hover:text-gray-300">{name}</a>
-      {source && <a href={source} className="text-sm text-gray-400 hover:text-white">(source)</a>}
-      <span className="text-gray-500 text-sm">{stack}</span>
+      <a href={href} className="font-semibold text-lg underline underline-offset-4 hover:text-soft">{name}</a>
+      {source && <a href={source} className="text-sm text-muted hover:text-white">(source)</a>}
+      <span className="text-subtle text-sm">{stack}</span>
     </p>
-    <p className="text-gray-300 mt-2 leading-relaxed">{children}</p>
+    <p className="text-soft mt-2 leading-relaxed">{children}</p>
   </div>
 );
 
@@ -169,10 +171,10 @@ const Skills = () => (
   <div className="space-y-5">
     {SKILLS.map(({ category, items }) => (
       <div key={category}>
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">{category}</h3>
+        <h3 className="text-xs font-semibold text-subtle uppercase tracking-widest mb-2">{category}</h3>
         <div className="flex flex-wrap gap-1.5">
           {items.map(skill => (
-            <span key={skill} className="px-2.5 py-0.5 bg-gray-800 text-white text-sm rounded-full border border-gray-700">
+            <span key={skill} className="px-2.5 py-0.5 bg-raised text-white text-sm rounded-full border border-line">
               {skill}
             </span>
           ))}

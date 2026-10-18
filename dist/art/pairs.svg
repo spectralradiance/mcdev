@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Two face-up cards beside two face-down cards">
+<rect x="8" y="10" width="22" height="22" rx="4" fill="#f59e0b" fill-opacity="0.2" stroke="#f59e0b" stroke-width="2"/>
+<path d="M19 15 L25 27 H13 Z" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>
+<rect x="34" y="10" width="22" height="22" rx="4" fill="none" stroke="#6b7280" stroke-width="2"/>
+<rect x="8" y="36" width="22" height="22" rx="4" fill="none" stroke="#6b7280" stroke-width="2"/>
+<rect x="34" y="36" width="22" height="22" rx="4" fill="#f59e0b" fill-opacity="0.2" stroke="#f59e0b" stroke-width="2"/>
+<path d="M45 41 L51 53 H39 Z" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>
+</svg>

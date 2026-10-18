@@ -223,10 +223,10 @@ function draw(ctx, bodies, drag, trails) {
 
 function Slider({ label, value, min, max, step, onChange, format = String, disabled = false }) {
   return (
-    <label className={`block text-sm ${disabled ? 'text-gray-600' : 'text-gray-300'}`}>
+    <label className={`block text-sm ${disabled ? 'text-faint' : 'text-soft'}`}>
       <span className="flex justify-between">
         <span>{label}</span>
-        <span className="tabular-nums text-gray-400">{format(value)}</span>
+        <span className="tabular-nums text-muted">{format(value)}</span>
       </span>
       <input
         type="range"
@@ -242,7 +242,7 @@ function Slider({ label, value, min, max, step, onChange, format = String, disab
   );
 }
 
-const buttonClass = 'rounded bg-gray-800 px-3 py-1 text-sm text-gray-200 hover:bg-gray-700';
+const buttonClass = 'rounded bg-raised px-3 py-1 text-sm text-soft hover:bg-strong';
 
 export default function NBodyGravity() {
   const canvasRef = useRef(null);
@@ -365,7 +365,7 @@ export default function NBodyGravity() {
   const { fixedCount } = PRESETS[preset];
 
   return (
-    <div className="max-w-[500px] space-y-4 text-gray-300">
+    <div className="max-w-[500px] space-y-4 text-soft">
       <canvas
         ref={canvasRef}
         width={SIZE}
@@ -375,9 +375,9 @@ export default function NBodyGravity() {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={() => (sim.current.drag = null)}
-        className="block h-auto w-full cursor-crosshair touch-none border border-gray-700 bg-black"
+        className="block h-auto w-full cursor-crosshair touch-none border border-line bg-black"
       />
-      <p className="text-xs text-gray-400">Click to drop a body; drag to launch it in that direction.</p>
+      <p className="text-xs text-muted">Click to drop a body; drag to launch it in that direction.</p>
 
       <div className="flex flex-wrap items-center gap-2">
         <button onClick={() => setPaused((p) => !p)} className={`${buttonClass} w-20`}>
@@ -399,7 +399,7 @@ export default function NBodyGravity() {
         </label>
       </div>
 
-      <div className="text-sm tabular-nums text-gray-400" aria-live="off">
+      <div className="text-sm tabular-nums text-muted" aria-live="off">
         {stats.count} bodies · energy {stats.energy.toFixed(1)} · drift {(stats.drift * 100).toFixed(3)}%
       </div>
 
@@ -408,7 +408,7 @@ export default function NBodyGravity() {
         <select
           value={preset}
           onChange={(e) => choosePreset(e.target.value)}
-          className="mt-1 block w-full rounded border border-gray-700 bg-gray-900 p-1 text-gray-200"
+          className="mt-1 block w-full rounded border border-line bg-panel p-1 text-soft"
         >
           {Object.entries(PRESETS).map(([key, p]) => (
             <option key={key} value={key}>
@@ -416,7 +416,7 @@ export default function NBodyGravity() {
             </option>
           ))}
         </select>
-        <span className="mt-1 block text-xs text-gray-400">{PRESETS[preset].hint}</span>
+        <span className="mt-1 block text-xs text-muted">{PRESETS[preset].hint}</span>
       </label>
 
       <div className="grid gap-3 sm:grid-cols-2">

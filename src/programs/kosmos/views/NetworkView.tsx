@@ -94,14 +94,14 @@ export default function NetworkView() {
         <Button onClick={() => { setSeed(newSeed()); setEnds(null); }}>New graph</Button>
       </div>
 
-      <div ref={wrap} className="overflow-hidden rounded-lg border border-gray-800 bg-[#030712]">
+      <div ref={wrap} className="overflow-hidden rounded-lg border border-line-soft bg-[#030712]">
         <canvas ref={canvas} className="block cursor-pointer" onPointerDown={pick} onContextMenu={(e) => e.preventDefault()} />
       </div>
 
       <Transport pb={pb} label="steps" />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-subtle">
           Click a node to start there{alg.usesEnd ? '; right-click or shift-click to move the goal' : ''}. Pitch follows height, and the sound pans with position.
         </p>
         <Legend items={[
@@ -114,12 +114,12 @@ export default function NetworkView() {
         ]} />
       </div>
 
-      <div className="flex flex-wrap gap-6 rounded-lg border border-gray-800 bg-gray-950 px-4 py-3">
+      <div className="flex flex-wrap gap-6 rounded-lg border border-line-soft bg-deep px-4 py-3">
         <Stat label="Nodes" value={net.nodes.length} />
         <Stat label="Edges" value={net.edges.length} />
         <Stat label="Reached" value={settled} color="#38bdf8" />
         <Stat label="Tree edges" value={tree} color="#38bdf8" />
-        {player.finished && <p className="self-center text-sm text-gray-300">{player.result.summary}</p>}
+        {player.finished && <p className="self-center text-sm text-soft">{player.result.summary}</p>}
       </div>
 
       <AlgorithmCard name={alg.name} tag={alg.group} about={alg.about} facts={[]} />

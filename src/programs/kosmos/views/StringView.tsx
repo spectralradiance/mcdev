@@ -100,18 +100,18 @@ export default function StringView() {
         <Field label="Pattern"><TextInput value={pattern} onChange={setPattern} maxLength={20} className="w-40" /></Field>
       </div>
 
-      <div ref={wrap} className="overflow-hidden rounded-lg border border-gray-800">
+      <div ref={wrap} className="overflow-hidden rounded-lg border border-line-soft">
         <canvas ref={canvas} className="block" onPointerDown={() => sound.unlock()} />
       </div>
 
       <Transport pb={pb} label="steps" />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="font-mono text-xs text-gray-400">{status}</p>
+        <p className="font-mono text-xs text-muted">{status}</p>
         <Legend items={[{ color: MATCH, label: 'Match' }, { color: MISMATCH, label: 'Mismatch' }, { color: COLORS.found, label: 'Occurrence', ring: true }]} />
       </div>
 
-      <div className="flex flex-wrap gap-6 rounded-lg border border-gray-800 bg-gray-950 px-4 py-3">
+      <div className="flex flex-wrap gap-6 rounded-lg border border-line-soft bg-deep px-4 py-3">
         <Stat label="Comparisons" value={st.compares} color={COLORS.compare} />
         <Stat label="Alignments" value={st.aligns} />
         <Stat label="Found" value={st.found.length ? st.found.join(', ') : '—'} color={COLORS.found} />

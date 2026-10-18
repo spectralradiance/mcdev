@@ -273,22 +273,22 @@ export default function Simone() {
   const playing = phase === 'playback' || phase === 'input'
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-700 bg-gray-900 px-4 py-6 font-light text-gray-300">
+    <div className="flex flex-col items-center gap-4 rounded-lg border border-line bg-panel px-4 py-6 font-light text-soft">
       <div className="flex w-full flex-wrap items-end justify-center gap-4 text-sm">
-        <label className="text-xs text-gray-400">
+        <label className="text-xs text-muted">
           buttons
           <select
             value={size}
             disabled={playing}
             onChange={(e) => changeSize(Number(e.target.value))}
-            className="mt-1 block rounded border border-gray-700 bg-gray-900 px-2 py-1 text-sm text-gray-200 focus:border-gray-500 focus:outline-none disabled:opacity-50"
+            className="mt-1 block rounded border border-line bg-panel px-2 py-1 text-sm text-soft focus:border-line-strong focus:outline-none disabled:opacity-50"
           >
             {BOARD_SIZES.map((n) => (
               <option key={n} value={n}>{n}</option>
             ))}
           </select>
         </label>
-        <label className="flex items-center gap-2 pb-1 text-gray-300">
+        <label className="flex items-center gap-2 pb-1 text-soft">
           <input
             type="checkbox"
             checked={strict}
@@ -302,18 +302,18 @@ export default function Simone() {
 
       <div className="flex gap-6 text-center">
         <div>
-          <div className="text-xs text-gray-500">level</div>
+          <div className="text-xs text-subtle">level</div>
           <div className="text-2xl text-white tabular-nums">{level || '–'}</div>
         </div>
         <div>
-          <div className="text-xs text-gray-500">best</div>
+          <div className="text-xs text-subtle">best</div>
           <div className="text-2xl text-white tabular-nums">{bestHere || '–'}</div>
         </div>
       </div>
 
       <p
         aria-live="polite"
-        className={`min-h-6 text-center ${phase === 'over' ? 'text-red-400' : 'text-gray-300'}`}
+        className={`min-h-6 text-center ${phase === 'over' ? 'text-red-400' : 'text-soft'}`}
       >
         {phase === 'input' ? 'Your turn.' : message}
       </p>
@@ -344,7 +344,7 @@ export default function Simone() {
               onPointerDown={() => press(i)}
               onClick={(e) => e.detail === 0 && press(i)}
             >
-              <span className="absolute right-1 bottom-0.5 font-mono text-xs text-gray-600 uppercase">
+              <span className="absolute right-1 bottom-0.5 font-mono text-xs text-faint uppercase">
                 {btn.key}
               </span>
             </button>
@@ -355,11 +355,11 @@ export default function Simone() {
       <button
         type="button"
         onClick={start}
-        className="rounded border border-gray-700 bg-gray-800 px-5 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
+        className="rounded border border-line bg-raised px-5 py-2 text-soft hover:bg-strong hover:text-white"
       >
         {phase === 'idle' ? 'Start' : 'New game'}
       </button>
-      <p className="text-center text-xs text-gray-500">
+      <p className="text-center text-xs text-subtle">
         Tap the buttons or use the keys shown on them.
       </p>
     </div>

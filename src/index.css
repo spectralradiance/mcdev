@@ -2,6 +2,24 @@
 
 @theme {
   --font-sans: 'Open Sans', sans-serif;
+
+  /* Shared palette: use these names (bg-panel, text-muted, border-line, ...) instead of raw gray-N. */
+  --color-deep: #030712;
+  --color-panel: #111827;
+  --color-raised: #1f2937;
+  --color-strong: #374151;
+  --color-line: #374151;
+  --color-line-soft: #1f2937;
+  --color-line-strong: #6b7280;
+  --color-faint: #4b5563;
+  --color-subtle: #6b7280;
+  --color-muted: #9ca3af;
+  --color-soft: #d1d5db;
+  --color-accent: #38bdf8;
+  --color-accent-soft: #7dd3fc;
+  --color-warn: #fb923c;
+  --color-danger: #f87171;
+  --color-ok: #4ade80;
 }
 
 body {

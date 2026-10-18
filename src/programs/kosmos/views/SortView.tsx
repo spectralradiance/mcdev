@@ -123,20 +123,20 @@ export default function SortView() {
         <Button onClick={() => { setSeed(newSeed()); sweep.reset(); }} title="New random input">Shuffle</Button>
       </div>
 
-      <div ref={wrap} className="overflow-hidden rounded-lg border border-gray-800">
+      <div ref={wrap} className="overflow-hidden rounded-lg border border-line-soft">
         <canvas ref={canvas} className="block" onPointerDown={() => sound.unlock()} />
       </div>
 
       <Transport pb={pb} label="ops" />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="font-mono text-xs text-gray-400">{describeOp(player)}</p>
+        <p className="font-mono text-xs text-muted">{describeOp(player)}</p>
         <Legend items={SORT_LEGEND} />
       </div>
 
       {truncated && <p className="text-sm text-amber-400">The trace hit its length limit and stops before the end.</p>}
 
-      <div className="flex flex-wrap gap-6 rounded-lg border border-gray-800 bg-gray-950 px-4 py-3">
+      <div className="flex flex-wrap gap-6 rounded-lg border border-line-soft bg-deep px-4 py-3">
         <Stat label="Comparisons" value={s.compares.toLocaleString()} color={COLORS.compare} />
         <Stat label="Swaps" value={s.swaps.toLocaleString()} color={COLORS.swap} />
         <Stat label="Writes" value={s.writes.toLocaleString()} color={COLORS.write} />

@@ -120,13 +120,13 @@ function nearestColor(entries, hex) {
 
 function ComponentSelect({ id, label, value, onChange }) {
   return (
-    <label htmlFor={id} className="flex flex-col text-xs text-gray-400">
+    <label htmlFor={id} className="flex flex-col text-xs text-muted">
       {label}
       <select
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 w-full min-w-0 rounded border border-gray-700 bg-gray-900 px-1 py-1 text-sm text-white"
+        className="mt-1 w-full min-w-0 rounded border border-line bg-panel px-1 py-1 text-sm text-white"
       >
         {Object.entries(COMPONENTS).map(([key, c]) => (
           <option key={key} value={key}>
@@ -155,7 +155,7 @@ function Selected({ color, distance }) {
   };
 
   return (
-    <div className="flex items-stretch gap-3 rounded border border-gray-700 bg-gray-900 p-2">
+    <div className="flex items-stretch gap-3 rounded border border-line bg-panel p-2">
       <div
         className="flex h-20 w-20 shrink-0 items-end rounded p-1 text-[10px] leading-tight"
         style={{ backgroundColor: color.hex, color: color.textColor }}
@@ -164,11 +164,11 @@ function Selected({ color, distance }) {
       </div>
       <div className="min-w-0 text-sm">
         <div className="truncate font-semibold text-white">{color.name}</div>
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-muted">
           rgb({color.r}, {color.g}, {color.b}) · hsl({Math.round(color.h)}°, {Math.round(color.s)}%, {Math.round(color.l)}%)
         </div>
         {distance !== undefined && (
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-subtle">
             OKLab distance {distance.toFixed(3)}
             {distance < 0.02 ? ' (barely distinguishable)' : ''}
           </div>
@@ -176,7 +176,7 @@ function Selected({ color, distance }) {
         <button
           type="button"
           onClick={copy}
-          className="mt-1 rounded border border-gray-700 px-2 py-0.5 text-xs text-gray-300 hover:bg-gray-800"
+          className="mt-1 rounded border border-line px-2 py-0.5 text-xs text-soft hover:bg-raised"
         >
           {copied ? 'Copied' : 'Copy hex'}
         </button>
@@ -249,7 +249,7 @@ export default function HsvColorPicker() {
   const hexInvalid = hexInput.trim() !== '' && !normalizeHex(hexInput);
 
   return (
-    <div className="text-gray-300">
+    <div className="text-soft">
       <div className="mb-3 grid grid-cols-3 gap-2">
         <ComponentSelect id="ncp-y" label="Y axis (rows)" value={axes.y} onChange={(k) => assign('y', k)} />
         <ComponentSelect id="ncp-x" label="X axis (sorted)" value={axes.x} onChange={(k) => assign('x', k)} />
@@ -257,7 +257,7 @@ export default function HsvColorPicker() {
       </div>
 
       <div className="mb-3 flex flex-wrap items-end gap-x-6 gap-y-2">
-        <label className="flex min-w-40 flex-1 flex-col text-xs text-gray-400">
+        <label className="flex min-w-40 flex-1 flex-col text-xs text-muted">
           {sliderComponent.label}: {sliderValue}
           {sliderComponent.unit}
           <input
@@ -269,7 +269,7 @@ export default function HsvColorPicker() {
             className="mt-1 w-full"
           />
         </label>
-        <label className="flex w-32 flex-col text-xs text-gray-400">
+        <label className="flex w-32 flex-col text-xs text-muted">
           Window: ±{windowPercent}%
           <input
             type="range"
@@ -283,17 +283,17 @@ export default function HsvColorPicker() {
       </div>
 
       <div className="mb-3 grid gap-2 sm:grid-cols-2">
-        <label className="flex flex-col text-xs text-gray-400">
+        <label className="flex flex-col text-xs text-muted">
           Search names
           <input
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="e.g. moss"
-            className="mt-1 rounded border border-gray-700 bg-gray-900 px-2 py-1 text-sm text-white"
+            className="mt-1 rounded border border-line bg-panel px-2 py-1 text-sm text-white"
           />
         </label>
-        <form onSubmit={findNearest} className="flex flex-col text-xs text-gray-400">
+        <form onSubmit={findNearest} className="flex flex-col text-xs text-muted">
           <label htmlFor="ncp-hex">Nearest name to a hex</label>
           <div className="mt-1 flex gap-1">
             <input
@@ -303,11 +303,11 @@ export default function HsvColorPicker() {
               placeholder="#3a7bd5"
               spellCheck={false}
               aria-invalid={hexInvalid}
-              className={`min-w-0 flex-1 rounded border bg-gray-900 px-2 py-1 font-mono text-sm text-white ${
-                hexInvalid ? 'border-red-500' : 'border-gray-700'
+              className={`min-w-0 flex-1 rounded border bg-panel px-2 py-1 font-mono text-sm text-white ${
+                hexInvalid ? 'border-red-500' : 'border-line'
               }`}
             />
-            <button type="submit" className="rounded border border-gray-700 px-3 text-sm hover:bg-gray-800">
+            <button type="submit" className="rounded border border-line px-3 text-sm hover:bg-raised">
               Find
             </button>
           </div>
@@ -316,7 +316,7 @@ export default function HsvColorPicker() {
 
       {query && (
         <div className="mb-3 flex flex-wrap gap-1 text-xs">
-          <span className="mr-1 text-gray-500">
+          <span className="mr-1 text-subtle">
             {matches.length} match{matches.length === 1 ? '' : 'es'}
           </span>
           {matches.slice(0, 24).map((e) => (
@@ -324,13 +324,13 @@ export default function HsvColorPicker() {
               key={e.hex + e.name}
               type="button"
               onClick={() => setSelected({ color: e })}
-              className="flex items-center gap-1 rounded border border-gray-700 px-1.5 py-0.5 hover:bg-gray-800"
+              className="flex items-center gap-1 rounded border border-line px-1.5 py-0.5 hover:bg-raised"
             >
               <span className="inline-block h-3 w-3 rounded-sm" style={{ backgroundColor: e.hex }} />
               {e.name}
             </button>
           ))}
-          {matches.length > 24 && <span className="text-gray-500">…</span>}
+          {matches.length > 24 && <span className="text-subtle">…</span>}
         </div>
       )}
 
@@ -341,10 +341,10 @@ export default function HsvColorPicker() {
       )}
 
       {error && <p className="text-red-400">Couldn&apos;t load colors: {error}</p>}
-      {!error && entries.length === 0 && <p className="text-gray-400">Loading colors…</p>}
+      {!error && entries.length === 0 && <p className="text-muted">Loading colors…</p>}
 
       {entries.length > 0 && (
-        <p className="mb-1 text-xs text-gray-500">
+        <p className="mb-1 text-xs text-subtle">
           Showing {count} of {entries.length} colors · rows: {COMPONENTS[axes.y].label.toLowerCase()} (high at top) ·
           sorted by {COMPONENTS[axes.x].label.toLowerCase()}
         </p>

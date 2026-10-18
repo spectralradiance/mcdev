@@ -340,9 +340,9 @@ function Panel({ item, summary }) {
     );
   }
   return (
-    <div className="rounded border border-gray-800 bg-gray-900 p-4 text-sm leading-relaxed text-gray-300">
-      {summary.status === 'loading' && <p className="text-gray-500">Loading summary…</p>}
-      {summary.status === 'error' && <p className="text-gray-400">{summary.text}</p>}
+    <div className="rounded border border-line-soft bg-panel p-4 text-sm leading-relaxed text-soft">
+      {summary.status === 'loading' && <p className="text-subtle">Loading summary…</p>}
+      {summary.status === 'error' && <p className="text-muted">{summary.text}</p>}
       {summary.status === 'ok' && <p className="whitespace-pre-line">{summary.text}</p>}
       <a href={item.url} target="_blank" rel="noreferrer" className="mt-3 inline-block hover:opacity-80" style={{ color: ACCENT }}>
         More ⤤
@@ -374,7 +374,7 @@ function ItemTitle({ item, isSelected, onToggle }) {
 }
 
 const fieldClass =
-  'rounded border border-gray-700 bg-gray-900 px-2 py-1 text-sm text-white outline-none focus:border-gray-400';
+  'rounded border border-line bg-panel px-2 py-1 text-sm text-white outline-none focus:border-gray-400';
 
 export default function MediaList() {
   const rootRef = useRef(null);
@@ -469,7 +469,7 @@ export default function MediaList() {
       </div>
 
       <div className="mt-6 flex flex-wrap items-end gap-3">
-        <label className="flex min-w-40 flex-1 flex-col text-xs text-gray-400">
+        <label className="flex min-w-40 flex-1 flex-col text-xs text-muted">
           Search
           <input
             type="search"
@@ -479,7 +479,7 @@ export default function MediaList() {
             className={`mt-1 ${fieldClass}`}
           />
         </label>
-        <label className="flex flex-col text-xs text-gray-400">
+        <label className="flex flex-col text-xs text-muted">
           Sort by
           <select value={sort} onChange={(event) => setSort(event.target.value)} className={`mt-1 ${fieldClass}`}>
             {Object.entries(SORTS).map(([key, s]) => (
@@ -498,13 +498,13 @@ export default function MediaList() {
           Surprise me
         </button>
       </div>
-      <p className="mt-2 text-xs text-gray-500" aria-live="polite">
+      <p className="mt-2 text-xs text-subtle" aria-live="polite">
         {visible.length} of {ITEMS.length} items
       </p>
 
       <div className={`mt-6 flex gap-8 ${wide ? 'flex-row items-start' : 'flex-col'}`}>
         <ul className="min-w-0 flex-1">
-          {visible.length === 0 && <li className="text-gray-500">Nothing matches.</li>}
+          {visible.length === 0 && <li className="text-subtle">Nothing matches.</li>}
           {rows.map(({ key, heading, item }) => {
             if (heading) {
               return (
@@ -520,7 +520,7 @@ export default function MediaList() {
                   <span className="w-[46px] shrink-0 text-white/80">{item.year}</span>
                   <span className="min-w-0">
                     <ItemTitle item={item} isSelected={isSelected} onToggle={() => toggleItem(item)} />
-                    {sort !== 'artist' && <span className="ml-2 text-sm text-gray-500">{item.artist}</span>}
+                    {sort !== 'artist' && <span className="ml-2 text-sm text-subtle">{item.artist}</span>}
                   </span>
                 </div>
                 {!wide && isSelected && <div className="mt-3">{panel}</div>}

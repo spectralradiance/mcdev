@@ -134,22 +134,22 @@ export default function Breakout() {
   }[hud.state]
 
   return (
-    <div className="flex flex-col items-center gap-3 rounded-lg border border-gray-700 bg-gray-900 px-4 py-6 font-light text-gray-300">
+    <div className="flex flex-col items-center gap-3 rounded-lg border border-line bg-panel px-4 py-6 font-light text-soft">
       <div className="flex items-center gap-6 text-sm">
-        <label className="flex items-center gap-2 text-gray-300">
+        <label className="flex items-center gap-2 text-soft">
           <input type="checkbox" checked={calm} onChange={(e) => toggleCalm(e.target.checked)} className="accent-teal-400" />
           calm mode (slower, no lives)
         </label>
         <button
           type="button"
           onClick={() => setRound((r) => r + 1)}
-          className="rounded border border-gray-700 bg-gray-800 px-3 py-1 text-gray-300 hover:bg-gray-700 hover:text-white"
+          className="rounded border border-line bg-raised px-3 py-1 text-soft hover:bg-strong hover:text-white"
         >
           {finished ? 'Play again' : 'Restart'}
         </button>
       </div>
 
-      <div className="flex gap-6 font-mono text-sm tabular-nums text-gray-400">
+      <div className="flex gap-6 font-mono text-sm tabular-nums text-muted">
         <span>SCORE {String(hud.score).padStart(4, '0')}</span>
         <span>{calm ? 'LIVES ∞' : `LIVES ${hud.lives}`}</span>
       </div>
@@ -164,12 +164,12 @@ export default function Breakout() {
           aim(event)
           launch(gameRef.current)
         }}
-        className="w-full max-w-[480px] touch-none rounded border border-gray-700"
+        className="w-full max-w-[480px] touch-none rounded border border-line"
         style={{ imageRendering: 'pixelated', aspectRatio: `${W} / ${H}` }}
       />
 
       <p aria-live="polite" className="min-h-6 text-center text-teal-300">{status}</p>
-      <p className="text-center text-xs text-gray-500">Mouse or touch to move; arrow keys or A / D also work.</p>
+      <p className="text-center text-xs text-subtle">Mouse or touch to move; arrow keys or A / D also work.</p>
     </div>
   )
 }

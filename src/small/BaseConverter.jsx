@@ -93,21 +93,21 @@ function Breakdown({ text, base, value }) {
   const shown = terms.slice(0, BREAKDOWN_TERMS);
   const hidden = terms.length - shown.length;
   return (
-    <div className="rounded border border-gray-800 bg-gray-900 p-3 font-mono text-sm text-gray-300">
-      <div className="mb-1 text-xs text-gray-500">Place values in base {base}</div>
+    <div className="rounded border border-line-soft bg-panel p-3 font-mono text-sm text-soft">
+      <div className="mb-1 text-xs text-subtle">Place values in base {base}</div>
       <div className="break-words">
         {value < 0n && '−('}
         {shown.map(({ digit, power }, i) => (
-          <span key={i} className={digit === 0 ? 'text-gray-600' : undefined}>
+          <span key={i} className={digit === 0 ? 'text-faint' : undefined}>
             {i > 0 && ' + '}
             {digit}·{base}
             {superscript(power)}
           </span>
         ))}
-        {hidden > 0 && <span className="text-gray-500"> + … ({hidden} more)</span>}
+        {hidden > 0 && <span className="text-subtle"> + … ({hidden} more)</span>}
         {value < 0n && ')'}
       </div>
-      <div className="mt-1 break-all text-gray-400">= {value.toString()} in decimal</div>
+      <div className="mt-1 break-all text-muted">= {value.toString()} in decimal</div>
     </div>
   );
 }
@@ -129,7 +129,7 @@ function CopyButton({ text }) {
   };
   return (
     <button type="button" onClick={copy} disabled={!text}
-      className="w-14 shrink-0 rounded bg-gray-800 px-2 py-0.5 text-xs text-gray-300 hover:bg-gray-700 disabled:opacity-30">
+      className="w-14 shrink-0 rounded bg-raised px-2 py-0.5 text-xs text-soft hover:bg-strong disabled:opacity-30">
       {copied ? 'Copied' : 'Copy'}
     </button>
   );
@@ -167,12 +167,12 @@ export default function BaseConverter() {
   return (
     <div className="space-y-4">
       <fieldset className="space-y-2">
-        <legend className="mb-1 text-sm text-gray-300">Bases to show</legend>
+        <legend className="mb-1 text-sm text-soft">Bases to show</legend>
         <div className="flex flex-wrap gap-1">
           {ALL_BASES.map((base) => (
             <button key={base} type="button" aria-pressed={bases.includes(base)} onClick={() => toggleBase(base)}
               title={BASE_NAMES[base]}
-              className={`${chip} w-7 ${bases.includes(base) ? 'bg-gray-300 text-black' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>
+              className={`${chip} w-7 ${bases.includes(base) ? 'bg-gray-300 text-black' : 'bg-raised text-muted hover:bg-strong'}`}>
               {base}
             </button>
           ))}
@@ -180,7 +180,7 @@ export default function BaseConverter() {
         <div className="flex flex-wrap gap-2">
           {Object.entries(BASE_SETS).map(([name, set]) => (
             <button key={name} type="button" onClick={() => setBases(set)}
-              className={`${chip} bg-gray-800 text-gray-300 hover:bg-gray-700`}>
+              className={`${chip} bg-raised text-soft hover:bg-strong`}>
               {name}
             </button>
           ))}
@@ -195,7 +195,7 @@ export default function BaseConverter() {
           const invalid = isEditing && editing.error;
           return (
             <div key={base} className="flex items-center gap-2">
-              <label htmlFor={`base-${base}`} className="w-20 shrink-0 text-right text-xs text-gray-500">
+              <label htmlFor={`base-${base}`} className="w-20 shrink-0 text-right text-xs text-subtle">
                 {base}
                 {BASE_NAMES[base] && <span className="block text-[10px] leading-none">{BASE_NAMES[base]}</span>}
               </label>
@@ -216,7 +216,7 @@ export default function BaseConverter() {
                   (invalid ? 'border border-orange-500' : isEditing ? 'border-gray-300' : 'border-gray-600')
                 }
               />
-              <span className="hidden w-12 shrink-0 text-right text-[10px] text-gray-600 sm:block" title="digits">
+              <span className="hidden w-12 shrink-0 text-right text-[10px] text-faint sm:block" title="digits">
                 {text.replace('-', '').length || ''}
               </span>
               <CopyButton text={text} />

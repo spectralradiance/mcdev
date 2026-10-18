@@ -98,14 +98,14 @@ export default function SearchView() {
         <Button onClick={() => { setSeed(newSeed()); setTargetPick({ seed: 0, value: null }); }}>New data</Button>
       </div>
 
-      <div ref={wrap} className="overflow-hidden rounded-lg border border-gray-800">
+      <div ref={wrap} className="overflow-hidden rounded-lg border border-line-soft">
         <canvas ref={canvas} className="block cursor-crosshair" onPointerDown={pickTarget} title="Click a bar to search for its value" />
       </div>
 
       <Transport pb={pb} label="ops" />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="font-mono text-xs text-gray-400">{describeOp(player, true)}</p>
+        <p className="font-mono text-xs text-muted">{describeOp(player, true)}</p>
         <Legend items={[
           { color: COLORS.compare, label: 'Probe' },
           { color: COLORS.read, label: 'Read' },
@@ -115,7 +115,7 @@ export default function SearchView() {
         ]} />
       </div>
 
-      <div className="flex flex-wrap gap-6 rounded-lg border border-gray-800 bg-gray-950 px-4 py-3">
+      <div className="flex flex-wrap gap-6 rounded-lg border border-line-soft bg-deep px-4 py-3">
         <Stat label="Target" value={target} />
         <Stat label="Probes" value={player.stats.compares} color={COLORS.compare} />
         <Stat label="Range left" value={player.finished ? '—' : Math.max(0, player.hi - player.lo + 1)} />
@@ -129,13 +129,13 @@ export default function SearchView() {
           about={algo.about}
           facts={[['average', `O(${algo.average})`], ['worst', `O(${algo.worst})`]]}
         />
-        <section className="rounded-lg border border-gray-800 bg-gray-950 p-4">
-          <h3 className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">Probes for this target</h3>
+        <section className="rounded-lg border border-line-soft bg-deep p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-widest text-subtle">Probes for this target</h3>
           <ul className="mt-2 space-y-1 text-sm">
             {table.map(({ a, probes }) => (
               <li key={a.id} className="flex justify-between gap-2">
-                <button type="button" className={'text-left hover:text-white ' + (a.id === algo.id ? 'text-white' : 'text-gray-400')} onClick={() => setAlgoId(a.id)}>{a.name}</button>
-                <span className={'tabular-nums ' + (probes === best ? 'text-emerald-400' : 'text-gray-300')}>{probes}</span>
+                <button type="button" className={'text-left hover:text-white ' + (a.id === algo.id ? 'text-white' : 'text-muted')} onClick={() => setAlgoId(a.id)}>{a.name}</button>
+                <span className={'tabular-nums ' + (probes === best ? 'text-emerald-400' : 'text-soft')}>{probes}</span>
               </li>
             ))}
           </ul>

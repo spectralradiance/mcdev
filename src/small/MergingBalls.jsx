@@ -163,10 +163,10 @@ function draw(ctx, balls, colorBySize) {
 
 function Slider({ label, value, min, max, step, onChange, format = String }) {
   return (
-    <label className="block text-sm text-gray-300">
+    <label className="block text-sm text-soft">
       <span className="flex justify-between">
         <span>{label}</span>
-        <span className="tabular-nums text-gray-400">{format(value)}</span>
+        <span className="tabular-nums text-muted">{format(value)}</span>
       </span>
       <input
         type="range"
@@ -181,7 +181,7 @@ function Slider({ label, value, min, max, step, onChange, format = String }) {
   );
 }
 
-const buttonClass = 'rounded bg-gray-800 px-3 py-1 text-sm text-gray-200 hover:bg-gray-700';
+const buttonClass = 'rounded bg-raised px-3 py-1 text-sm text-soft hover:bg-strong';
 
 export default function MergingBalls() {
   const canvasRef = useRef(null);
@@ -249,7 +249,7 @@ export default function MergingBalls() {
   };
 
   return (
-    <div className="max-w-[500px] space-y-4 text-gray-300">
+    <div className="max-w-[500px] space-y-4 text-soft">
       <canvas
         ref={canvasRef}
         width={WIDTH}
@@ -262,9 +262,9 @@ export default function MergingBalls() {
         onPointerMove={(event) => spray.current && aim(event)}
         onPointerUp={() => (spray.current = null)}
         onPointerCancel={() => (spray.current = null)}
-        className="block h-auto w-full cursor-crosshair touch-none border border-gray-700 bg-black"
+        className="block h-auto w-full cursor-crosshair touch-none border border-line bg-black"
       />
-      <p className="text-xs text-gray-400">Press and hold on the box to spray in more balls.</p>
+      <p className="text-xs text-muted">Press and hold on the box to spray in more balls.</p>
 
       <div className="flex flex-wrap items-center gap-2">
         <button onClick={() => setPaused((p) => !p)} className={`${buttonClass} w-20`}>
@@ -284,7 +284,7 @@ export default function MergingBalls() {
         </label>
       </div>
 
-      <div className="text-sm tabular-nums text-gray-400">
+      <div className="text-sm tabular-nums text-muted">
         {stats.balls} balls · largest radius {stats.largest.toFixed(1)} · {stats.merges} merges
       </div>
 

@@ -178,17 +178,17 @@ export default function GridView() {
         <Field label="Grid"><Select value={size.id} onChange={setSizeId} options={SIZES} /></Field>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-gray-500">Draw</span>
+        <span className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-subtle">Draw</span>
         <Button active={tool === 'wall'} onClick={() => setTool('wall')}>Walls</Button>
         <Button active={tool === 'weight'} onClick={() => setTool('weight')}>Weights ×{WEIGHT_COST}</Button>
         <Button active={tool === 'erase'} onClick={() => setTool('erase')}>Erase</Button>
-        <span className="mx-2 h-5 w-px bg-gray-800" />
+        <span className="mx-2 h-5 w-px bg-raised" />
         <Button onClick={() => clear('path')}>Clear search</Button>
         <Button onClick={() => clear('weights')}>Clear weights</Button>
         <Button onClick={() => clear('walls')}>Clear all</Button>
       </div>
 
-      <div ref={wrap} className="overflow-hidden rounded-lg border border-gray-800 bg-[#030712]">
+      <div ref={wrap} className="overflow-hidden rounded-lg border border-line-soft bg-[#030712]">
         <canvas
           ref={canvas}
           className="block touch-none select-none"
@@ -203,7 +203,7 @@ export default function GridView() {
       <Transport pb={pb} label="steps" />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-gray-500">Drag the green start or red goal. Click or drag to draw; right-drag erases. After a search finishes, edits re-solve instantly.</p>
+        <p className="text-xs text-subtle">Drag the green start or red goal. Click or drag to draw; right-drag erases. After a search finishes, edits re-solve instantly.</p>
         <Legend items={[
           { color: FRONTIER, label: 'Frontier' },
           { color: visitedColour(0.2, false), label: 'Visited (near)' },
@@ -214,7 +214,7 @@ export default function GridView() {
         ]} />
       </div>
 
-      <div className="flex flex-wrap gap-6 rounded-lg border border-gray-800 bg-gray-950 px-4 py-3">
+      <div className="flex flex-wrap gap-6 rounded-lg border border-line-soft bg-deep px-4 py-3">
         <Stat label="Visited" value={run?.kind === 'path' ? p!.stats.visited : '—'} color={visitedColour(0.7, false)} />
         <Stat label="Frontier" value={run?.kind === 'path' ? p!.stats.frontier : '—'} color={FRONTIER} />
         <Stat label="Path length" value={result ? (result.found ? result.length : 'none') : '—'} color={PATH} />

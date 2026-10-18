@@ -126,11 +126,11 @@ const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 function NumberControl({ label, value, min, max, step = 1, onChange }) {
   const set = (event) => onChange(clamp(Number(event.target.value) || 0, min, max));
   return (
-    <label className="block text-sm text-gray-300">
+    <label className="block text-sm text-soft">
       <span className="flex items-center justify-between">
         {label}
         <input type="number" value={value} min={min} max={max} step={step} onChange={set}
-          className="w-16 border border-gray-700 bg-gray-800 px-1 text-right text-white" />
+          className="w-16 border border-line bg-raised px-1 text-right text-white" />
       </span>
       <input type="range" value={value} min={min} max={max} step={step} onChange={set} className="mt-1 w-full" />
     </label>
@@ -140,11 +140,11 @@ function NumberControl({ label, value, min, max, step = 1, onChange }) {
 // Text field for #rrggbbaa (the color picker can't do alpha) plus a swatch.
 function ColorControl({ label, value, onChange }) {
   return (
-    <label className="flex items-center justify-between text-sm text-gray-300">
+    <label className="flex items-center justify-between text-sm text-soft">
       {label}
       <span className="flex items-center gap-2">
         <input type="text" value={value} onChange={(e) => onChange(e.target.value)} spellCheck={false}
-          className="w-24 border border-gray-700 bg-gray-800 px-1 font-mono text-white" />
+          className="w-24 border border-line bg-raised px-1 font-mono text-white" />
         <input type="color" value={value.slice(0, 7)} aria-label={`${label} picker`}
           onChange={(e) => onChange(e.target.value + value.slice(7))}
           className="h-6 w-6 cursor-pointer border-0 bg-transparent p-0" />
@@ -155,15 +155,15 @@ function ColorControl({ label, value, onChange }) {
 
 function Toggle({ label, checked, onChange }) {
   return (
-    <label className="flex items-center gap-2 text-sm text-gray-300">
+    <label className="flex items-center gap-2 text-sm text-soft">
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       {label}
     </label>
   );
 }
 
-const sectionTitle = 'text-xs font-semibold uppercase tracking-wide text-gray-500';
-const buttonClass = 'rounded bg-gray-800 px-3 py-1 text-xs text-gray-200 hover:bg-gray-700';
+const sectionTitle = 'text-xs font-semibold uppercase tracking-wide text-subtle';
+const buttonClass = 'rounded bg-raised px-3 py-1 text-xs text-soft hover:bg-strong';
 
 // ---- Component -------------------------------------------------------------
 
@@ -213,7 +213,7 @@ export default function SeedOfLife() {
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-      <div className="space-y-4 rounded-lg border border-gray-800 bg-gray-900 p-4">
+      <div className="space-y-4 rounded-lg border border-line-soft bg-panel p-4">
         <div className="space-y-2">
           <h3 className={sectionTitle}>Presets</h3>
           <div className="flex flex-wrap gap-2">
@@ -261,10 +261,10 @@ export default function SeedOfLife() {
           <NumberControl label="Line width" value={lineWidth} min={0.5} max={16} step={0.5} onChange={setLineWidth} />
           <ColorControl label="Fill" value={fillColor} onChange={setFillColor} />
           <NumberControl label="Fill opacity" value={fillOpacity} min={0} max={1} step={0.05} onChange={setFillOpacity} />
-          <label className="flex items-center justify-between text-sm text-gray-300">
+          <label className="flex items-center justify-between text-sm text-soft">
             Blend
             <select value={blendMode} onChange={(e) => setBlendMode(e.target.value)}
-              className="border border-gray-700 bg-gray-800 px-1 text-white">
+              className="border border-line bg-raised px-1 text-white">
               {BLEND_MODES.map((mode) => <option key={mode}>{mode}</option>)}
             </select>
           </label>
@@ -284,7 +284,7 @@ export default function SeedOfLife() {
         </div>
 
         <div className="flex items-center gap-2 pt-1">
-          <span className="text-sm text-gray-400">Download</span>
+          <span className="text-sm text-muted">Download</span>
           {['svg', 'png', 'jpg'].map((type) => (
             <button key={type} type="button" onClick={() => downloadSvg(svgRef.current, type)}
               className={`${buttonClass} uppercase`}>
@@ -296,7 +296,7 @@ export default function SeedOfLife() {
 
       <svg ref={svgRef} xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${SIZE} ${SIZE}`} width={SIZE} height={SIZE}
         role="img" aria-label={`${centers.length} circles`}
-        className="h-auto w-full rounded border border-gray-700 bg-[#fafafa]">
+        className="h-auto w-full rounded border border-line bg-[#fafafa]">
         <defs>
           <clipPath id={clipId}>
             <circle cx={0} cy={0} r={extent} />

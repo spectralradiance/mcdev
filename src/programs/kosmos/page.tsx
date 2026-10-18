@@ -63,7 +63,7 @@ function SoundPanel() {
       <button
         type="button"
         onClick={() => update({ enabled: !s.enabled })}
-        className={'inline-flex items-center gap-1.5 rounded border px-2.5 py-1 transition-colors ' + (s.enabled ? 'border-gray-500 text-white' : 'border-gray-800 text-gray-500')}
+        className={'inline-flex items-center gap-1.5 rounded border px-2.5 py-1 transition-colors ' + (s.enabled ? 'border-line-strong text-white' : 'border-line-soft text-subtle')}
         aria-pressed={s.enabled}
       >
         <SpeakerIcon on={s.enabled} /> {s.enabled ? 'Sound on' : 'Muted'}
@@ -95,29 +95,29 @@ export default function KosmosPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-bold">Kosmos</h1>
-          <p className="mt-1 text-gray-400">Sorting, searching and graph algorithms you can watch and hear.</p>
+          <p className="mt-1 text-muted">Sorting, searching and graph algorithms you can watch and hear.</p>
         </div>
         <SoundPanel />
       </div>
 
-      <nav className="mt-6 flex flex-wrap gap-1 border-b border-gray-800" aria-label="Algorithm families">
+      <nav className="mt-6 flex flex-wrap gap-1 border-b border-line-soft" aria-label="Algorithm families">
         {TABS.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTabId(t.id)}
             aria-current={t.id === tab.id ? 'page' : undefined}
-            className={'-mb-px border-b-2 px-3 py-2 text-sm transition-colors ' + (t.id === tab.id ? 'border-white text-white' : 'border-transparent text-gray-400 hover:text-white')}
+            className={'-mb-px border-b-2 px-3 py-2 text-sm transition-colors ' + (t.id === tab.id ? 'border-white text-white' : 'border-transparent text-muted hover:text-white')}
           >
             {t.name}
           </button>
         ))}
       </nav>
-      <p className="mb-5 mt-3 text-sm text-gray-500">
+      <p className="mb-5 mt-3 text-sm text-subtle">
         {tab.blurb} <span className="hidden sm:inline">Space plays and pauses, the arrow keys step, and [ and ] change speed.</span>
       </p>
 
-      <Suspense fallback={<p className="text-gray-400">Loading…</p>}>
+      <Suspense fallback={<p className="text-muted">Loading…</p>}>
         <View key={tab.id} />
       </Suspense>
     </main>

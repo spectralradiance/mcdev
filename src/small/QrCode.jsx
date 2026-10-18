@@ -92,7 +92,7 @@ function tryEncode(text, options) {
 }
 
 const buttonClass =
-  'rounded border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-700 ' +
+  'rounded border border-line bg-raised px-3 py-1.5 text-sm text-soft hover:bg-strong ' +
   'focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 disabled:opacity-40';
 
 export default function QrCode() {
@@ -136,9 +136,9 @@ export default function QrCode() {
   const bytes = qr ? Math.ceil(qr.dataBits / 8) : 0;
 
   return (
-    <div className="flex flex-col gap-4 text-gray-300 sm:flex-row-reverse sm:items-start">
+    <div className="flex flex-col gap-4 text-soft sm:flex-row-reverse sm:items-start">
       <figure className="mx-auto w-full max-w-xs shrink-0 sm:mx-0">
-        <div className="aspect-square w-full overflow-hidden rounded border border-gray-700" style={{ background: light }}>
+        <div className="aspect-square w-full overflow-hidden rounded border border-line" style={{ background: light }}>
           {qr && (
             <svg
               viewBox={`0 0 ${dim} ${dim}`}
@@ -157,7 +157,7 @@ export default function QrCode() {
             </svg>
           )}
         </div>
-        <figcaption className="mt-2 text-xs text-gray-400" aria-live="polite">
+        <figcaption className="mt-2 text-xs text-muted" aria-live="polite">
           {qr ? (
             <>
               Version {qr.version} ({qr.size}×{qr.size}) · {qr.mode} mode · mask {qr.mask} · {bytes}/
@@ -191,7 +191,7 @@ export default function QrCode() {
             onChange={(e) => setText(e.target.value)}
             rows={4}
             spellCheck={false}
-            className="w-full resize-y rounded border border-gray-700 bg-gray-900 p-2 font-mono text-sm text-white focus:border-gray-400 focus:outline-none"
+            className="w-full resize-y rounded border border-line bg-panel p-2 font-mono text-sm text-white focus:border-gray-400 focus:outline-none"
           />
         </label>
 
@@ -203,7 +203,7 @@ export default function QrCode() {
                 key={level}
                 className={
                   'cursor-pointer rounded border px-2 py-1 text-center has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gray-400 ' +
-                  (ecLevel === level ? 'border-gray-400 bg-gray-700 text-white' : 'border-gray-700 bg-gray-900 hover:bg-gray-800')
+                  (ecLevel === level ? 'border-gray-400 bg-strong text-white' : 'border-line bg-panel hover:bg-raised')
                 }
               >
                 <input
@@ -215,7 +215,7 @@ export default function QrCode() {
                   className="sr-only"
                 />
                 <span className="font-mono font-bold">{level}</span>
-                <span className="block text-xs text-gray-400">{recovers}</span>
+                <span className="block text-xs text-muted">{recovers}</span>
               </label>
             ))}
           </div>
@@ -227,7 +227,7 @@ export default function QrCode() {
             <select
               value={mask}
               onChange={(e) => setMask(e.target.value)}
-              className="rounded border border-gray-700 bg-gray-900 px-2 py-1 text-white focus:border-gray-400 focus:outline-none"
+              className="rounded border border-line bg-panel px-2 py-1 text-white focus:border-gray-400 focus:outline-none"
             >
               <option value="auto">Auto (lowest penalty)</option>
               {Array.from({ length: 8 }, (_, i) => (

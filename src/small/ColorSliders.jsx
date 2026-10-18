@@ -259,7 +259,7 @@ function Track({ mode, values, index, onChange }) {
   const readout = unit < 1 ? (values[index] * unit).toFixed(3) : Math.round(values[index] * unit);
   return (
     <div className="flex items-center gap-2">
-      <span className="w-4 text-gray-400">{name}</span>
+      <span className="w-4 text-muted">{name}</span>
       <canvas
         ref={canvasRef}
         width={TRACK_WIDTH}
@@ -281,7 +281,7 @@ function Track({ mode, values, index, onChange }) {
         }}
         className="block h-6 w-full max-w-[300px] min-w-0 cursor-pointer touch-none rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
       />
-      <span className="w-10 shrink-0 text-right text-xs text-gray-500">{readout}</span>
+      <span className="w-10 shrink-0 text-right text-xs text-subtle">{readout}</span>
     </div>
   );
 }
@@ -291,18 +291,18 @@ function CopyRow({ label, text, copied, onCopy }) {
     <button
       type="button"
       onClick={() => onCopy(label, text)}
-      className="flex w-full items-center justify-between gap-3 rounded px-2 py-1 text-left hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-gray-300"
+      className="flex w-full items-center justify-between gap-3 rounded px-2 py-1 text-left hover:bg-raised focus-visible:outline-2 focus-visible:outline-gray-300"
       title={`Copy ${text}`}
     >
       <span className="truncate">{text}</span>
-      <span className="shrink-0 text-xs text-gray-500">{copied === label ? 'copied' : 'copy'}</span>
+      <span className="shrink-0 text-xs text-subtle">{copied === label ? 'copied' : 'copy'}</span>
     </button>
   );
 }
 
 function ContrastBadge({ background, text, ratio }) {
   return (
-    <div className="flex items-center gap-2 rounded border border-gray-700 px-2 py-1" style={{ background, color: text }}>
+    <div className="flex items-center gap-2 rounded border border-line px-2 py-1" style={{ background, color: text }}>
       <span className="font-bold">Aa</span>
       <span className="text-xs">
         {ratio.toFixed(2)}:1 {grade(ratio)}
@@ -365,7 +365,7 @@ export default function ColorSliders() {
   const draftInvalid = draft !== null && draft.trim() !== '' && !parseColor(draft);
 
   return (
-    <div className="max-w-xl font-mono text-sm text-gray-300">
+    <div className="max-w-xl font-mono text-sm text-soft">
       <div role="radiogroup" aria-label="Color model" className="mb-3 flex flex-wrap gap-1">
         {Object.keys(MODES).map((name) => (
           <button
@@ -375,7 +375,7 @@ export default function ColorSliders() {
             aria-checked={mode === name}
             onClick={() => switchMode(name)}
             className={`rounded border px-3 py-1 uppercase ${
-              mode === name ? 'border-gray-300 bg-gray-800 text-white' : 'border-gray-700 text-gray-500 hover:text-gray-300'
+              mode === name ? 'border-gray-300 bg-raised text-white' : 'border-line text-subtle hover:text-soft'
             }`}
           >
             {name}
@@ -390,9 +390,9 @@ export default function ColorSliders() {
       </div>
 
       <div className="mt-4 flex flex-wrap items-start gap-4">
-        <div className="h-24 w-24 shrink-0 rounded border border-gray-700" style={{ background: toCss(rgb) }} />
+        <div className="h-24 w-24 shrink-0 rounded border border-line" style={{ background: toCss(rgb) }} />
         <div className="min-w-0 flex-1 basis-48">
-          <label className="block text-xs text-gray-500" htmlFor="color-sliders-input">
+          <label className="block text-xs text-subtle" htmlFor="color-sliders-input">
             Type a color (hex, rgb(), hsl()) and press Enter
           </label>
           <input
@@ -413,8 +413,8 @@ export default function ColorSliders() {
             }}
             spellCheck={false}
             aria-invalid={draftInvalid}
-            className={`mt-1 w-full rounded border bg-gray-900 px-2 py-1 text-white outline-none focus:border-gray-300 ${
-              draftInvalid ? 'border-red-500' : 'border-gray-700'
+            className={`mt-1 w-full rounded border bg-panel px-2 py-1 text-white outline-none focus:border-gray-300 ${
+              draftInvalid ? 'border-red-500' : 'border-line'
             }`}
           />
           {clipped && (
@@ -436,12 +436,12 @@ export default function ColorSliders() {
 
       <div className="mt-4">
         <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500">Swatches</span>
-          <button type="button" onClick={saveSwatch} className="rounded border border-gray-700 px-2 py-0.5 text-xs hover:bg-gray-800">
+          <span className="text-xs text-subtle">Swatches</span>
+          <button type="button" onClick={saveSwatch} className="rounded border border-line px-2 py-0.5 text-xs hover:bg-raised">
             + save
           </button>
           {swatches.length > 0 && (
-            <button type="button" onClick={() => updateSwatches([])} className="text-xs text-gray-500 hover:text-gray-300">
+            <button type="button" onClick={() => updateSwatches([])} className="text-xs text-subtle hover:text-soft">
               clear
             </button>
           )}
@@ -454,11 +454,11 @@ export default function ColorSliders() {
               title={`Load ${hex}`}
               aria-label={`Load ${hex}`}
               onClick={() => setFromRgb(parseColor(hex))}
-              className={`h-7 w-7 rounded border ${hex === strings.hex ? 'border-white' : 'border-gray-700'} focus-visible:outline-2 focus-visible:outline-gray-300`}
+              className={`h-7 w-7 rounded border ${hex === strings.hex ? 'border-white' : 'border-line'} focus-visible:outline-2 focus-visible:outline-gray-300`}
               style={{ background: hex }}
             />
           ))}
-          {swatches.length === 0 && <span className="text-xs text-gray-600">Saved colors appear here.</span>}
+          {swatches.length === 0 && <span className="text-xs text-faint">Saved colors appear here.</span>}
         </div>
       </div>
     </div>

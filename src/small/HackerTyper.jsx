@@ -185,22 +185,22 @@ export default function HackerTyper() {
   else if (shown === 0) placeholder = 'Click here (or tap) and start typing.';
 
   return (
-    <div className="space-y-3 text-gray-300">
+    <div className="space-y-3 text-soft">
       <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
-        <label className="min-w-0 flex-1 basis-60 text-xs text-gray-400">
+        <label className="min-w-0 flex-1 basis-60 text-xs text-muted">
           source
           <select
             value={sourceId}
             onChange={(e) => chooseSource(e.target.value)}
-            className="mt-1 block w-full truncate rounded border border-gray-700 bg-gray-900 px-2 py-1 text-sm text-gray-200 focus:border-gray-500 focus:outline-none"
+            className="mt-1 block w-full truncate rounded border border-line bg-panel px-2 py-1 text-sm text-soft focus:border-line-strong focus:outline-none"
           >
             {SOURCES.map((s) => (
               <option key={s.id} value={s.id}>{s.title}</option>
             ))}
           </select>
         </label>
-        <label className="text-xs text-gray-400">
-          characters per key: <span className="font-mono text-gray-200">{charsPerKey}</span>
+        <label className="text-xs text-muted">
+          characters per key: <span className="font-mono text-soft">{charsPerKey}</span>
           <input
             type="range"
             min="1"
@@ -219,13 +219,13 @@ export default function HackerTyper() {
           aria-label={`Terminal: type any keys to write ${source.title}`}
           onKeyDown={handleKeyDown}
           onClick={advance}
-          className="h-96 cursor-text overflow-y-auto rounded border border-gray-700 bg-[#272822] focus:border-gray-400 focus:outline-none"
+          className="h-96 cursor-text overflow-y-auto rounded border border-line bg-[#272822] focus:border-gray-400 focus:outline-none"
         >
           <pre className="hljs m-0 whitespace-pre-wrap break-words p-3 text-xs sm:text-sm">
             <code dangerouslySetInnerHTML={{ __html: html }} />
             <span className="animate-pulse text-green-400" aria-hidden="true">█</span>
           </pre>
-          {placeholder && <p className="px-3 pb-3 text-sm text-gray-400">{placeholder}</p>}
+          {placeholder && <p className="px-3 pb-3 text-sm text-muted">{placeholder}</p>}
         </div>
 
         {overlay && (
@@ -254,11 +254,11 @@ export default function HackerTyper() {
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(progress * 100)}
-          className="h-1.5 overflow-hidden rounded bg-gray-800"
+          className="h-1.5 overflow-hidden rounded bg-raised"
         >
           <div className="h-full bg-green-500 transition-[width]" style={{ width: `${progress * 100}%` }} />
         </div>
-        <p className="mt-1 flex flex-wrap justify-between gap-x-4 font-mono text-xs text-gray-500">
+        <p className="mt-1 flex flex-wrap justify-between gap-x-4 font-mono text-xs text-subtle">
           <span>
             {finished
               ? 'EOF. Keep typing to start over.'
@@ -266,11 +266,11 @@ export default function HackerTyper() {
           </span>
           <span>
             Alt ×3:{' '}
-            <button type="button" className="underline hover:text-gray-300" onClick={() => setOverlay('granted')}>
+            <button type="button" className="underline hover:text-soft" onClick={() => setOverlay('granted')}>
               granted
             </button>
             {' · '}Caps Lock ×3:{' '}
-            <button type="button" className="underline hover:text-gray-300" onClick={() => setOverlay('denied')}>
+            <button type="button" className="underline hover:text-soft" onClick={() => setOverlay('denied')}>
               denied
             </button>
           </span>

@@ -82,10 +82,10 @@ const splitPhrases = (text) =>
 
 function Slider({ label, value, min, max, step, onChange, format = String }) {
   return (
-    <label className="block text-sm text-gray-300">
+    <label className="block text-sm text-soft">
       <span className="flex justify-between">
         <span>{label}</span>
-        <span className="tabular-nums text-gray-400">{format(value)}</span>
+        <span className="tabular-nums text-muted">{format(value)}</span>
       </span>
       <input
         type="range"
@@ -162,7 +162,7 @@ export default function DecodingText() {
   };
 
   return (
-    <div className="max-w-2xl space-y-4 text-gray-300">
+    <div className="max-w-2xl space-y-4 text-soft">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -171,7 +171,7 @@ export default function DecodingText() {
         className="space-y-2"
       >
         <label className="block text-sm">
-          Text {cycle && <span className="text-gray-400">(blank lines separate phrases)</span>}
+          Text {cycle && <span className="text-muted">(blank lines separate phrases)</span>}
           <textarea
             value={draft}
             rows={5}
@@ -184,11 +184,11 @@ export default function DecodingText() {
                 decode();
               }
             }}
-            className="mt-1 block w-full rounded border border-gray-700 bg-gray-900 p-2 font-mono text-sm text-white focus:border-gray-400 focus:outline-none"
+            className="mt-1 block w-full rounded border border-line bg-panel p-2 font-mono text-sm text-white focus:border-gray-400 focus:outline-none"
           />
         </label>
-        <button type="submit" className="rounded bg-gray-800 px-3 py-1 text-sm text-gray-200 hover:bg-gray-700">
-          Decode <span className="text-gray-400">(Ctrl+Enter)</span>
+        <button type="submit" className="rounded bg-raised px-3 py-1 text-sm text-soft hover:bg-strong">
+          Decode <span className="text-muted">(Ctrl+Enter)</span>
         </button>
       </form>
 
@@ -196,10 +196,10 @@ export default function DecodingText() {
       <p className="sr-only">{cells.map((cell) => cell.target).join('')}</p>
       <p
         aria-hidden="true"
-        className="min-h-24 rounded border border-gray-700 bg-black p-4 font-mono text-lg break-words whitespace-pre-wrap text-white"
+        className="min-h-24 rounded border border-line bg-black p-4 font-mono text-lg break-words whitespace-pre-wrap text-white"
       >
         {cells.map((cell, i) => (
-          <span key={i} className={cell.done ? undefined : 'text-gray-500'}>
+          <span key={i} className={cell.done ? undefined : 'text-subtle'}>
             {cell.char}
           </span>
         ))}
@@ -221,7 +221,7 @@ export default function DecodingText() {
           <select
             value={glyphSet}
             onChange={(event) => setGlyphSet(event.target.value)}
-            className="mt-1 block w-full rounded border border-gray-700 bg-gray-900 p-1 text-gray-200"
+            className="mt-1 block w-full rounded border border-line bg-panel p-1 text-soft"
           >
             {Object.entries(GLYPH_SETS).map(([key, set]) => (
               <option key={key} value={key}>

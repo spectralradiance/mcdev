@@ -25,11 +25,11 @@ function Lane({ slot, player, name, place, ops, total }: { slot: Slot; player: A
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between gap-2 text-sm">
         <span className="font-semibold">{name}</span>
-        <span className={'tabular-nums text-xs ' + (finished ? 'text-emerald-400' : 'text-gray-500')}>
+        <span className={'tabular-nums text-xs ' + (finished ? 'text-emerald-400' : 'text-subtle')}>
           {finished ? `${ORDINAL[place]} · ${total.toLocaleString()} ops` : `${ops.toLocaleString()} / ${total.toLocaleString()}`}
         </span>
       </div>
-      <div ref={wrap} className={'overflow-hidden rounded-lg border ' + (finished ? 'border-emerald-700' : 'border-gray-800')}>
+      <div ref={wrap} className={'overflow-hidden rounded-lg border ' + (finished ? 'border-emerald-700' : 'border-line-soft')}>
         <canvas ref={canvas} className="block" onPointerDown={() => sound.unlock()} />
       </div>
     </div>
@@ -106,7 +106,7 @@ export default function RaceView() {
 
       <Transport pb={pb} label="ops" />
       <Legend items={SORT_LEGEND} />
-      <p className="text-sm leading-relaxed text-gray-400">
+      <p className="text-sm leading-relaxed text-muted">
         Every lane gets the same input and performs the same number of operations per second, counting each
         comparison, swap, read and write as one. Lanes are panned left to right, each with its own timbre, so
         with headphones you can hear which algorithm is still working.

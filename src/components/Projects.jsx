@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import projects from '../data/projects.json';
 import smallProjects from '../small';
 import SourceCode from './SourceCode';
+import { Heading } from '../ui';
 
 const projectHref = (project) => project.page ?? `/projects/${project.slug}`;
 
@@ -18,16 +19,16 @@ const Icon = ({ project, className = '' }) => (
   <img
     src={project.art}
     alt=""
-    className={'shrink-0 rounded-lg border border-gray-800 bg-[#0a0a0a] p-2 ' + className}
+    className={'shrink-0 rounded-lg border border-line-soft bg-[#0a0a0a] p-2 ' + className}
   />
 );
 
 const Category = ({ children }) => (
-  <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">{children}</p>
+  <p className="text-[11px] font-semibold uppercase tracking-widest text-subtle">{children}</p>
 );
 
 const cardClass =
-  'flex items-start gap-4 bg-gray-900 border border-gray-800 rounded-lg hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500';
+  'flex items-start gap-4 bg-panel border border-line-soft rounded-lg hover:border-line-strong transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500';
 
 const LargeCard = ({ project }) => {
   const { title, category, description, tech } = project;
@@ -38,8 +39,8 @@ const LargeCard = ({ project }) => {
       <div className="min-w-0">
         <Category>{category}</Category>
         <h3 className="mt-1 text-white font-semibold text-lg leading-tight">{title}</h3>
-        {description && <p className="text-gray-400 text-sm mt-2">{description}</p>}
-        <p className="text-gray-500 text-xs mt-3">{tech.join(' · ')}</p>
+        {description && <p className="text-muted text-sm mt-2">{description}</p>}
+        <p className="text-subtle text-xs mt-3">{tech.join(' · ')}</p>
       </div>
     </Link>
   );
@@ -54,7 +55,7 @@ const SmallCard = ({ project }) => {
       <div className="min-w-0">
         <Category>{category}</Category>
         <h3 className="mt-0.5 text-white font-semibold text-sm leading-tight">{title}</h3>
-        {description && <p className="text-gray-400 text-xs mt-1">{description}</p>}
+        {description && <p className="text-muted text-xs mt-1">{description}</p>}
       </div>
     </Link>
   );
@@ -77,7 +78,7 @@ const ImageModal = ({ src, alt, onClose }) => {
       <button
         onClick={onClose}
         aria-label="Close"
-        className="absolute top-4 right-4 text-gray-300 hover:text-white text-3xl leading-none"
+        className="absolute top-4 right-4 text-soft hover:text-white text-3xl leading-none"
       >
         ×
       </button>
@@ -100,9 +101,9 @@ const Gallery = ({ images, title }) => {
         <button
           key={src}
           onClick={() => setOpen(src)}
-          className="rounded-lg overflow-hidden border border-gray-800 hover:border-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+          className="rounded-lg overflow-hidden border border-line-soft hover:border-line-strong transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
-          <img src={src} alt={title} loading="lazy" className="h-48 w-auto max-w-full bg-gray-900" />
+          <img src={src} alt={title} loading="lazy" className="h-48 w-auto max-w-full bg-panel" />
         </button>
       ))}
       {open && <ImageModal src={open} alt={title} onClose={() => setOpen(null)} />}
@@ -111,7 +112,7 @@ const Gallery = ({ images, title }) => {
 };
 
 const BackLink = () => (
-  <Link to="/projects" className="mb-6 text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center gap-1">
+  <Link to="/projects" className="mb-6 text-sm text-muted hover:text-white transition-colors inline-flex items-center gap-1">
     ← Back to projects
   </Link>
 );
@@ -119,16 +120,16 @@ const BackLink = () => (
 const TechList = ({ tech }) => (
   <ul className="mb-8 flex flex-wrap gap-2">
     {tech.map((name) => (
-      <li key={name} className="rounded border border-gray-700 px-2 py-0.5 text-xs text-gray-300">{name}</li>
+      <li key={name} className="rounded border border-line px-2 py-0.5 text-xs text-soft">{name}</li>
     ))}
   </ul>
 );
 
 const About = ({ about, features }) => (
   <>
-    {about && <p className="text-gray-300 leading-relaxed whitespace-pre-line mb-4">{about}</p>}
+    {about && <p className="text-soft leading-relaxed whitespace-pre-line mb-4">{about}</p>}
     {features?.length > 0 && (
-      <ul className="mb-8 list-disc space-y-1 pl-5 text-sm text-gray-400 marker:text-gray-600">
+      <ul className="mb-8 list-disc space-y-1 pl-5 text-sm text-muted marker:text-faint">
         {features.map((feature) => <li key={feature}>{feature}</li>)}
       </ul>
     )}
@@ -149,18 +150,18 @@ const SmallProjectDetail = ({ project }) => {
           <h2 className="mt-1 text-4xl font-bold text-white">{project.title}</h2>
         </div>
       </div>
-      {project.description && <p className="text-gray-300 leading-relaxed mb-4">{project.description}</p>}
+      {project.description && <p className="text-soft leading-relaxed mb-4">{project.description}</p>}
       <TechList tech={project.tech} />
       <About about={project.about} features={project.features} />
 
       {Demo ? (
         <div className="mb-6">
-          <Suspense fallback={<p className="text-gray-400">Loading…</p>}>
+          <Suspense fallback={<p className="text-muted">Loading…</p>}>
             <Demo />
           </Suspense>
         </div>
       ) : (
-        <p className="mb-6 text-gray-400">This one hasn&apos;t been ported yet.</p>
+        <p className="mb-6 text-muted">This one hasn&apos;t been ported yet.</p>
       )}
 
       {project.codepen && (
@@ -168,7 +169,7 @@ const SmallProjectDetail = ({ project }) => {
           href={project.codepen}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1 text-sm text-muted hover:text-white transition-colors"
         >
           Original on CodePen <ExternalIcon />
         </a>
@@ -192,13 +193,13 @@ const LargeProjectDetail = ({ project }) => {
           <h2 className="mt-1 text-4xl font-bold text-white">{title}</h2>
         </div>
       </div>
-      {description && <p className="text-gray-300 leading-relaxed mb-4">{description}</p>}
+      {description && <p className="text-soft leading-relaxed mb-4">{description}</p>}
       <TechList tech={tech} />
 
       {about && (
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-white mb-2">About</h3>
-          <p className="text-gray-300 leading-relaxed whitespace-pre-line">{about}</p>
+          <p className="text-soft leading-relaxed whitespace-pre-line">{about}</p>
         </div>
       )}
 
@@ -216,7 +217,7 @@ const LargeProjectDetail = ({ project }) => {
             href={repo.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gray-800 text-gray-200 hover:bg-gray-700 transition-colors text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-raised text-soft hover:bg-strong transition-colors text-sm"
           >
             <ExternalIcon />
             {repos.length > 1 ? repo.label : 'View on GitHub'}
@@ -234,7 +235,7 @@ export const ProjectDetail = () => {
     return (
       <div>
         <BackLink />
-        <p className="text-gray-400">No project called “{slug}”.</p>
+        <p className="text-muted">No project called “{slug}”.</p>
       </div>
     );
   }
@@ -250,15 +251,15 @@ const Projects = () => {
   return (
     <div className="space-y-14">
       <section>
-        <h2 className="text-3xl font-bold mb-6 border-b border-gray-700 pb-2">Projects</h2>
+        <Heading>Projects</Heading>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {large.map((project) => <LargeCard key={project.slug} project={project} />)}
         </div>
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold mb-2 border-b border-gray-700 pb-2">Small projects</h2>
-        <p className="text-gray-400 text-sm mb-6">Sketches and experiments, each runnable right on its page.</p>
+        <h2 className="text-2xl font-bold mb-2 border-b border-line pb-2">Small projects</h2>
+        <p className="text-muted text-sm mb-6">Sketches and experiments, each runnable right on its page.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {small.map((project) => <SmallCard key={project.slug} project={project} />)}
         </div>

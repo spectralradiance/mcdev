@@ -114,14 +114,14 @@ export default function Pairs() {
   const cell = sizeName === '6 × 6' ? 'text-xl' : 'text-3xl'
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-700 bg-gray-900 px-4 py-6 font-light text-gray-300">
+    <div className="flex flex-col items-center gap-4 rounded-lg border border-line bg-panel px-4 py-6 font-light text-soft">
       <div className="flex w-full flex-wrap items-end justify-center gap-4 text-sm">
-        <label className="text-xs text-gray-400">
+        <label className="text-xs text-muted">
           board
           <select
             value={sizeName}
             onChange={(e) => newGame(e.target.value)}
-            className="mt-1 block rounded border border-gray-700 bg-gray-900 px-2 py-1 text-sm text-gray-200 focus:border-gray-500 focus:outline-none"
+            className="mt-1 block rounded border border-line bg-panel px-2 py-1 text-sm text-soft focus:border-line-strong focus:outline-none"
           >
             {Object.keys(SIZES).map((name) => <option key={name}>{name}</option>)}
           </select>
@@ -129,7 +129,7 @@ export default function Pairs() {
         <button
           type="button"
           onClick={() => newGame()}
-          className="rounded border border-gray-700 bg-gray-800 px-4 py-1.5 text-gray-300 hover:bg-gray-700 hover:text-white"
+          className="rounded border border-line bg-raised px-4 py-1.5 text-soft hover:bg-strong hover:text-white"
         >
           New game
         </button>
@@ -137,11 +137,11 @@ export default function Pairs() {
 
       <div className="flex gap-6 text-center">
         <div>
-          <div className="text-xs text-gray-500">moves</div>
+          <div className="text-xs text-subtle">moves</div>
           <div className="text-2xl text-white tabular-nums">{moves}</div>
         </div>
         <div>
-          <div className="text-xs text-gray-500">best</div>
+          <div className="text-xs text-subtle">best</div>
           <div className="text-2xl text-white tabular-nums">{best[sizeName] ?? '–'}</div>
         </div>
       </div>
@@ -159,7 +159,7 @@ export default function Pairs() {
               aria-label={faceUp ? `${card.glyph}, ${card.state}` : 'Face-down card'}
               onClick={() => flip(i)}
               className={`aspect-square rounded-md border transition-colors duration-150 ${cell} ${
-                faceUp ? 'border-transparent' : 'border-gray-700 bg-gray-800 hover:bg-gray-700'
+                faceUp ? 'border-transparent' : 'border-line bg-raised hover:bg-strong'
               } ${card.state === 'matched' ? 'opacity-40' : ''}`}
               style={faceUp ? { backgroundColor: `hsl(${card.hue} 45% 18%)`, color: `hsl(${card.hue} 90% 68%)` } : undefined}
             >
@@ -172,7 +172,7 @@ export default function Pairs() {
       <p aria-live="polite" className="min-h-6 text-center text-teal-300">
         {won ? `All ${cards.length / 2} pairs in ${moves} moves.` : ''}
       </p>
-      <p className="max-w-md text-center text-xs text-gray-500">
+      <p className="max-w-md text-center text-xs text-subtle">
         Pairs share both shape and color. Fewer moves is better, but there&apos;s no clock.
       </p>
     </div>

@@ -60,8 +60,8 @@ export default function SourceCode({ files }) {
   return (
     <section className="mt-12">
       <h3 className="text-lg font-semibold text-white mb-3">Source</h3>
-      <div className="rounded-lg border border-gray-800 bg-gray-950 overflow-hidden">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-gray-800 px-3 py-2 text-xs">
+      <div className="rounded-lg border border-line-soft bg-deep overflow-hidden">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line-soft px-3 py-2 text-xs">
           <div className="flex flex-wrap gap-1" role="tablist" aria-label="Source files">
             {files.map((file) => (
               <button
@@ -71,26 +71,26 @@ export default function SourceCode({ files }) {
                 onClick={() => setActive(file)}
                 className={
                   'rounded px-2 py-1 font-mono ' +
-                  (file === active ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white')
+                  (file === active ? 'bg-raised text-white' : 'text-muted hover:text-white')
                 }
               >
                 {file}
               </button>
             ))}
           </div>
-          <span className="text-gray-500">{lines > 0 && `${lines} lines`}</span>
+          <span className="text-subtle">{lines > 0 && `${lines} lines`}</span>
           <div className="ml-auto flex gap-3">
-            <button onClick={copy} className="text-gray-400 hover:text-white">
+            <button onClick={copy} className="text-muted hover:text-white">
               {copied ? 'Copied' : 'Copy'}
             </button>
-            <a href={repoUrl + active} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+            <a href={repoUrl + active} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-white">
               GitHub ↗
             </a>
           </div>
         </div>
         <pre className="source-code max-h-[40rem] overflow-auto p-4 text-xs leading-relaxed">
           {html === null ? (
-            <code className="text-gray-500">Loading…</code>
+            <code className="text-subtle">Loading…</code>
           ) : (
             <code dangerouslySetInnerHTML={{ __html: html }} />
           )}

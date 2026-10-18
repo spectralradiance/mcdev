@@ -12,7 +12,7 @@ Object.values(children).forEach((list) => list.sort((a, b) => a.localeCompare(b)
 
 const Row = ({ label, children: kids }) => (
   <div className="flex gap-3">
-    <span className="text-gray-500 text-xs w-16 shrink-0 pt-0.5">{label}</span>
+    <span className="text-subtle text-xs w-16 shrink-0 pt-0.5">{label}</span>
     <div className="flex flex-wrap gap-2 min-w-0">{kids}</div>
   </div>
 );
@@ -20,7 +20,7 @@ const Row = ({ label, children: kids }) => (
 const TermLink = ({ term, onGo }) => (
   <button
     onClick={() => onGo(term)}
-    className="text-xs px-2 py-0.5 rounded border border-gray-700 text-sky-400 hover:bg-gray-800 transition-colors"
+    className="text-xs px-2 py-0.5 rounded border border-line text-sky-400 hover:bg-raised transition-colors"
   >
     {term}
   </button>
@@ -74,8 +74,8 @@ const Glossary = () => {
 
   return (
     <section>
-      <h2 className="text-3xl font-bold mb-2 border-b border-gray-700 pb-2">Glossary</h2>
-      <p className="text-gray-400 text-sm mt-3 mb-6">
+      <h2 className="text-3xl font-bold mb-2 border-b border-line pb-2">Glossary</h2>
+      <p className="text-muted text-sm mt-3 mb-6">
         Terms in AI and machine learning, web development and general technology. Click a term to expand it.
       </p>
 
@@ -85,12 +85,12 @@ const Glossary = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search terms, definitions, tags…"
-          className="flex-1 bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+          className="flex-1 bg-panel border border-line-soft rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
         />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-gray-500"
+          className="bg-panel border border-line-soft rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
           <option value="All">All categories</option>
           {categories.map((c) => (
@@ -103,21 +103,21 @@ const Glossary = () => {
 
       {activeTag && (
         <div className="flex items-center gap-2 mb-4 text-sm">
-          <span className="text-gray-400">Filtering by tag:</span>
+          <span className="text-muted">Filtering by tag:</span>
           <button
             onClick={() => setActiveTag(null)}
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-800 text-gray-200 hover:bg-gray-700 transition-colors"
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-raised text-soft hover:bg-strong transition-colors"
           >
             {activeTag} ✕
           </button>
         </div>
       )}
 
-      <p className="text-gray-500 text-xs mb-3">
+      <p className="text-subtle text-xs mb-3">
         {entries.length} term{entries.length === 1 ? '' : 's'}
       </p>
 
-      <div className="bg-gray-900 border border-gray-800 rounded-lg divide-y divide-gray-800">
+      <div className="bg-panel border border-line-soft rounded-lg divide-y divide-gray-800">
         {entries.map((e) => {
           const open = expanded.has(e.term);
           const kids = children[e.term] || [];
@@ -129,11 +129,11 @@ const Glossary = () => {
               <button
                 onClick={() => toggle(e.term)}
                 aria-expanded={open}
-                className="w-full flex items-baseline gap-3 px-4 py-2 text-left hover:bg-gray-800/50 transition-colors"
+                className="w-full flex items-baseline gap-3 px-4 py-2 text-left hover:bg-raised/50 transition-colors"
               >
-                <span className="text-gray-600 text-xs shrink-0 w-3">{open ? '▾' : '▸'}</span>
+                <span className="text-faint text-xs shrink-0 w-3">{open ? '▾' : '▸'}</span>
                 <span className="text-white font-semibold text-sm shrink-0">{e.term}</span>
-                <span className={'text-gray-400 text-sm min-w-0 ' + (open ? '' : 'truncate')}>
+                <span className={'text-muted text-sm min-w-0 ' + (open ? '' : 'truncate')}>
                   {e.definition}
                 </span>
               </button>
@@ -143,7 +143,7 @@ const Glossary = () => {
                   <Row label="Category">
                     <button
                       onClick={() => setCategory(e.category)}
-                      className="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors"
+                      className="text-xs px-2 py-0.5 rounded bg-raised text-soft hover:bg-strong transition-colors"
                     >
                       {e.category}
                     </button>
@@ -158,7 +158,7 @@ const Glossary = () => {
                             'text-xs px-2 py-0.5 rounded transition-colors ' +
                             (t === activeTag
                               ? 'bg-gray-200 text-gray-900'
-                              : 'bg-gray-800 text-gray-400 hover:bg-gray-700')
+                              : 'bg-raised text-muted hover:bg-strong')
                           }
                         >
                           {t}
@@ -205,7 +205,7 @@ const Glossary = () => {
         })}
 
         {entries.length === 0 && (
-          <p className="text-gray-500 text-sm p-4">No terms match your search.</p>
+          <p className="text-subtle text-sm p-4">No terms match your search.</p>
         )}
       </div>
     </section>

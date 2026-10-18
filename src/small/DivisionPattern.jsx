@@ -277,12 +277,12 @@ export default function DivisionPattern() {
   // Pinned-cell marker, positioned in percentages so it tracks CSS scaling.
   const cellPct = 100 * (view.zoom / SIZE);
 
-  const select = 'border border-gray-700 bg-gray-800 px-1 py-0.5 text-white';
-  const button = 'rounded bg-gray-800 px-2 py-0.5 text-sm text-gray-200 hover:bg-gray-700 disabled:opacity-40';
+  const select = 'border border-line bg-raised px-1 py-0.5 text-white';
+  const button = 'rounded bg-raised px-2 py-0.5 text-sm text-soft hover:bg-strong disabled:opacity-40';
 
   return (
     <div className="max-w-[501px] space-y-3">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-300">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-soft">
         <label className="flex items-center gap-2">
           Rule
           <select value={rule} onChange={(e) => setRule(e.target.value)} className={select}>
@@ -305,7 +305,7 @@ export default function DivisionPattern() {
         </div>
       </div>
 
-      <div className="relative inline-block max-w-full touch-none select-none border border-gray-700">
+      <div className="relative inline-block max-w-full touch-none select-none border border-line">
         <canvas
           ref={canvasRef}
           width={SIZE}
@@ -339,7 +339,7 @@ export default function DivisionPattern() {
         )}
         {hover && (
           <div
-            className="pointer-events-none absolute z-10 whitespace-nowrap border border-gray-700 bg-black px-1 font-mono text-xs text-gray-300"
+            className="pointer-events-none absolute z-10 whitespace-nowrap border border-line bg-black px-1 font-mono text-xs text-soft"
             style={{
               left: `${hover.fx * 100}%`,
               top: `${hover.fy * 100}%`,
@@ -352,14 +352,14 @@ export default function DivisionPattern() {
         )}
       </div>
 
-      <div className="min-h-[3.5rem] rounded border border-gray-800 bg-gray-900 p-2 font-mono text-xs text-gray-300">
+      <div className="min-h-[3.5rem] rounded border border-line-soft bg-panel p-2 font-mono text-xs text-soft">
         {pinned ? (
           <>
             <div>{fraction(pinned)}</div>
             {pinned.d !== 0 && (
               <>
-                <div className="mt-1 break-all text-gray-400">exact: {exactDecimal(pinned.n, pinned.d)}</div>
-                <div className="text-gray-400">
+                <div className="mt-1 break-all text-muted">exact: {exactDecimal(pinned.n, pinned.d)}</div>
+                <div className="text-muted">
                   printed length {RULES.length.level(pinned.n, pinned.d)} · period{' '}
                   {periodOf(repeatingModulus(pinned.n, pinned.d))} · remainder {pinned.n % pinned.d}
                 </div>
@@ -367,7 +367,7 @@ export default function DivisionPattern() {
             )}
           </>
         ) : (
-          <span className="text-gray-500">Click a cell to pin it. Drag to pan, scroll to zoom.</span>
+          <span className="text-subtle">Click a cell to pin it. Drag to pan, scroll to zoom.</span>
         )}
       </div>
     </div>

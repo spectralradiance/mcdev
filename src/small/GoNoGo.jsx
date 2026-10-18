@@ -139,8 +139,8 @@ export default function GoNoGo() {
   const total = summary ? summary.omissions + summary.commissions : 0
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-700 bg-gray-900 px-4 py-6 font-light text-gray-300">
-      <p className="text-center text-sm text-gray-400">
+    <div className="flex flex-col items-center gap-4 rounded-lg border border-line bg-panel px-4 py-6 font-light text-soft">
+      <p className="text-center text-sm text-muted">
         Press <span className="text-green-400">space or tap</span> for the circle. Do nothing for the{' '}
         <span className="text-red-400">square</span>.
       </p>
@@ -150,27 +150,27 @@ export default function GoNoGo() {
         tabIndex={-1}
         aria-label="Response area"
         onPointerDown={phase === 'running' ? respond : undefined}
-        className="flex h-56 w-full max-w-sm touch-manipulation items-center justify-center rounded-lg border border-gray-700 bg-gray-950 select-none"
+        className="flex h-56 w-full max-w-sm touch-manipulation items-center justify-center rounded-lg border border-line bg-deep select-none"
       >
         {stimulus === 'go' && <div className="h-24 w-24 rounded-full bg-green-500" />}
         {stimulus === 'nogo' && <div className="h-24 w-24 rounded-sm bg-red-500" />}
         {phase === 'running' && !stimulus && <div className="h-2 w-2 rounded-full bg-gray-600" />}
-        {phase === 'idle' && <p className="text-gray-500">{TRIALS} trials, about 2 minutes</p>}
+        {phase === 'idle' && <p className="text-subtle">{TRIALS} trials, about 2 minutes</p>}
         {phase === 'done' && summary && (
           <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-            <dt className="text-gray-500">mean reaction</dt>
+            <dt className="text-subtle">mean reaction</dt>
             <dd className="text-white tabular-nums">{summary.meanRt ?? '–'} ms</dd>
-            <dt className="text-gray-500">variability (SD)</dt>
+            <dt className="text-subtle">variability (SD)</dt>
             <dd className="text-white tabular-nums">{summary.sdRt ?? '–'} ms</dd>
-            <dt className="text-gray-500">missed circles</dt>
+            <dt className="text-subtle">missed circles</dt>
             <dd className="text-white tabular-nums">{summary.omissions} of {summary.goTrials}</dd>
-            <dt className="text-gray-500">pressed on square</dt>
+            <dt className="text-subtle">pressed on square</dt>
             <dd className="text-white tabular-nums">{summary.commissions} of {summary.noGoTrials}</dd>
           </dl>
         )}
       </div>
 
-      <div className="h-4 text-xs text-gray-500 tabular-nums">
+      <div className="h-4 text-xs text-subtle tabular-nums">
         {phase === 'running' && `${progress} / ${TRIALS}`}
         {phase === 'done' && `${total} mistake${total === 1 ? '' : 's'}`}
         {phase === 'idle' && best && `best: ${best.errors} mistakes, ${best.meanRt} ms`}
@@ -180,11 +180,11 @@ export default function GoNoGo() {
         type="button"
         onClick={start}
         disabled={phase === 'running'}
-        className="rounded border border-gray-700 bg-gray-800 px-5 py-2 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+        className="rounded border border-line bg-raised px-5 py-2 text-soft hover:bg-strong hover:text-white disabled:opacity-50"
       >
         {phase === 'idle' ? 'Start' : 'Go again'}
       </button>
-      <p className="max-w-md text-center text-xs text-gray-500">
+      <p className="max-w-md text-center text-xs text-subtle">
         Pressing on the square is the number to watch: it is the slip that this task is built to
         catch. Compare yourself with yourself on a different day, not with anyone else.
       </p>
