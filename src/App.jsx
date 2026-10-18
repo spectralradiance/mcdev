@@ -4,7 +4,6 @@ import Profile from './components/Profile';
 import Projects, { ProjectDetail } from './components/Projects';
 import Glossary from './components/Glossary';
 import Learn from './components/Learn';
-import WoodlandFortressPage from './programs/woodlandfortress/page';
 import KybosPage from './programs/kybos/page';
 import ApaxPage from './programs/apax/page';
 import NiamhPage from './programs/niamh/page';
@@ -88,7 +87,6 @@ function App() {
         <Header />
         <Routes>
           <Route path="/programs/kybos" element={<KybosPage />} />
-          <Route path="/programs/woodlandfortress" element={<WoodlandFortressPage />} />
           <Route path="/programs/apax" element={<ApaxPage />} />
           <Route path="/programs/niamh" element={<Contained><NiamhPage /></Contained>} />
           <Route path="/programs/kosmos" element={<KosmosPage />} />
