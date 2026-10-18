@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bars rising in order, with a graph path above">
+<path d="M12 54 V46 M20 54 V41 M28 54 V36 M36 54 V30 M44 54 V24 M52 54 V18" fill="none" stroke="#e5e7eb" stroke-width="4" stroke-linecap="round"/>
+<path d="M36 54 V30" fill="none" stroke="#facc15" stroke-width="4" stroke-linecap="round"/>
+<path d="M10 22 L22 12 L34 18 L46 8" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="10" cy="22" r="3" fill="#a78bfa"/>
+<circle cx="22" cy="12" r="3" fill="#a78bfa"/>
+<circle cx="34" cy="18" r="3" fill="#a78bfa"/>
+<circle cx="46" cy="8" r="3" fill="#a78bfa"/>
+</svg>

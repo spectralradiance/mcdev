@@ -74,12 +74,6 @@ const icons = {
     return `<path d="M32 6 V58 M6 32 H58" ${line(G, 1.5)} stroke-dasharray="3 3"/>\n` + rects.join('\n');
   })()],
 
-  // A stack of layers built up week by week.
-  'python-full-stack-curriculum': ['Three stacked layers of a web stack', `
-<path d="M32 40 L54 46 L32 52 L10 46 Z" ${line(G)}/>
-<path d="M32 28 L54 34 L32 40 L10 34 Z" ${line()}/>
-<path d="M32 16 L54 22 L32 28 L10 22 Z" fill="#38bdf8" fill-opacity="0.25" stroke="#38bdf8" stroke-width="2" stroke-linejoin="round"/>`],
-
   // The Seed of Life: six circles around a seventh.
   'seed-of-life': ['Seed of Life, six circles around a center circle', (() => {
     const r = 11, c = 32;

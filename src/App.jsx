@@ -8,6 +8,7 @@ import WoodlandFortressPage from './programs/woodlandfortress/page';
 import KybosPage from './programs/kybos/page';
 import ApaxPage from './programs/apax/page';
 import NiamhPage from './programs/niamh/page';
+import KosmosPage from './programs/kosmos/page';
 
 function HomePage() {
   return (
@@ -90,6 +91,7 @@ function App() {
           <Route path="/programs/woodlandfortress" element={<WoodlandFortressPage />} />
           <Route path="/programs/apax" element={<ApaxPage />} />
           <Route path="/programs/niamh" element={<Contained><NiamhPage /></Contained>} />
+          <Route path="/programs/kosmos" element={<KosmosPage />} />
           <Route path="/" element={<Contained><HomePage /></Contained>} />
           <Route path="/projects" element={<Contained><Projects /></Contained>} />
           <Route path="/projects/:slug" element={<Contained><ProjectDetail /></Contained>} />

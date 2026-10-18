@@ -1,7 +1,10 @@
 // A glossary of common web development and general technology terms.
-// Each entry: { term, definition, category, tags }
+// Each entry: { term, definition, category, tags, parent?, related?, links? }
+// Relations for the entries below are filled in from `relations`; AI terms live in glossaryAI.js.
 
-const glossary = [
+import aiGlossary from './glossaryAI';
+
+const base = [
   // Web Fundamentals
   { term: 'HTTP', definition: 'The request-response protocol underlying data exchange on the web.', category: 'Web Fundamentals', tags: ['protocol', 'networking', 'foundational'] },
   { term: 'HTTPS', definition: 'HTTP secured with TLS encryption.', category: 'Web Fundamentals', tags: ['protocol', 'security', 'encryption'] },
@@ -144,16 +147,6 @@ const glossary = [
   { term: 'gRPC', definition: 'A high-performance RPC framework using Protocol Buffers for communication between services.', category: 'APIs & Data Formats', tags: ['api', 'protocol'] },
   { term: 'Endpoint', definition: 'A specific URL where an API can be accessed by a client.', category: 'APIs & Data Formats', tags: ['api'] },
 
-  // AI/ML & Data
-  { term: 'Machine Learning', definition: 'A field of AI where systems learn patterns from data rather than explicit rules.', category: 'AI/ML & Data', tags: ['ai'] },
-  { term: 'Neural Network', definition: 'A machine learning model loosely inspired by the brain, made of layered nodes.', category: 'AI/ML & Data', tags: ['ai', 'ml'] },
-  { term: 'LLM', definition: 'Large Language Model; a neural network trained on vast text data to generate and understand language.', category: 'AI/ML & Data', tags: ['ai', 'nlp'] },
-  { term: 'Training', definition: "The process of adjusting a model's parameters using data to improve its predictions.", category: 'AI/ML & Data', tags: ['ai', 'ml'] },
-  { term: 'Inference', definition: 'Using a trained model to make predictions on new data.', category: 'AI/ML & Data', tags: ['ai', 'ml'] },
-  { term: 'Embedding', definition: 'A numerical vector representation of data (like text) that captures semantic meaning.', category: 'AI/ML & Data', tags: ['ai', 'nlp'] },
-  { term: 'Vector Database', definition: 'A database optimized for storing and searching high-dimensional embedding vectors.', category: 'AI/ML & Data', tags: ['ai', 'database'] },
-  { term: 'Prompt Engineering', definition: 'Crafting inputs to a language model to elicit better or more reliable outputs.', category: 'AI/ML & Data', tags: ['ai', 'nlp'] },
-
   // General CS
   { term: 'Algorithm', definition: 'A finite, well-defined sequence of steps for solving a problem.', category: 'General CS', tags: ['cs-fundamentals'] },
   { term: 'Data Structure', definition: 'A particular way of organizing and storing data for efficient access and modification.', category: 'General CS', tags: ['cs-fundamentals'] },
@@ -169,5 +162,61 @@ const glossary = [
   { term: 'Quantum Computing', definition: 'A computing paradigm using quantum-mechanical phenomena to perform certain calculations exponentially faster.', category: 'Emerging Tech', tags: ['emerging-tech'] },
   { term: 'Augmented Reality', definition: 'Technology that overlays digital content onto the real world in real time.', category: 'Emerging Tech', tags: ['emerging-tech'] },
 ];
+
+// parent / related for the general-tech entries.
+const relations = {
+  HTTPS: { parent: 'HTTP', related: ['TLS', 'Encryption'] },
+  HTTP: { related: ['REST', 'URL', 'Cookie'] },
+  DNS: { related: ['IP Address', 'URL'] },
+  REST: { related: ['API', 'Endpoint', 'GraphQL'] },
+  WebSocket: { related: ['HTTP', 'TCP/IP'] },
+  CORS: { parent: 'Same-Origin Policy', related: ['HTTP'] },
+  Session: { related: ['Cookie', 'JWT'] },
+  DOM: { related: ['HTML', 'Virtual DOM'] },
+  SSR: { related: ['CSR', 'Hydration'] },
+  CSR: { related: ['SSR', 'SPA'] },
+  Hydration: { parent: 'SSR' },
+  Hook: { parent: 'Component' },
+  Props: { parent: 'Component' },
+  JSX: { related: ['Component', 'Transpiler'] },
+  Bundler: { related: ['Minification', 'Transpiler'] },
+  Microservices: { related: ['Monolith', 'Message Queue'] },
+  Monolith: { related: ['Microservices'] },
+  Webhook: { related: ['API', 'Endpoint'] },
+  TLS: { related: ['HTTPS', 'Encryption'] },
+  JWT: { related: ['OAuth', 'Session'] },
+  Salt: { parent: 'Hashing' },
+  Hashing: { related: ['Salt', 'Encryption'] },
+  'SQL Injection': { related: ['SQL'] },
+  SQL: { related: ['NoSQL', 'Schema'] },
+  NoSQL: { related: ['SQL'] },
+  Docker: { related: ['Container', 'Kubernetes'] },
+  Kubernetes: { related: ['Container', 'Orchestration'] },
+  Container: { related: ['Docker', 'Virtual Machine'] },
+  Monitoring: { related: ['Logging', 'Observability'] },
+  Observability: { related: ['Monitoring', 'Logging'] },
+  Git: { related: ['Branch', 'Commit'] },
+  Branch: { parent: 'Git', related: ['Merge', 'Pull Request'] },
+  Merge: { related: ['Rebase'] },
+  Rebase: { related: ['Merge'] },
+  Commit: { parent: 'Git' },
+  'Unit Test': { related: ['Integration Test', 'Mocking'] },
+  'Integration Test': { related: ['Unit Test'] },
+  TDD: { related: ['Unit Test'] },
+  Caching: { related: ['CDN'] },
+  Debouncing: { related: ['Throttling'] },
+  Throttling: { related: ['Debouncing', 'Rate Limiting'] },
+  GraphQL: { related: ['REST', 'API'] },
+  JSON: { related: ['XML', 'API'] },
+  Compiler: { related: ['Interpreter'] },
+  Interpreter: { related: ['Compiler'] },
+  Concurrency: { related: ['Parallelism'] },
+  Parallelism: { related: ['Concurrency'] },
+  Algorithm: { related: ['Data Structure', 'Big O Notation'] },
+};
+
+const general = base.map((e) => ({ related: [], links: [], parent: null, ...e, ...relations[e.term] }));
+
+const glossary = [...general, ...aiGlossary];
 
 export default glossary;
