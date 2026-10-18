@@ -88,7 +88,7 @@ function App() {
         <Routes>
           <Route path="/programs/kybos" element={<KybosPage />} />
           <Route path="/programs/woodlandfortress" element={<WoodlandFortressPage />} />
-          <Route path="/programs/apax" element={<Contained><ApaxPage /></Contained>} />
+          <Route path="/programs/apax" element={<ApaxPage />} />
           <Route path="/programs/niamh" element={<Contained><NiamhPage /></Contained>} />
           <Route path="/" element={<Contained><HomePage /></Contained>} />
           <Route path="/projects" element={<Contained><Projects /></Contained>} />
