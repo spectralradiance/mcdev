@@ -487,5 +487,106 @@
       "Custom colors, optional quiet zone, SVG and PNG download",
       "Every version tested by decoding the output with jsQR"
     ]
+  },
+  {
+    "slug": "breathe",
+    "size": "small",
+    "title": "Breathe",
+    "category": "Wellbeing",
+    "art": "/art/breathe.svg",
+    "description": "A paced-breathing guide: a circle swells and shrinks at about six breaths a minute.",
+    "tech": [
+      "React",
+      "Canvas-free CSS",
+      "requestAnimationFrame"
+    ],
+    "about": "Slow breathing near six breaths a minute is the best-supported relaxation technique among the games in this set, though the trials are small and varied. This is a pacer, not a measurement: it can't see your heart rate. The animation is computed from the clock rather than accumulated frames, so the circle never drifts if a frame is dropped.",
+    "features": [
+      "4 to 8 breaths per minute",
+      "Even or longer-exhale rhythm",
+      "1, 3, 5 or 10 minute sessions",
+      "Soft cosine easing at the turnarounds"
+    ]
+  },
+  {
+    "slug": "recall",
+    "size": "small",
+    "title": "Recall",
+    "category": "Learning",
+    "art": "/art/recall.svg",
+    "description": "Spaced-repetition flashcards: try to recall first, then check, and cards come back after longer gaps.",
+    "tech": [
+      "React",
+      "localStorage",
+      "Leitner system",
+      "Vitest"
+    ],
+    "about": "Retrieval practice and spaced repetition are the best-evidenced techniques in the cognitive-training literature, but they help only for the material you practise. Recall uses a five-box Leitner scheduler with intervals of 1, 2, 4, 8 and 16 days. The deck is plain text, one card per line, and editing it keeps progress for cards whose text hasn't changed.",
+    "features": [
+      "Recall before reveal, with an optional typed answer",
+      "Missed cards drop back to box 0, due tomorrow",
+      "Edit the deck as plain text: front | back",
+      "Progress kept in localStorage",
+      "Scheduler covered by unit tests"
+    ]
+  },
+  {
+    "slug": "go-no-go",
+    "size": "small",
+    "title": "Go / No-Go",
+    "category": "Attention",
+    "art": "/art/go-no-go.svg",
+    "description": "Press for the green circle, hold still for the red square. A mirror for reaction time and impulse control.",
+    "tech": [
+      "React",
+      "performance.now()",
+      "Vitest"
+    ],
+    "about": "A classic measure of response inhibition. It's here as a self-measurement, not a workout: training this task hasn't been shown to improve attention in daily life. A block is 60 trials, three in four go, with a random gap so you can't settle into a beat. Reaction times are measured from the frame the stimulus is painted, using a double requestAnimationFrame.",
+    "features": [
+      "Exact 25% no-go share, shuffled",
+      "Mean reaction time, variability, misses and slips",
+      "Space bar or tap",
+      "Best run saved",
+      "Trial generation and scoring covered by unit tests"
+    ]
+  },
+  {
+    "slug": "pairs",
+    "size": "small",
+    "title": "Pairs",
+    "category": "Games",
+    "art": "/art/pairs.svg",
+    "description": "Concentration: find the matching shape-and-color pairs on a 2×2 to 6×6 board.",
+    "tech": [
+      "React",
+      "localStorage"
+    ],
+    "about": "Each pair shares both a shape and a hue, so you can remember it by form, by color or both. There's no clock, only a move count. There's little evidence that matching games improve memory in general, so it's a calm way to pass a few minutes. The deck is shuffled with Fisher-Yates, and a mismatch is held face-up briefly before turning back.",
+    "features": [
+      "2×2, 4×3, 4×4 and 6×6 boards",
+      "No timer, fewest moves wins",
+      "Best moves saved per board size"
+    ]
+  },
+  {
+    "slug": "breakout",
+    "size": "small",
+    "title": "Breakout",
+    "category": "Games",
+    "art": "/art/breakout.svg",
+    "description": "A retro bat-and-ball game with a calm mode: a slower ball and no lives to lose.",
+    "tech": [
+      "React",
+      "Canvas 2D",
+      "Vitest"
+    ],
+    "about": "Nobody has tested whether a game this simple does anything for your brain, so it makes no claim. The rules live in a plain module and are tested without a browser; the component draws the state to a pixelated canvas. Where the ball lands on the paddle sets its angle, and sub-stepping keeps the ball from tunnelling through bricks.",
+    "features": [
+      "Mouse, touch or arrow keys",
+      "Calm mode: slower ball, infinite lives",
+      "Paddle-angle control",
+      "Rules covered by unit tests"
+    ]
   }
 ]

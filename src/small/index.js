@@ -17,6 +17,11 @@ const smallProjects = {
   'draw-division-remainder-pattern': { component: lazy(() => import('./DivisionPattern')), files: ['DivisionPattern.jsx'] },
   'media-list': { component: lazy(() => import('./MediaList')), files: ['MediaList.jsx'] },
   'qr-code-generator': { component: lazy(() => import('./QrCode')), files: ['QrCode.jsx', 'qr.js'] },
+  breathe: { component: lazy(() => import('./Breathe')), files: ['Breathe.jsx'] },
+  recall: { component: lazy(() => import('./Recall')), files: ['Recall.jsx', 'leitner.js'] },
+  'go-no-go': { component: lazy(() => import('./GoNoGo')), files: ['GoNoGo.jsx', 'goNoGoTrials.js'] },
+  pairs: { component: lazy(() => import('./Pairs')), files: ['Pairs.jsx'] },
+  breakout: { component: lazy(() => import('./Breakout')), files: ['Breakout.jsx', 'breakoutRules.js'] },
 };
 
 export default smallProjects;
